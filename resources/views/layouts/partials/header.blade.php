@@ -49,9 +49,11 @@
                                             {{ __('Administrar cuenta') }}
                                         </div>
 
-                                        <x-dropdown-link href="{{ route('profile.show') }}">
+                                        
+                                        <x-dropdown-link href="{{ route('profile.perfil1') }}">
                                             {{ __('Perfil') }}
                                         </x-dropdown-link>
+                                        
 
                                         <x-dropdown-link href="{{ route('profile.show') }}">
                                             {{ __('Configuración') }}

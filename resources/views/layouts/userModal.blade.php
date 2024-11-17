@@ -51,6 +51,7 @@
         </div>
     </div>
 </div>
+
 <script>
       function openModal(userName, userDetails) {
         document.getElementById('modalUserName').innerText = userName;

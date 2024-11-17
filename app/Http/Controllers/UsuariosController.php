@@ -112,4 +112,5 @@ class UsuariosController extends Controller
         $categorias =  DB::table('categorias')->select('nomcategoria')->get();
         return view('usuario', compact('usuarios','categorias'));
     }
+    
 }
