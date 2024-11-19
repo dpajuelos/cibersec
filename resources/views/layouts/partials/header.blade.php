@@ -1,6 +1,7 @@
 @if (isset($header))
     <div class="bg-black">
-        <nav x-data="{ open: false }" class="bg-black border-b border-red-600 shadow-red-600 shadow-md h-24 w-full fixed z-50">
+        <nav x-data="{ open: false }"
+            class="bg-black border-b border-red-600 shadow-red-600 shadow-md h-24 w-full fixed z-50">
             <div class="px-4 sm:px-6 lg:px-8 pt-2">
                 <div class="flex py-4 justify-around">
                     <div class=" shrink-0 flex items-center">
@@ -30,16 +31,16 @@
 
                     <div class="hidden sm:flex sm:items-center sm:ms-6">
                         <!-- Settings Dropdown -->
-                        <div class="ms-3 relative">
+                        <div class="ms-3 relative flex">
                             @if (@Auth::user())
                                 <x-dropdown align="right" width="48">
                                     <x-slot name="trigger">
                                         <button
-                                            class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
+                                            class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition p-1">
                                             <img class="h-8 w-8 rounded-full object-cover"
                                                 src="{{ Auth::user()->profile_photo_url }}" alt="" />
                                             <p class="text-white m-auto ml-3">
-                                                {{ Auth::user()->name }}
+                                                {{ Auth::user()->usuario }}
                                             </p>
                                         </button>
                                     </x-slot>
@@ -55,7 +56,7 @@
                                         </x-dropdown-link>
                                         
 
-                                        <x-dropdown-link href="{{ route('profile.show') }}">
+                                        <x-dropdown-link href="{{ route('profile') }}">
                                             {{ __('Configuración') }}
                                         </x-dropdown-link>
 
@@ -72,6 +73,72 @@
                                         </form>
                                     </x-slot>
                                 </x-dropdown>
+
+                                <div class="relative self-center ml-5">
+                                    <button @click="open = ! open" class="flex items-center text-white">
+                                        <i class="fas fa-bell"></i>
+                                        <span class="ml-2">{{ $notifications->where('is_read', false)->count() + $generalNotifications->count() }}</span>
+                                    </button>
+
+                                    <div x-show="open" @click.away="open = false"
+                                        class="absolute right-0 mt-2 w-60 bg-gray-100 rounded-md shadow-lg z-50 p-5"
+                                        x-transition>
+                                        <div class="py-1">
+                                            @if ($generalNotifications->isNotEmpty())
+                                                <div class="font-semibold text-lg mb-2 text-center">Notificaciones
+                                                    Generales
+                                                </div>
+                                                @foreach ($generalNotifications as $notification)
+                                                    <div class="block px-2 py-2 text-sm-center text-gray-800">
+                                                        {{ $notification->message }}
+                                                    </div>
+                                                @endforeach
+                                            @else
+                                                <div class="block px-4 py-2 text-sm text-gray-800">
+                                                    No hay notificaciones generales.
+                                                </div>
+                                            @endif
+
+                                            @if ($notifications->isNotEmpty())
+                                                <div class="font-semibold text-lg mt-4 mb-2 text-center">Notificaciones
+                                                    de
+                                                    Usuario</div>
+                                                @foreach ($notifications as $notification)
+                                                    <div
+                                                        class="flex items-center justify-between px-4 py-2 gap-4 text-sm text-gray-800">
+                                                        <span>{{ $notification->message }}</span>
+                                                        @if (!$notification->is_read)
+                                                            <span class="text-red-500">(Nuevo)</span>
+                                                            <form
+                                                                action="{{ route('notifications.read', $notification->id) }}"
+                                                                method="POST" style="display: inline;">
+                                                                @csrf
+                                                                <button type="submit"
+                                                                    class="text-blue-500 hover:underline">
+                                                                    <i class="fas fa-check"></i>
+                                                                </button>
+                                                            </form>
+                                                        @endif
+
+                                                        <form
+                                                            action="{{ route('notifications.destroy', $notification->id) }}"
+                                                            method="POST" style="display: inline;">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="text-red-500 hover:underline">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                @endforeach
+                                            @else
+                                                <div class="block px-4 py-2 text-sm text-gray-800">
+                                                    No hay notificaciones de usuario.
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
                             @else
                                 <div class="flex items-center space-x-5">
                                     <a href="{{ route('register') }}"
@@ -105,32 +172,31 @@
             </div>
 
             <!-- Responsive Navigation Menu -->
-            <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden bg-slate-50 fixed z-30 w-screen top-24">
+            <div :class="{ 'block': open, 'hidden': !open }"
+                class="hidden sm:hidden bg-slate-50 fixed z-30 w-screen top-24">
                 <!-- Responsive Settings Options -->
                 <div class="flex-1 items-center px-4">
                     @if (Auth::user())
                         <div class="pt-4 pb-1">
                             <div class="shrink-0 me-3">
                                 <img class="h-10 w-10 rounded-full object-cover"
-                                    src="{{ Auth::user()->profile_photo_url}}" alt="{{ Auth::user()->name }}" />
+                                    src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->usuario }}" />
                             </div>
                             <div>
-                                <div class="font-medium text-base text-black">{{ Auth::user()->name }}</div>
+                                <div class="font-medium text-base text-black">{{ Auth::user()->usuario }}</div>
                                 <div class="font-medium text-sm text-black">{{ Auth::user()->email }}</div>
                             </div>
                         </div>
                         <div class="mt-3 space-y-1">
                             <!-- Account Management -->
-                            <x-responsive-nav-link href="{{ route('profile.show') }}" :active="request()->routeIs('profile.show')"
-                                class="text-black">
+                            <x-responsive-nav-link href="{{ route('profile') }}" :active="request()->routeIs('profile')" class="text-black">
                                 {{ __('Usuarios') }}
                             </x-responsive-nav-link>
                             <x-responsive-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')"
                                 class="text-black">
                                 {{ __('Ranking') }}
                             </x-responsive-nav-link>
-                            <x-responsive-nav-link href="{{ route('retos') }}" :active="request()->routeIs('retos')"
-                                class="text-black">
+                            <x-responsive-nav-link href="{{ route('retos') }}" :active="request()->routeIs('retos')" class="text-black">
                                 {{ __('Retos') }}
                             </x-responsive-nav-link>
                             <!-- Authentication -->
@@ -155,16 +221,22 @@
                         </div>
                         <div class="mt-3 space-y-1">
                             <!-- Account Management -->
-                            <x-responsive-nav-link href="{{ route('profile.show') }}" :active="request()->routeIs('dashboard')"
+                            <x-responsive-nav-link href="{{ route('login') }}" :active="request()->routeIs('login')" class="text-black">
+                                {{ __('Iniciar sesión') }}
+                            </x-responsive-nav-link>
+                            <x-responsive-nav-link href="{{ route('register') }}" :active="request()->routeIs('register')"
                                 class="text-black">
                                 {{ __('Registrarse') }}
                             </x-responsive-nav-link>
-                            <x-responsive-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')"
+                            <x-responsive-nav-link href="{{ route('usuarios') }}" :active="request()->routeIs('usuarios')"
+                                class="text-black">
+                                {{ __('Usuarios') }}
+                            </x-responsive-nav-link>
+                            <x-responsive-nav-link href="{{ route('ranking') }}" :active="request()->routeIs('ranking')"
                                 class="text-black">
                                 {{ __('Ranking') }}
                             </x-responsive-nav-link>
-                            <x-responsive-nav-link href="{{ route('retos') }}" :active="request()->routeIs('retos')"
-                                class="text-black">
+                            <x-responsive-nav-link href="{{ route('retos') }}" :active="request()->routeIs('retos')" class="text-black">
                                 {{ __('Retos') }}
                             </x-responsive-nav-link>
                         </div>
@@ -172,7 +244,6 @@
                 </div>
             </div>
     </div>
-
     </nav>
     </div>
 @endif

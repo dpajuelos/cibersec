@@ -1,15 +1,15 @@
 <?php
 namespace App\Http\Controllers;
-use App\Models\Usuarios;
+use App\Models\v_usuarios;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-class UsuariosController extends Controller
+class usuariosController extends Controller
 {
     
     public function index()
     {
-        $usuarios = Usuarios::paginate(10); 
-        return view('usuario', compact('usuarios')); 
+        $v_usuarios = v_usuarios::paginate(10); 
+        return view('usuario', compact('v_usuarios')); 
     }
     public function categorias()
     {
@@ -69,46 +69,46 @@ class UsuariosController extends Controller
  
          
          if (empty($query)) {
-             $usuarios = Usuarios::paginate(10);
+             $v_usuarios = v_usuarios::paginate(10);
          } else {
-             $usuarios = Usuarios::where('usuario', 'LIKE', '%' . $query . '%')
+             $v_usuarios = v_usuarios::where('usuario', 'LIKE', '%' . $query . '%')
                          ->orWhere('nickname', 'LIKE', '%' . $query . '%')
                          ->orWhere('nomuniversidad', 'LIKE', '%' . $query . '%')
                          ->paginate(10);
          }
          $categorias =  DB::table('categorias')->select('nomcategoria')->get();
-         return view('usuario', compact('usuarios','categorias'));
+         return view('usuario', compact('v_usuarios','categorias'));
      }
-    public function filtrarusuarios(Request $request)
+    public function filtrarv_usuarios(Request $request)
     {
         $status = $request->input('estado');
-        $usuarios = Usuarios::query();
+        $v_usuarios = v_usuarios::query();
         if ($status) {
-            $usuarios = $usuarios->where('estadousuario', $status);
+            $v_usuarios = $v_usuarios->where('estadousuario', $status);
         }
-        $usuarios = $usuarios->paginate(10);
+        $v_usuarios = $v_usuarios->paginate(10);
         $categorias =  DB::table('categorias')->select('nomcategoria')->get();
-        return view('usuario', compact('usuarios','categorias'));
+        return view('usuario', compact('v_usuarios','categorias'));
     }
-    public function ordenarusuarios(Request $request)
+    public function ordenarv_usuarios(Request $request)
     {
         $order = $request->input('order');
-        $usuarios = Usuarios::query();
+        $v_usuarios = v_usuarios::query();
         switch ($order) {
             case 'nombre_asc':
-                $usuarios = $usuarios->orderBy('usuario', 'asc');
+                $v_usuarios = $v_usuarios->orderBy('usuario', 'asc');
                 break;
             case 'nombre_desc':
-                $usuarios = $usuarios->orderBy('usuario', 'desc');
+                $v_usuarios = $v_usuarios->orderBy('usuario', 'desc');
                 break;
             case 'nick_asc':
-                $usuarios = $usuarios->orderBy('nickname', 'asc'); 
+                $v_usuarios = $v_usuarios->orderBy('nickname', 'asc'); 
                 break;
             case 'nick_desc':
-                $usuarios = $usuarios->orderBy('nickname', 'desc'); 
+                $v_usuarios = $v_usuarios->orderBy('nickname', 'desc'); 
                 break;
         }
-        $usuarios = $usuarios->paginate(10);
+        $v_usuarios = $v_usuarios->paginate(10);
         $categorias =  DB::table('categorias')->select('nomcategoria')->get();
         return view('usuario', compact('usuarios','categorias'));
     }

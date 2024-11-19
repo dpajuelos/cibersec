@@ -80,7 +80,6 @@
                     <p class="text-center text-gray-400 text-sm md:text-base">No se encontraron usuarios con el término de búsqueda.</p>
                  @else
                 <table class="min-w-full divide-y divide-gray-700 text-sm md:text-base">
-
                         <thead class="bg-gray-800">
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
@@ -98,12 +97,12 @@
                             </tr>
                         </thead>
                         <tbody class="bg-gray-900 divide-y divide-gray-700">
-                            @foreach ($usuarios as $usuario)
+                            @foreach ($v_usuarios as $usuario)
                             <tr class="hover:bg-gray-800">
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center cursor-pointer space-x-4 sm:space-x-6" onclick="openModal('{{ $usuario->usuario }}', '{{ $usuario->nickname }}')">
-                                        <div class="flex-shrink-0 h-10 w-10 bg-gray-100 rounded-full flex items-center justify-center">
-                                            <img src="{{ $usuario->foto }}" alt="Imagen" class="h-full w-full rounded-full object-cover">
+                                    <div class="flex items-center cursor-pointer" onclick="openModal('{{ $usuario->usuario }}', '{{ $usuario->nickname }}')">
+                                        <div class="flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center">
+                                            <img src="{{ $usuario->profile_photo_url }}" alt="Imagen" class="h-full w-full rounded-full object-cover">
                                         </div>
                                         <div class="ml-4">
                                             <div class="text-sm font-medium text-gray-300">{{ $usuario->usuario }}</div>
@@ -143,23 +142,23 @@
                 <div class="flex items-center justify-between">
                     <!-- Muestra el rango de elementos actuales y el total de usuarios -->
                     <span class="text-sm text-gray-400">
-                          Mostrando {{ $usuarios->firstItem() }} a {{ $usuarios->lastItem() }} de {{ $usuarios->total() }} usuarios 
+                          Mostrando {{ $v_usuarios->firstItem() }} a {{ $v_usuarios->lastItem() }} de {{ $v_usuarios->total() }} Usuarios
                     </span>
                     
                     <div class="flex-1 flex justify-end">
                         <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px text-sm md:text-base">
                             <!-- Botón Anterior -->
-                            <a href="{{ $usuarios->previousPageUrl() }}" class="relative inline-flex items-center px-2 sm:px-3 py-2 rounded-l-md border border-gray-600 bg-gray-700 text-sm font-medium text-gray-400 hover:bg-gray-600 {{ $usuarios->onFirstPage() ? 'disabled:opacity-50 disabled:cursor-not-allowed' : '' }}" {{ $usuarios->onFirstPage() ? 'aria-disabled=true tabindex=-1' : '' }}>
+                            <a href="{{ $v_usuarios->previousPageUrl() }}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-600 bg-gray-700 text-sm font-medium text-gray-400 hover:bg-gray-600 {{ $v_usuarios->onFirstPage() ? 'disabled:opacity-50 disabled:cursor-not-allowed' : '' }}" {{ $v_usuarios->onFirstPage() ? 'aria-disabled=true tabindex=-1' : '' }}>
                                 Anterior
                             </a>
                             <!-- Mostrar número de páginas -->
-                            @foreach ($usuarios->getUrlRange(1, $usuarios->lastPage()) as $page => $url)
-                                <a href="{{ $url }}" class="relative inline-flex items-center px-4 py-2 border border-gray-600 {{ $usuarios->currentPage() == $page ? 'bg-blue-800 text-blue-400' : 'bg-gray-700 text-gray-400 hover:bg-gray-600' }}">
+                            @foreach ($v_usuarios->getUrlRange(1, $v_usuarios->lastPage()) as $page => $url)
+                                <a href="{{ $url }}" class="relative inline-flex items-center px-4 py-2 border border-gray-600 {{ $v_usuarios->currentPage() == $page ? 'bg-blue-800 text-blue-400' : 'bg-gray-700 text-gray-400 hover:bg-gray-600' }}">
                                     {{ $page }}
                                 </a>
                             @endforeach
                             <!-- Botón Siguiente -->
-                            <a href="{{ $usuarios->nextPageUrl() }}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-600 bg-gray-700 text-sm font-medium text-gray-400 hover:bg-gray-600 {{ !$usuarios->hasMorePages() ? 'disabled:opacity-50 disabled:cursor-not-allowed' : '' }}" {{ !$usuarios->hasMorePages() ? 'aria-disabled=true tabindex=-1' : '' }}>
+                            <a href="{{ $v_usuarios->nextPageUrl() }}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-600 bg-gray-700 text-sm font-medium text-gray-400 hover:bg-gray-600 {{ !$v_usuarios->hasMorePages() ? 'disabled:opacity-50 disabled:cursor-not-allowed' : '' }}" {{ !$v_usuarios->hasMorePages() ? 'aria-disabled=true tabindex=-1' : '' }}>
                                 Siguiente
                             </a>
                         </nav>
