@@ -76,7 +76,7 @@
             <!-- Tablita como mi ex :3 -->
             <div class="overflow-x-auto sm:rounded-lg">
 
-                @if($usuarios->isEmpty())
+                @if($v_usuarios->isEmpty())
                     <p class="text-center text-gray-400 text-sm md:text-base">No se encontraron usuarios con el término de búsqueda.</p>
                  @else
                 <table class="min-w-full divide-y divide-gray-700 text-sm md:text-base">
@@ -99,7 +99,7 @@
                         <tbody class="bg-gray-900 divide-y divide-gray-700">
                             @foreach ($v_usuarios as $usuario)
                             <tr class="hover:bg-gray-800">
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-6 py-4 whitespace-nowrap">    
                                     <div class="flex items-center cursor-pointer" onclick="openModal('{{ $usuario->usuario }}', '{{ $usuario->nickname }}')">
                                         <div class="flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center">
                                             <img src="{{ $usuario->profile_photo_url }}" alt="Imagen" class="h-full w-full rounded-full object-cover">
