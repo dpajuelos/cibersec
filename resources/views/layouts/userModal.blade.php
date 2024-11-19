@@ -1,48 +1,65 @@
 <div id="userModal" class="fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-50 z-50">
-    <div class="bg-gray-700 rounded-lg shadow-lg w-11/12 md:w-1/3 p-6">
-        <div class="flex justify-between items-center mb-4">
-            <h2 id="modalUserName" class="text-xl font-bold text-white">{{ $userName ?? 'Nombre de Usuario' }}</h2>
-            <p id="modalUserDetails" class="text-gray-400">{{ $userDetails ?? 'Aquí puedes mostrar más detalles del usuario.' }}</p>
-            <button onclick="closeModal()" class="text-gray-100 hover:text-gray-700">&times;</button>
+    <div class="bg-gray-700 rounded-lg shadow-lg w-full sm:w-10/12 md:w-2/3 lg:w-1/3 p-4 md:p-6">
+        <!-- Encabezado del modal -->
+        <div class="flex flex-wrap md:flex-nowrap justify-between items-center mb-4">
+            <h2 id="modalUserName" class="text-lg md:text-xl font-bold text-white">
+                {{ $userName ?? 'Nombre de Usuario' }}
+            </h2>
+            <p id="modalUserDetails" class="text-gray-400 text-sm md:text-base">
+                {{ $userDetails ?? 'Aquí puedes mostrar más detalles del usuario.' }}
+            </p>
+            <button onclick="closeModal()" class="text-gray-100 hover:text-gray-700 text-xl md:text-2xl">&times;</button>
         </div>
-        <div class="flex justify-center items-center space-x-4 mb-4">
-            <span id="puntos" class="text-xl text-white rounded-lg px-3 py-1 bg-blue-600 shadow-md">Cargando puntos gaa</span>
-            <span id="puesto" class="text-xl text-white rounded-lg px-3 py-1 bg-yellow-400 shadow-md">:3</span>
+        
+        <!-- Estadísticas básicas -->
+        <div class="flex flex-wrap justify-center items-center space-x-4 mb-4">
+            <span id="puntos" class="text-sm md:text-lg text-white rounded-lg px-2 md:px-3 py-1 bg-blue-600 shadow-md">
+                Cargando puntos gaa
+            </span>
+            <span id="puesto" class="text-sm md:text-lg text-white rounded-lg px-2 md:px-3 py-1 bg-yellow-400 shadow-md">
+                :3
+            </span>
         </div>
-        <div class="flex items-center space-x-4 mb-4">
-            <span class="text-x2 font-medium text-gray-300">PROBLEMAS RESUELTOS</span>
+        
+        <!-- Tabla de problemas resueltos -->
+        <div class="overflow-x-auto">
+            <table id="modalUserTable" class="min-w-full border-collapse border border-gray-700 text-sm md:text-base">
+                <thead>
+                    <tr class="bg-gray-800">
+                        <th class="border border-gray-600 p-2 text-left text-gray-300 font-semibold">Retos</th>
+                        <th class="border border-gray-600 p-2 text-center text-gray-300 font-semibold">Categorías</th>
+                        <th class="border border-gray-600 p-2 text-center text-gray-300 font-semibold">Puntaje</th>
+                        <th class="border border-gray-600 p-2 text-center text-gray-300 font-semibold">Hora</th>
+                        <th class="border border-gray-600 p-2 text-center text-gray-300 font-semibold">Resultado</th>
+                    </tr>
+                </thead>
+                <tbody id="modalUserTableBody">
+                </tbody>
+            </table>
         </div>
-        <table id="modalUserTable" class="min-w-full border-collapse border border-gray-700 mb-4">
-            <thead>
-                <tr class="bg-gray-800">
-                    <th class="border border-gray-600 p-2 text-left text-gray-300 font-semibold">Retos</th>
-                    <th class="border border-gray-600 p-2 text-center text-gray-300 font-semibold">Categorias</th>
-                    <th class="border border-gray-600 p-2 text-center text-gray-300 font-semibold">Puntaje</th>
-                    <th class="border border-gray-600 p-2 text-center text-gray-300 font-semibold">Hora</th>
-                    <th class="border border-gray-600 p-2 text-center text-gray-300 font-semibold">Resultado</th>
-                </tr>
-            </thead>
-            <tbody id="modalUserTableBody">
-            </tbody>
-        </table>
-        <div class="flex items-center justify-between my-4">
-            <span class="text-xl font-bold text-gray-300">PORCENTAJE DE ACIERTOS</span>
-            <select id = 'categoriaselect' class="bg-gray-700 text-gray-300 border border-gray-500 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-600" onchange='actualizarProgreso()'>
+
+        <!-- Selector de categorías -->
+        <div class="flex flex-wrap md:flex-nowrap items-center justify-between my-4">
+            <span class="text-sm md:text-lg font-bold text-gray-300">PORCENTAJE DE ACIERTOS</span>
+            <select id="categoriaselect" class="bg-gray-700 text-gray-300 border border-gray-500 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-600" onchange='actualizarProgreso()'>
                 <option value="" disabled selected>Seleccionar</option>
             </select>
         </div>
+
         <!-- Progreso de la categoría -->
         <div class="w-full bg-gray-200 rounded-full dark:bg-gray-600">
-            <div id= 'barrita' class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 0%"></div>
+            <div id="barrita" class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 0%"></div>
         </div>
-        <div class="bg-gray-700 rounded-lg p-6 mt-4">
-            <h2 class="text-xl font-semibold text-gray-300 mb-4 text-center">Scar Over Time</h2>
+
+        <!-- Gráfico de puntuación -->
+        <div class="bg-gray-700 rounded-lg p-4 md:p-6 mt-4">
+            <h2 class="text-lg md:text-xl font-semibold text-gray-300 mb-4 text-center">Score Over Time</h2>
             <div class="relative w-full" style="padding-top: 56.25%">
                 <div class="absolute top-0 left-0 w-full h-full">
                     <canvas id="scoreChart"></canvas>
                 </div>
             </div>
-            <div class="mt-4 flex items-center justify-center text-sm text-gray-400">
+            <div class="mt-4 flex flex-wrap items-center justify-center text-xs md:text-sm text-gray-400">
                 <span class="inline-block w-3 h-3 bg-emerald-400 opacity-30 rounded mr-2"></span>
                 <span>Área de puntuación</span>
                 <span class="inline-block w-3 h-0.5 bg-emerald-400 mx-2 ml-4"></span>
@@ -51,6 +68,9 @@
         </div>
     </div>
 </div>
+
+
+
 <script>
       function openModal(userName, userDetails) {
         document.getElementById('modalUserName').innerText = userName;

@@ -1,8 +1,8 @@
 <?php
-
+use App\Http\Controllers\RankingController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UsuariosController;
-use App\Http\Controllers\RankingController;
+
 use App\Http\Controllers\RetosController;
 
 Route::get('/', function () {
@@ -44,6 +44,13 @@ Route::post('/usuarios/puntos-por-fecha', [UsuariosController::class, 'obtenerPu
 Route::get('/ranking', [RankingController::class, 'index']);
 
 Route::get('/rankings/top5', [RankingController::class, 'getTop5']);
+
+
+Route::get('/perfil1', function () {
+    return view('profile.perfil1');
+})->name('profile.perfil1');
+
+
 
 Route::middleware([
     'auth:sanctum',
