@@ -11,7 +11,6 @@
                 <h1 class="text-2xl font-bold mb-4">Perfil de Usuario</h1>
                 <p class="text-gray-600 mb-6">Detalles del usuario aquí...</p>
                 
-                <!-- Contenido del modal adaptado -->
                 <div class="bg-gray-700 rounded-lg shadow-lg p-6">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-xl font-bold text-white">{{ $userName ?? 'Nombre de Usuario' }}</h2>

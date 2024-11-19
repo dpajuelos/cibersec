@@ -5,7 +5,8 @@
             {{ __('Dashboard') }}
         </h2>
     </x-slot>
-    <div class="container mx-auto px-4 py-0 max-w-full">
+    <div class="container mx-auto px-4 py-0 max-w-full lg:px-8 xl:px-12">
+
         <header class="mb-10">
             <h1 class="text-4xl font-bold text-center text-white mb-3">Lista de Usuarios</h1>
             <p class="text-center text-gray-400">Perfiles de participantes</p>
@@ -18,7 +19,8 @@
         
         <div class="bg-gray-800 rounded-lg shadow-lg">
             <!-- Search and Filter Bar -->
-            <div class="border-b border-gray-700 px-6 py-4 br-gray-900 relative z-10"> <!-- modiiiii -->
+            <div class="border-b border-gray-700 px-4 sm:px-6 py-4 br-gray-900 relative z-10">
+
                 <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
                     <!-- Search Bar -->
                     <form action="{{ route('usuarios.buscar') }}" method="GET" class="relative w-full sm:w-96">
@@ -35,14 +37,14 @@
                     <div class="flex space-x-2">
                         <div class="relative inline-block text-left">
                             <div>
-                                <button id="filterButton" onclick="toggleFilterMenu()" class="inline-flex items-center px-3 py-2 border border-gray-600 rounded-md text-sm font-medium text-gray-200 bg-gray-800 hover:bg-gray-700">
+                                <button id="filterButton" onclick="toggleFilterMenu()" class="inline-flex items-center px-3 py-2 text-sm md:text-base border-gray-600 rounded-md font-medium text-gray-200 bg-gray-800 hover:bg-gray-700">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
                                     </svg>
                                     Filtrar
                                 </button>
                             </div>
-                            <div id="filterMenu" class="hidden absolute right-0 z-10 mt-2 w-48 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5">
+                            <div id="filterMenu" class="hidden absolute right-0 z-10 mt-2 w-40 sm:w-48 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5">
                                 <form action="{{ route('usuarios.filtrar') }}" method="GET">
                                     <button type="submit" name="estado" value="activo" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">Activo</button>
                                     <button type="submit" name="estado" value="inactivo" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700">Inactivo</button>
@@ -72,11 +74,13 @@
                 </div>
             </div>
             <!-- Tablita como mi ex :3 -->
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto sm:rounded-lg">
+
                 @if($usuarios->isEmpty())
-                    <p class="text-center text-gray-400">No se encontraron usuarios con el término de búsqueda.</p>
-                @else
-                    <table class="min-w-full divide-y divide-gray-700">
+                    <p class="text-center text-gray-400 text-sm md:text-base">No se encontraron usuarios con el término de búsqueda.</p>
+                 @else
+                <table class="min-w-full divide-y divide-gray-700 text-sm md:text-base">
+
                         <thead class="bg-gray-800">
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
@@ -97,7 +101,7 @@
                             @foreach ($usuarios as $usuario)
                             <tr class="hover:bg-gray-800">
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center cursor-pointer" onclick="openModal('{{ $usuario->usuario }}', '{{ $usuario->nickname }}')">
+                                    <div class="flex items-center cursor-pointer space-x-4 sm:space-x-6" onclick="openModal('{{ $usuario->usuario }}', '{{ $usuario->nickname }}')">
                                         <div class="flex-shrink-0 h-10 w-10 bg-gray-100 rounded-full flex items-center justify-center">
                                             <img src="{{ $usuario->foto }}" alt="Imagen" class="h-full w-full rounded-full object-cover">
                                         </div>
@@ -143,9 +147,9 @@
                     </span>
                     
                     <div class="flex-1 flex justify-end">
-                        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px text-sm md:text-base">
                             <!-- Botón Anterior -->
-                            <a href="{{ $usuarios->previousPageUrl() }}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-600 bg-gray-700 text-sm font-medium text-gray-400 hover:bg-gray-600 {{ $usuarios->onFirstPage() ? 'disabled:opacity-50 disabled:cursor-not-allowed' : '' }}" {{ $usuarios->onFirstPage() ? 'aria-disabled=true tabindex=-1' : '' }}>
+                            <a href="{{ $usuarios->previousPageUrl() }}" class="relative inline-flex items-center px-2 sm:px-3 py-2 rounded-l-md border border-gray-600 bg-gray-700 text-sm font-medium text-gray-400 hover:bg-gray-600 {{ $usuarios->onFirstPage() ? 'disabled:opacity-50 disabled:cursor-not-allowed' : '' }}" {{ $usuarios->onFirstPage() ? 'aria-disabled=true tabindex=-1' : '' }}>
                                 Anterior
                             </a>
                             <!-- Mostrar número de páginas -->
@@ -164,6 +168,8 @@
             </div>
         </div>
     </div>
+
+    
 <script>
 function toggleFilterMenu() {
     const menu = document.getElementById('filterMenu');
