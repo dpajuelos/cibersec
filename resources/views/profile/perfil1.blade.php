@@ -13,8 +13,8 @@
                 
                 <div class="bg-gray-700 rounded-lg shadow-lg p-6">
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-bold text-white">{{ $userName ?? 'Nombre de Usuario' }}</h2>
-                        <p class="text-gray-400">{{ $userDetails ?? 'Aquí puedes mostrar más detalles del usuario.' }}</p>
+                        <h2 class="text-xl font-bold text-white">{{   Auth::user()->name ?? 'usuario' }}</h2>
+                        <p class="text-gray-400">{{ $nickname ?? 'nickname' }}</p>
                     </div>
                     <div class="flex justify-center items-center space-x-4 mb-4">
                         <span id="puntos" class="text-xl text-white rounded-lg px-3 py-1 bg-blue-600 shadow-md">Cargando puntos gaa</span>
@@ -69,10 +69,7 @@
 
 
 <script>
-      function openModal(userName, userDetails) {
-        document.getElementById('modalUserName').innerText = userName;
-        document.getElementById('modalUserDetails').innerText = userDetails;
-        document.getElementById('userModal').classList.remove('hidden');
+    function cargarCategorias() {
         fetch(`/categorias`)
             .then(response => response.json())
             .then(data => {
@@ -87,7 +84,13 @@
                 });
             })
             .catch(error => console.error('Error al cargar las categorías', error));
-        fetch(`/usuarios/puesto_puntos?userDetails=${encodeURIComponent(userDetails)}`)
+    }
+
+    
+
+    function puesto_puntos() {
+        const nickname = "{{ $nickname }}";
+        fetch(`/usuarios/puesto_puntos?nickname=${encodeURIComponent(nickname)}`)
             .then(response => response.json())
             .then(data => {
                 
@@ -100,12 +103,16 @@
                 }
             })
             .catch(error => console.error('Error al cargar datos', error));
-        // Llama al método `detalle` para obtener los datos del usuario
+    }
+
+    
+    function detalle() {
+        const userName   = "{{  Auth::user()->name  }}";
         fetch(`/usuarios/detalle?userName=${encodeURIComponent(userName)}`)
             .then(response => response.json())
             .then(data => {
                 // Limpia el contenido actual de la tabla
-                const tableBody = document.getElementById('modalUserTableBody');
+                const tableBody = document.getElementById('userTableBody');
                 tableBody.innerHTML = '';
                 if (data.message) {
                     // Si se encuentra el mensaje de error
@@ -137,38 +144,12 @@
             .catch(error => console.error('Error al cargar los detalles del usuario:', error));
     }
 
-    function closeModal() {
-        document.getElementById('userModal').classList.add('hidden');
-        // Volver a la URL original sin recargar la página
-        history.replaceState(null, '', window.location.pathname);
-        // Limpiar los valores del combo box y la barra de progreso
-        const categoriaSelect = document.getElementById('categoriaselect');
-        const barraProgreso = document.getElementById('barrita');
-        if (categoriaSelect) {
-            categoriaSelect.selectedIndex = 0; 
-        }
-        if (barraProgreso) {
-            barraProgreso.style.display = 'none';
-        }
-        document.getElementById('puntos').textContent = 'Cargando puntos gaa';
-        document.getElementById('puesto').textContent = ':3';
-        scoreChart.data.labels = [];
-        scoreChart.data.datasets[0].data = [];
-        scoreChart.update();
-    }
+    
 
-    // Cerrar el modal al retroceder en el historial de navegación
-    window.addEventListener('popstate', function(event) {
-        if (event.state && event.state.modalOpen) {
-            openModal();
-        } else {
-            closeModal();
-        }
-    });
  
     function actualizarProgreso() {
         const categoria = document.getElementById('categoriaselect').value;
-        const userName = document.getElementById('modalUserName').innerText; // Usa el nombre de usuario actual
+        const userName = "{{  Auth::user()->name  }}"; // Usa el nombre de usuario actual
         
         // Realiza una solicitud al nuevo método del controlador para obtener el porcentaje de aciertos
         fetch(`/usuarios/porcentaje-acierto`, {
@@ -291,5 +272,12 @@ const scoreChart = new Chart(ctx, {
                 }
             }
         });
-        closeModal();
+        
+        
+document.addEventListener('DOMContentLoaded', function() {
+    cargarCategorias();
+    puesto_puntos();
+    detalle();
+});
+      
 </script>
