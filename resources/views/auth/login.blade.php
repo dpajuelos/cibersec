@@ -18,14 +18,14 @@
                 <x-label for="email" value="{{ __('Email') }}" class="text-white" />
                 <x-input id="email"
                     class="block mt-1 w-full bg-black border-2 border-blue-500 text-white placeholder-gray-400"
-                    type="email" name="email" :value="old('email')" required autofocus autocomplete="username" placeholder="Ingrese sus correo electrónico"/>
+                    type="email" name="email" :value="old('email')" required autofocus autocomplete="username" placeholder="Ingrese su correo electrónico"/>
             </div>
 
             <div class="mt-4">
                 <x-label for="password" value="{{ __('Contraseña') }}" class="text-white" />
                 <x-input id="password"
                     class="block mt-1 w-full bg-black border-2 border-blue-500 text-white placeholder-gray-400"
-                    type="password" name="password" required autocomplete="current-password" placeholder="Ingrese sus contraseña"/>
+                    type="password" name="password" required autocomplete="current-password" placeholder="Ingrese su contraseña"/>
             </div>
 
             <div class="block mt-4">
@@ -36,10 +36,10 @@
             </div>
 
             <div class="flex items-center justify-end mt-4">
-                @if (Route::has('password.request'))
+                @if(Route::has('password.request'))
                     <a class="underline text-sm text-gray-300 hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        href="{{ route('password.request') }}">
-                        {{ __('Olvidó su contraseña?') }}
+                        href="{{ route('register') }}">
+                        {{ __('Aún no esta registrado?') }}
                     </a>
                 @endif
 
