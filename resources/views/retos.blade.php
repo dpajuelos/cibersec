@@ -29,7 +29,7 @@
     <div class="lg:bg-cover md:bg-left-bottom mt-24 py-12"
         style="background-image: url('{{ asset('images/circuito.svg') }}');">
         
-        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+        <div class="absolute inset-0 bg-black/10"></div>
         
         <h1 class="text-center text-3xl font-bold mb-6 p-4 text-white">Retos</h1>
         <div class="grid gap-10 lg:grid-cols-2 sm:grid-cols-1">

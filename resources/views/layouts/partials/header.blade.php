@@ -189,10 +189,10 @@
                         </div>
                         <div class="mt-3 space-y-1">
                             <!-- Account Management -->
-                            <x-responsive-nav-link href="{{ route('profile') }}" :active="request()->routeIs('profile')" class="text-black">
+                            <x-responsive-nav-link href="{{ route('usuarios') }}" :active="request()->routeIs('usuarios')" class="text-black">
                                 {{ __('Usuarios') }}
                             </x-responsive-nav-link>
-                            <x-responsive-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')"
+                            <x-responsive-nav-link href="{{ route('ranking') }}" :active="request()->routeIs('ranking')"
                                 class="text-black">
                                 {{ __('Ranking') }}
                             </x-responsive-nav-link>
