@@ -2,7 +2,7 @@
 use App\Http\Controllers\RankingController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UsuariosController;
-
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\RetosController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
@@ -81,9 +81,15 @@ Route::get('/dashboard', function () {
 
 Route::get('/notificaciones', [NotificationController::class, 'index'])->name('notificaciones');
 
-Route::get('/perfil1', function () {
-    return view('profile.perfil1');
-})->name('profile.perfil1');
+
+
+
+Route::get('/perfil1', [UserController::class, 'index'])->name('profile.perfil1');
+Route::get('/usuarios/puesto_puntos', [UserController::class, 'puesto_puntos'])->name('usuarios.puesto_puntos');
+Route::get('/usuarios/detalle', [UserController::class, 'detalle'])->name('usuarios.detalle');
+Route::post('/usuarios/porcentaje-acierto', [UserController::class, 'obtenerPorcentajeAcierto']);
+Route::post('/usuarios/puntos-por-fecha', [UserController::class, 'obtenerPuntosPorFecha']);
+
 
 
 
