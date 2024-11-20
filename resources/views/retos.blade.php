@@ -25,12 +25,12 @@
         </h2>
     </x-slot>
 
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <div class="lg:bg-cover md:bg-left-bottom mt-24 py-12"
         style="background-image: url('{{ asset('images/circuito.svg') }}');">
-        
+
         <div class="absolute inset-0 bg-black/10"></div>
-        
+
         <h1 class="text-center text-3xl font-bold mb-6 p-4 text-white">Retos</h1>
         <div class="grid gap-10 lg:grid-cols-2 sm:grid-cols-1">
             @foreach ($retosPorCategoria as $categoria => $retos)
@@ -49,6 +49,10 @@
                                 onclick="openModal({{ $reto->idretos }})">
                                 <p class="text-white sm:">{{ $reto->nomreto }}</p>
                                 <p class="text-white">{{ $reto->puntos }} puntos</p>
+
+                                @if (Auth::check() && $reto->resuelto == 1)
+                                    <p class="text-green-500">Resuelto</p>
+                                @endif
                             </div>
                         @endforeach
                     </div>
@@ -73,10 +77,15 @@
                 <p id="modal-points" class="mb-4 text-gray-100 text-center"></p>
                 <p id="modal-description" class="mb-4 text-gray-100"></p>
 
+                <div id="pistas"></div>
                 <div id="pistas-container"></div>
-                <div class="flex justify-end">
+                <div id="message-container my-6">
+                    <p id="message" class="text-red-300 text-center"></p>
+                    <p id="result" class="text-orange-300 text-center"></p>
+                </div>
+                <div class="flex justify-center mt-6">
                     <button onclick="closeModal()"
-                        class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                        class="bg-emerald-500 hover:bg-emerald-700 text-gray-50 font-bold py-2 px-4 rounded">
                         Cerrar
                     </button>
                 </div>
@@ -92,6 +101,14 @@
 
         function showReto() {
             const idreto = document.getElementById('idreto').innerText;
+            const retoButton = document.querySelector('button[onclick="showReto()"]');
+            const resueltoButton = document.getElementById('btn-resuelto');
+            retoButton.classList.add('bg-teal-500', 'text-white', 'font-semibold', 'h-8', 'hover:bg-teal-600');
+            retoButton.classList.remove('border', 'border-teal-500', 'bg-inherit', 'hover:bg-gray-100',
+                'hover:text-teal-500');
+            resueltoButton.classList.remove('bg-teal-500', 'hover:bg-teal-600');
+            resueltoButton.classList.add('border', 'border-teal-500', 'bg-inherit', 'font-semibold', 'text-white',
+                'hover:bg-gray-100', 'hover:text-teal-500');
 
             fetch(`/detalles/${idreto}`)
                 .then(response => response.json())
@@ -100,23 +117,119 @@
                     document.getElementById('modal-description').innerText = data.descripcion || 'Sin descripción';
                     document.getElementById('modal-points').innerText = data.puntos + ' puntos';
                     document.getElementById('pistas-container').innerHTML = '';
-                    obtenerPistas(idreto);
+                    document.getElementById('message').innerHTML = '';
+                    document.getElementById('result').innerHTML = '';
+
+                    const archivoHtml = `
+                    <div class="flex gap-4 justify-center">
+                        <p class="mt-4 font-semibold text-gray-50">Archivo:</p>
+                        <button id="download-button" class="mt-2 bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">
+                            Descargar
+                        </button>
+                    </div>`;
+                    document.getElementById('pistas-container').innerHTML += archivoHtml;
+
+                    const flagHtml = `
+                    <form id="flag-form" method="POST" action=""> 
+                        @csrf
+                        <div class="flex gap-4 mt-4 mb-6 justify-center items-center">
+                            <p class="font-semibold text-gray-50">Flag:</p>
+                            <input type="text" id="flag" name="flag" class="border border-gray-300 rounded p-2 w-full" placeholder="CibersecUnasam{flag}" autocomplete="off">
+                            <button type="submit" id="submit-flag" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-700">
+                                Enviar
+                            </button>
+                        </div>
+                    </form>`;
+                    document.getElementById('pistas-container').innerHTML += flagHtml;
+                    const downloadButton = document.getElementById('download-button');
+                    downloadButton.onclick = function() {
+                        const idreto = document.getElementById('idreto').innerText;
+                        fetch(`/detalles/${idreto}`)
+                            .then(response => response.json())
+                            .then(data => {
+
+                                const archivoNombre = data.nombre;
+                                const archivoPath = `store/${archivoNombre}`;
+
+                                fetch(`${window.location.origin}/${archivoPath}`)
+                                    .then(response => response.blob())
+                                    .then(blob => {
+                                        const url = URL.createObjectURL(blob);
+                                        const a = document.createElement('a');
+                                        a.href = url;
+                                        a.download = archivoNombre;
+                                        a.click();
+                                    })
+                                    .catch(error => console.error('Error downloading file:', error));
+                            })
+                            .catch(error => console.error('Error fetching reto data:', error));
+                    };
+
+                    document.getElementById('flag-form').addEventListener('submit', function(event) {
+                        event.preventDefault();
+
+                        const flag = document.getElementById('flag').value;
+                        const idreto = document.getElementById('idreto').innerText;
+
+                        fetch(`/juegos/${idreto}`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({
+                                    flag: flag
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                const messageElement = document.getElementById('message');
+                                const resultado = document.getElementById('result');
+
+
+                                if (data.success) {
+                                    messageElement.textContent = data.message;
+                                    resultado.textContent = data.result;
+                                    getResueltoCount();
+                                } else {
+                                    messageElement.textContent = data.error;
+                                    messageElement.classList.remove('hidden'); //
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('Ocurrió un error al enviar la bandera.');
+                            });
+                    });
                 })
                 .catch(error => console.error('Error fetching reto data:', error));
+            obtenerPistas(idreto);
         }
 
         function showResueltos() {
             const idreto = document.getElementById('idreto').innerText;
+            const retoButton = document.querySelector('button[onclick="showReto()"]');
+            const resueltoButton = document.getElementById('btn-resuelto');
+            resueltoButton.classList.add('bg-teal-500', 'text-white', 'font-semibold', 'h-8', 'hover:bg-teal-600');
+            resueltoButton.classList.remove('border', 'border-teal-500', 'bg-inherit', 'hover:bg-gray-100',
+                'hover:text-teal-500');
+            retoButton.classList.remove('bg-teal-500', 'hover:bg-teal-600');
+            retoButton.classList.add('border', 'border-teal-500', 'bg-inherit', 'font-semibold', 'text-white',
+                'hover:bg-gray-100', 'hover:text-teal-500');
 
             fetch(`/resueltos/${idreto}`)
                 .then(response => response.json())
                 .then(data => {
                     const resueltoCount = data.length;
+                    document.getElementById('pistas').innerText = '';
                     document.getElementById('resuelto-count').innerText = resueltoCount;
+                    document.getElementById('modal-title').innerText = '';
+                    document.getElementById('modal-points').innerText = '';
+                    document.getElementById('modal-description').innerText = '';
+                    document.getElementById('message').innerText = '';
+                    document.getElementById('result').innerText = '';
                     if (resueltoCount === 0) {
-                        document.getElementById('modal-title').innerText = '';
-                        document.getElementById('modal-points').innerText = '';
-                        document.getElementById('modal-description').innerText = '';
+
                         document.getElementById('pistas-container').innerHTML = `
                     <p class="text-white text-center">Aún nadie lo ha resuelto, suerte :)</p>`;
                         return;
@@ -146,9 +259,7 @@
                     tableHtml += `
                     </tbody>
                 </table>
-                </div>`;
-                    document.getElementById('modal-title').innerText = '';
-                    document.getElementById('modal-description').innerText = '';
+                </div>`
                     document.getElementById('pistas-container').innerHTML = tableHtml;
                 })
                 .catch(error => console.error('Error fetching data:', error));
@@ -260,24 +371,40 @@
         }
 
         function mostrarPistas(pistas, idreto) {
-            const pistasContainer = document.getElementById('pistas-container');
+            const pistasContainer = document.getElementById('pistas');
             pistasContainer.innerHTML = '';
-            if (pistas.length === 0) {
+
+            if (!pistas || pistas.length === 0) {
+                pistasContainer.innerHTML =
+                    '<p class="text-gray-50 text-center">No hay pistas disponibles para este reto.</p>';
                 return;
             }
 
-            pistasContainer.innerHTML = '<h3 class="mb-4 text-gray-50 text-center font-semibold">Pista</h3>';
+            pistasContainer.innerHTML = '<h3 class="mb-4 text-gray-50 text-center font-semibold">Pistas</h3>';
+
+            let pistaDesbloqueadaEncontrada = false;
 
             pistas.forEach((pista, index) => {
-                const pistaElement = document.createElement('div');
-                pistaElement.className = 'flex items-center space-x-12 mb-8 justify-center';
-                pistaElement.setAttribute('data-id', pista.idpistas);
+                if (!pistaDesbloqueadaEncontrada) {
+                    const pistaElement = document.createElement('div');
+                    pistaElement.className = 'flex items-center space-x-12 mb-8 justify-center';
+                    pistaElement.setAttribute('data-id', pista.idpistas);
 
-                pistaElement.innerHTML =
-                    `
-                <p class="text-gray-50 pista-contenido">Pista: ${index + 1} (Descuento: ${pista.valor} puntos)</p>
-                <button class='bg-indigo-500 hover:bg-indigo-700 text-gray-50 font-bold py-2 px-4 rounded button-pista' onclick="desbloquearPista('${pista.contenido}', '${pista.idpistas}', '${idreto}')">Desbloquear</button>`;
-                pistasContainer.appendChild(pistaElement);
+                    if (!pista.fk_reto_pistas) {
+                        pistaElement.innerHTML =
+                            `
+                    <p class="text-gray-50 pista-contenido">Pista: ${index + 1} (Descuento: ${pista.valor} puntos)</p>
+                    <button class='bg-indigo-500 hover:bg-indigo-700 text-gray-50 font-bold py-2 px-4 rounded button-pista' onclick="desbloquearPista('${pista.contenido}', '${pista.idpistas}', '${idreto}')">Desbloquear</button>`;
+                    } else {
+                        pistaElement.innerHTML =
+                            `
+                    <p class="text-red-500 font-bold pista-contenido">Pista desbloqueada: ${pista.contenido} (Descuento: ${pista.valor} puntos)</p>`;
+
+                        pistaDesbloqueadaEncontrada = true;
+                    }
+
+                    pistasContainer.appendChild(pistaElement);
+                }
             });
         }
 
@@ -315,36 +442,35 @@
             }
         }
 
-        function registrarPista(idretos, idPista) {
-            const data = {
-                idreto: idretos,
-                idpista: idPista
-            };
+        async function registrarPista(idretos, idPista) {
+            try {
 
-            console.log('Datos a enviar:', JSON.stringify(data));
-
-            fetch('/RegistroPistas', {
+                const response = await fetch(`/retos/${idretos}/${idPista}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
-                    body: JSON.stringify(data)
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Error en la respuesta del servidor');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.message) {
-                        console.log(data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error al registrar la pista:', error);
                 });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.message || 'Error al registrar la pista');
+                }
+                console.log('Pista registrada:', data.juego);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        function toggleButtonStyle(button) {
+            if (button.classList.contains('bg-blue-500')) {
+                button.classList.remove('bg-blue-500', 'hover:bg-blue-700');
+                button.classList.add('bg-green-500', 'hover:bg-green-700');
+            } else {
+                button.classList.remove('bg-green-500', 'hover:bg-green-700');
+                button.classList.add('bg-blue-500', 'hover:bg-blue-700');
+            }
         }
     </script>
 </x-app-layout>

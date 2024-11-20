@@ -50,14 +50,8 @@
                                             {{ __('Administrar cuenta') }}
                                         </div>
 
-                                        
-                                        <x-dropdown-link href="{{ route('profile.perfil1') }}">
-                                            {{ __('Perfil') }}
-                                        </x-dropdown-link>
-                                        
-
                                         <x-dropdown-link href="{{ route('profile') }}">
-                                            {{ __('Configuración') }}
+                                            <i class="mr-1 fas fa-cog"></i> {{ __('Configuración') }}
                                         </x-dropdown-link>
 
                                         <div class="border-t border-gray-200"></div>
@@ -68,7 +62,7 @@
 
                                             <x-dropdown-link href="{{ route('logout') }}"
                                                 @click.prevent="$root.submit();">
-                                                {{ __('Cerrar Sesión') }}
+                                                <i class="mr-1 fas fa-sign-out-alt"></i> {{ __('Cerrar Sesión') }}
                                             </x-dropdown-link>
                                         </form>
                                     </x-slot>
@@ -77,7 +71,8 @@
                                 <div class="relative self-center ml-5">
                                     <button @click="open = ! open" class="flex items-center text-white">
                                         <i class="fas fa-bell"></i>
-                                        <span class="ml-2">{{ $notifications->where('is_read', false)->count() + $generalNotifications->count() }}</span>
+                                        <span
+                                            class="ml-2">{{ $notifications->where('is_read', false)->count() + $generalNotifications->count() }}</span>
                                     </button>
 
                                     <div x-show="open" @click.away="open = false"
