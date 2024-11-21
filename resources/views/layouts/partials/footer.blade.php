@@ -22,26 +22,23 @@
             <div>
                 <h3 class="text-xl font-bold text-white mb-4">Enlaces Rápidos</h3>
                 <ul class="space-y-2">
-                    <li><a href="#" class="text-gray-400 hover:text-red-500">Sobre Nosotros</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-blue-500">FAQ</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-red-500">Términos y Condiciones</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-blue-500">Política de Privacidad</a></li>
+                    <li><a target="_blank" href="{{ route('terms.show') }}"
+                            class="text-gray-400 hover:text-red-500">Términos y Condiciones</a></li>
+                    <li><a target="_blank" href="{{ route('policy.show') }}"
+                            class="text-gray-400 hover:text-blue-500">Política de Privacidad</a></li>
                 </ul>
             </div>
 
             <div>
                 <h3 class="text-xl font-bold text-white mb-4">Síguenos</h3>
                 <div class="flex justify-center space-x-4">
-                    <a href="#" class="text-gray-400 hover:text-blue-500 transition-colors">
+                    <a target="_blank" href="https://www.facebook.com/cibersecunasam" class="text-gray-400 hover:text-blue-500 transition-colors">
                         <i class="fab fa-facebook-f text-2xl"></i>
                     </a>
-                    <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">
-                        <i class="fab fa-twitter text-2xl"></i>
+                    <a target="_blank" href="https://www.linkedin.com/company/cibersec-unasam/posts/?feedView=all" class="text-gray-400 hover:text-blue-400 transition-colors">
+                        <i class="fa-brands fa-linkedin text-2xl"></i>
                     </a>
-                    <a href="#" class="text-gray-400 hover:text-red-500 transition-colors">
-                        <i class="fab fa-youtube text-2xl"></i>
-                    </a>
-                    <a href="#" class="text-gray-400 hover:text-pink-500 transition-colors">
+                    <a target="_blank" href="https://www.instagram.com/cibersecunasam/" class="text-gray-400 hover:text-pink-500 transition-colors">
                         <i class="fab fa-instagram text-2xl"></i>
                     </a>
                 </div>

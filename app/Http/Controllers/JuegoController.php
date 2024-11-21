@@ -13,6 +13,7 @@ class JuegoController extends Controller
 {
     public function updateJuego(Request $request, $idreto)
     {
+        
         $flag = $request->input('flag');
         if (is_null($flag)) {
             return response()->json(['success' => false, 'error' => 'Flag no proporcionada.'], 400);
@@ -21,11 +22,12 @@ class JuegoController extends Controller
             ->where('usuarios.idusuario', Auth::id())
             ->select('perfiles.idperfil')
             ->first()->idperfil;
+        $tiempo = Carbon::now()->setTimezone('America/Lima');
 
         $juego = Juegos::updateOrCreate(
             ['fk_retos' => $idreto, 'fk_perfil' => $perfilId],
             [
-                'tiempo' => Carbon::now(),
+                'tiempo' => $tiempo,
                 'cantidad' => \DB::raw('cantidad + 1'), 
                 'bandera_enviada' => $flag,
                 'fk_resultado' => $this->isFlagCorrect($flag, $idreto) ? 1 : 2

@@ -21,27 +21,28 @@ class RetosController extends Controller
             ->where('usuarios.idusuario', Auth::id())
             ->select('perfiles.idperfil')
             ->first()->idperfil;
-            $retos = DB::table('retos AS rt')
-                ->select(
-                    'rt.idretos',
-                    'rt.nomreto',
-                    'rt.puntos',
-                    'rt.descripcion',
-                    'ct.nomcategoria',
-                    'pt.nombre',
-                    'pt.url',
-                    'pt.tipo',
-                    DB::raw('IF(j.fk_resultado=1 AND j.fk_perfil=' . $perfilId . ', 1, 0) AS resuelto')
-                )
-                ->join('niveles_reto AS lvl', 'rt.fk_nivel', '=', 'lvl.idnivel_reto')
-                ->join('categorias AS ct', 'rt.fk_categoria', '=', 'ct.idcategoria')
-                ->join('estados_reto AS et', 'rt.fk_estado_reto', '=', 'et.idestado_reto')
-                ->join('archivos_reto AS pt', 'rt.fk_archivo', '=', 'pt.idarchivo')
-                ->leftJoin('juegos AS j', 'rt.idretos', '=', 'j.fk_retos')
-                ->leftJoin('perfiles AS pf', 'j.fk_perfil', '=', 'pf.idperfil')
-                ->where('et.estadoreto', '=', 'Activo')
-                ->distinct()
-                ->get();
+            
+            $retos = DB::table('retos AS rt') ->select(
+                'rt.idretos',
+                'rt.nomreto',
+                'rt.puntos',
+                'rt.descripcion',
+                'ct.nomcategoria',
+                'pt.nombre',
+                'pt.url',
+                'pt.tipo',
+                DB::raw('MAX(IF(j.fk_resultado=1 AND j.fk_perfil=' . $perfilId . ', 1, 0)) AS resuelto')
+            )
+            ->join('niveles_reto AS lvl', 'rt.fk_nivel', '=', 'lvl.idnivel_reto')
+            ->join('categorias AS ct', 'rt.fk_categoria', '=', 'ct.idcategoria')
+            ->join('estados_reto AS et', 'rt.fk_estado_reto', '=', 'et.idestado_reto')
+            ->join('archivos_reto AS pt', 'rt.fk_archivo', '=', 'pt.idarchivo')
+            ->leftJoin('juegos AS j', 'rt.idretos', '=', 'j.fk_retos')
+            ->leftJoin('perfiles AS pf', 'j.fk_perfil', '=', 'pf.idperfil')
+            ->where('et.estadoreto', '=', 'Activo')
+            ->groupBy('rt.idretos', 'rt.nomreto', 'rt.puntos', 'rt.descripcion', 'ct.nomcategoria', 'pt.nombre', 'pt.url', 'pt.tipo')
+            ->get();
+
             $retosPorCategoria = $retos->groupBy('nomcategoria');
             return view('retos', compact('retosPorCategoria'));
     
