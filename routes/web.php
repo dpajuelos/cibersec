@@ -41,7 +41,7 @@ Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])
 
 Route::get('/universidades', [RegisterController::class, 'universidades']);
 
-Route::get('/retos', [RetosController::class, 'index'])->name('retos');
+
 
 Route::get('/detalles/{id}', [RetosController::class, 'detalles']);
 
@@ -52,7 +52,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/retos/{idretos}/pistas', [RetosController::class, 'obtenerPistas']);
 });
 
-Route::post('/RegistroPistas', [RetosController::class, 'RegistroPistas']);
+Route::post('/retos/{idreto}/{idpista}', [RetosController::class, 'registrarPista']);
+
+Route::get('/retos', [RetosController::class, 'index'])->name('retos');
+
+Route::post('/juegos/{idreto}', [JuegoController::class, 'updateJuego']);
 
 Route::get('/usuario', [UsuariosController::class, 'index'])->name('usuarios');
 
@@ -76,18 +80,11 @@ Route::get('/ranking', [RankingController::class, 'index'])->name('ranking');
 
 Route::get('/rankings/top5', [RankingController::class, 'getTop5']);
 
-Route::post('/retos/{idreto}/{idpista}', [RetosController::class, 'registrarPista']);
-
-Route::post('/juegos/{idreto}', [JuegoController::class, 'updateJuego']);
-
 Route::get('/dashboard', function () {
     return view('welcome');
 })->name('dashboard');
 
 Route::get('/notificaciones', [NotificationController::class, 'index'])->name('notificaciones');
-
-
-
 
 Route::get('/perfil1', [UserController::class, 'index'])->name('profile.perfil1');
 Route::get('/perfil/puesto_puntos', [UserController::class, 'puesto_puntos'])->name('perfil.puestopuntos');

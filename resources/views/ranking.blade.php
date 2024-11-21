@@ -160,9 +160,8 @@
             fetch('/ranking')
                 .then(response => response.json())
                 .then(data => {
-                    // Actualizar la tabla con los nuevos datos (opcional)
                     let tbody = document.querySelector('tbody');
-                    tbody.innerHTML = ''; // Limpiar tabla
+                    tbody.innerHTML = ''; 
                     data.forEach((ranking, index) => {
                         tbody.innerHTML += `
                     <tr class="hover:bg-gray-700 transition duration-200 ease-in-out transform hover:scale-105">

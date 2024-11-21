@@ -51,6 +51,7 @@
                                         </div>
 
                                         <x-dropdown-link href="{{ route('profile.perfil1') }}">
+                                            <i class="mr-1 fa-solid fa-user"></i>
                                             {{ __('Perfil') }}
                                         </x-dropdown-link>
                                         

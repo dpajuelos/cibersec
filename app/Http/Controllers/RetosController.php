@@ -36,7 +36,7 @@ class RetosController extends Controller
             ->join('niveles_reto AS lvl', 'rt.fk_nivel', '=', 'lvl.idnivel_reto')
             ->join('categorias AS ct', 'rt.fk_categoria', '=', 'ct.idcategoria')
             ->join('estados_reto AS et', 'rt.fk_estado_reto', '=', 'et.idestado_reto')
-            ->join('archivos_reto AS pt', 'rt.fk_archivo', '=', 'pt.idarchivo')
+            ->leftjoin('archivos_reto AS pt', 'rt.fk_archivo', '=', 'pt.idarchivo')
             ->leftJoin('juegos AS j', 'rt.idretos', '=', 'j.fk_retos')
             ->leftJoin('perfiles AS pf', 'j.fk_perfil', '=', 'pf.idperfil')
             ->where('et.estadoreto', '=', 'Activo')

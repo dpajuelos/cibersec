@@ -151,7 +151,6 @@
         const categoria = document.getElementById('categoriaselect').value;
         const userName = "{{   $usu  }}"; // Usa el nombre de usuario actual
         
-        // Realiza una solicitud al nuevo método del controlador para obtener el porcentaje de aciertos
         fetch(`/perfil/porcentaje-acierto`, {
             method: 'POST',
             headers: {

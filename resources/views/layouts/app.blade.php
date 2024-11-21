@@ -17,6 +17,7 @@
 </head>
 
 <body class="bg-gray-100 min-h-screen flex flex-col">
+    
     @include('layouts.partials.header')
     <main class="flex-grow">
         @yield('content')
@@ -24,5 +25,5 @@
     @include('layouts.partials.footer')
 </body>
 @livewireScripts
-
+<p id="retito oculto :) suerte"class="hidden">43 53 55 7b 70 72 69 6d 65 72 76 69 72 75 73 7d</p>
 </html>

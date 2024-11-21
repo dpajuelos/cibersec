@@ -65,7 +65,7 @@ class RegisterController extends Controller
 
     public function universidades()
     {
-        $universidades = DB::table('universidades')->select('iduniversidad','nomuniversidad')->orderby('nomuniversidad')->get();
+        $universidades = DB::table('universidades')->select('iduniversidad','nomuniversidad')->orderby('iduniversidad')->get();
         return response()->json($universidades);
     }
     

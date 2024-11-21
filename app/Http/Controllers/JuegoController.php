@@ -35,7 +35,7 @@ class JuegoController extends Controller
         );
 
         $resultadoMensaje = ($juego->fk_resultado == 1) 
-        ? '¡Ha respondido correctamentex!' 
+        ? 'Ha respondido correctamente !!! :) ' 
         : 'Fallaste, Sigue intentando ^-^';
 
         return response()->json(['success' => true, 'message' => '¡Tu flag ha sido enviada!', 'result'=>$resultadoMensaje]);

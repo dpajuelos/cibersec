@@ -1,21 +1,11 @@
 <x-app-layout>
     @php
         $coloresPorCategoria = [
-            'Web Exploitation' => ['border' => 'border-red-400', 'shadow' => 'shadow-red-900'],
-            'Cryptography' => ['border' => 'border-blue-400', 'shadow' => 'shadow-blue-900'],
-            'Binary Exploitation' => ['border' => 'border-yellow-400', 'shadow' => 'shadow-yellow-900'],
-            'Reverse Engineering' => ['border' => 'border-purple-400', 'shadow' => 'shadow-purple-900'],
-            'Forensics' => ['border' => 'border-pink-400', 'shadow' => 'shadow-pink-900'],
-            'Network Security' => ['border' => 'border-green-400', 'shadow' => 'shadow-green-900'],
-            'Steganography' => ['border' => 'border-teal-400', 'shadow' => 'shadow-teal-900'],
+            'Web' => ['border' => 'border-red-400', 'shadow' => 'shadow-red-900'],
+            'Criptografía' => ['border' => 'border-blue-400', 'shadow' => 'shadow-blue-900'],
+            'Esteganografía' => ['border' => 'border-teal-400', 'shadow' => 'shadow-teal-900'],
             'OSINT' => ['border' => 'border-indigo-400', 'shadow' => 'shadow-indigo-900'],
-            'Mobile Security' => ['border' => 'border-gray-400', 'shadow' => 'shadow-gray-900'],
-            'IoT Security' => ['border' => 'border-orange-400', 'shadow' => 'shadow-orange-900'],
-            'Cloud Security' => ['border' => 'border-blue-500', 'shadow' => 'shadow-blue-700'],
-            'Blockchain Security' => ['border' => 'border-lime-400', 'shadow' => 'shadow-lime-900'],
-            'AI Security' => ['border' => 'border-rose-400', 'shadow' => 'shadow-rose-900'],
-            'Hardware Hacking' => ['border' => 'border-slate-400', 'shadow' => 'shadow-slate-900'],
-            'Program' => ['border-cyan-400', 'shadow-cyan-900'],
+            'Trivias' => ['border' => 'border-yellow-400', 'shadow' => 'shadow-yellow-900'],
         ];
     @endphp
     @section('title', 'Retos-CibersecUnasam')
@@ -33,37 +23,42 @@
 
         <h1 class="text-center text-3xl font-bold mb-6 p-4 text-white">Retos</h1>
         <div class="grid gap-10 lg:grid-cols-2 sm:grid-cols-1">
-            @foreach ($retosPorCategoria as $categoria => $retos)
-                @php
-                    $colores = $coloresPorCategoria[$categoria] ?? [
-                        'border' => 'border-gray-400',
-                        'shadow' => 'shadow-gray-900',
-                    ];
-                @endphp
-                <div class="p-5 border {{ $colores['border'] }}">
-                    <h2 class="text-lg font-semibold mb-2 text-white text-center">{{ $categoria }}</h2>
-                    <div class="rounded-lg p-4 grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-12">
-                        @foreach ($retos as $reto)
-                            <div class="cursor-pointer border {{ $colores['border'] }} {{ $colores['shadow'] }} shadow-md hover:shadow-2xl rounded-lg p-3 h-24 
-                                text-center bg-black transition duration-200 ease-in-out transform hover:scale-105 content-center"
-                                onclick="openModal({{ $reto->idretos }})">
-                                <p class="text-white sm:">{{ $reto->nomreto }}</p>
-                                <p class="text-white">{{ $reto->puntos }} puntos</p>
+            @if (!$retosPorCategoria->isEmpty())
+                @foreach ($retosPorCategoria as $categoria => $retos)
+                    @php
+                        $colores = $coloresPorCategoria[$categoria] ?? [
+                            'border' => 'border-gray-400',
+                            'shadow' => 'shadow-gray-900',
+                        ];
+                    @endphp
+                    <div class="p-5 border {{ $colores['border'] }}">
+                        <h2 class="text-lg font-semibold mb-4 text-white text-center">{{ $categoria }}</h2>
+                        <div class="rounded-lg p-4 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2">
+                            @foreach ($retos as $reto)
+                                <div class="cursor-pointer border {{ $colores['border'] }} {{ $colores['shadow'] }} 
+                                    shadow-md hover:shadow-lg rounded-lg p-4 h-28 flex flex-col justify-center 
+                                    items-center bg-black transition duration-200 ease-in-out transform hover:scale-105"
+                                    onclick="openModal({{ $reto->idretos }})">
+                                    <p class="text-white font-semibold text-center">{{ $reto->nomreto }}</p>
+                                    <p class="text-gray-400 text-center">{{ $reto->puntos }} puntos</p>
 
-                                @if (Auth::check() && $reto->resuelto == 1)
-                                    <p class="text-green-500">Resuelto</p>
-                                @endif
-                            </div>
-                        @endforeach
+                                    @if (Auth::check() && $reto->resuelto == 1)
+                                        <p class="text-green-500 font-bold text-sm mt-2">Resuelto</p>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
-                </div>
-            @endforeach
+                @endforeach
+            @else
+                <div class="text-white">No se encontraron retos</div>
+            @endif
         </div>
     </div>
 
     {{-- Modal :) --}}
     <div id="modal" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-        <div class="bg-black rounded-lg shadow-lg p-6 max-w-3xl w-full h-auto overflow-auto">
+        <div class="bg-black rounded-lg shadow-lg p-6 max-w-3xl w-full h-auto overflow-auto border border-white">
             <div class="grid grid-cols-2 gap-6 border-b-2 border-white py-6">
                 <button class="bg-teal-500 text-white font-semibold h-8 hover:bg-teal-600"
                     onclick="showReto()">Reto</button>
@@ -103,6 +98,7 @@
             const idreto = document.getElementById('idreto').innerText;
             const retoButton = document.querySelector('button[onclick="showReto()"]');
             const resueltoButton = document.getElementById('btn-resuelto');
+
             retoButton.classList.add('bg-teal-500', 'text-white', 'font-semibold', 'h-8', 'hover:bg-teal-600');
             retoButton.classList.remove('border', 'border-teal-500', 'bg-inherit', 'hover:bg-gray-100',
                 'hover:text-teal-500');
@@ -113,63 +109,93 @@
             fetch(`/detalles/${idreto}`)
                 .then(response => response.json())
                 .then(data => {
+                    document.getElementById('pistas').innerHTML = '';
+                    document.getElementById('pistas-container').innerHTML = '';
                     document.getElementById('modal-title').innerText = data.nomreto;
                     document.getElementById('modal-description').innerText = data.descripcion || 'Sin descripción';
                     document.getElementById('modal-points').innerText = data.puntos + ' puntos';
-                    document.getElementById('pistas-container').innerHTML = '';
                     document.getElementById('message').innerHTML = '';
                     document.getElementById('result').innerHTML = '';
 
-                    const archivoHtml = `
+                    if (data.url) {
+                        const urlHtml = `
+                    <p class="mt-4 text-blue-500 underline cursor-pointer">
+                        <a href="${data.url}" target="_blank" rel="noopener noreferrer">${data.url}</a>
+                    </p>`;
+                        document.getElementById('modal-description').innerHTML += urlHtml;
+                    }
+
+
+                    if (data.nombre) {
+                        const archivoNombre = data.nombre;
+                        const archivoPath = `store/${archivoNombre}`;
+                        const archivoHtml = `
                     <div class="flex gap-4 justify-center">
                         <p class="mt-4 font-semibold text-gray-50">Archivo:</p>
                         <button id="download-button" class="mt-2 bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">
                             Descargar
                         </button>
                     </div>`;
-                    document.getElementById('pistas-container').innerHTML += archivoHtml;
+                        document.getElementById('pistas-container').innerHTML += archivoHtml;
 
-                    const flagHtml = `
-                    <form id="flag-form" method="POST" action=""> 
-                        @csrf
-                        <div class="flex gap-4 mt-4 mb-6 justify-center items-center">
-                            <p class="font-semibold text-gray-50">Flag:</p>
-                            <input type="text" id="flag" name="flag" class="border border-gray-300 rounded p-2 w-full" placeholder="CibersecUnasam{flag}" autocomplete="off">
-                            <button type="submit" id="submit-flag" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-700">
-                                Enviar
-                            </button>
-                        </div>
-                    </form>`;
-                    document.getElementById('pistas-container').innerHTML += flagHtml;
-                    const downloadButton = document.getElementById('download-button');
-                    downloadButton.onclick = function() {
-                        const idreto = document.getElementById('idreto').innerText;
-                        fetch(`/detalles/${idreto}`)
-                            .then(response => response.json())
-                            .then(data => {
+                        const downloadUrl = `${window.location.origin}/${archivoPath}`;
+                        console.log('Intentando descargar:', downloadUrl);
+
+
+                        document.getElementById('pistas-container').addEventListener('click', (event) => {
+                            if (event.target && event.target.id === 'download-button') {
+                                console.log('Botón de descarga clicado');
 
                                 const archivoNombre = data.nombre;
                                 const archivoPath = `store/${archivoNombre}`;
+                                const downloadUrl = `${window.location.origin}/${archivoPath}`;
+                                console.log('Intentando descargar:', downloadUrl);
 
-                                fetch(`${window.location.origin}/${archivoPath}`)
-                                    .then(response => response.blob())
-                                    .then(blob => {
-                                        const url = URL.createObjectURL(blob);
-                                        const a = document.createElement('a');
-                                        a.href = url;
-                                        a.download = archivoNombre;
-                                        a.click();
+                                fetch(downloadUrl, {
+                                        method: 'HEAD'
                                     })
-                                    .catch(error => console.error('Error downloading file:', error));
-                            })
-                            .catch(error => console.error('Error fetching reto data:', error));
-                    };
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error(
+                                                'El archivo no está disponible en el servidor.');
+                                        }
+                                        const a = document.createElement('a');
+                                        a.href = downloadUrl;
+                                        a.download = archivoNombre;
+                                        document.body.appendChild(a);
+                                        a.click();
+                                        document.body.removeChild(a);
+                                    })
+                                    .catch(error => {
+                                        console.error('Error descargando archivo:', error);
+                                        alert(
+                                            'No se pudo descargar el archivo. Por favor, inténtelo de nuevo.'
+                                        );
+                                    });
+                            }
+                        });
+
+                    }
+
+
+
+
+                    const flagHtml = `
+                <form id="flag-form" method="POST" action=""> 
+                    @csrf
+                    <div class="flex gap-4 mt-4 mb-6 justify-center items-center">
+                        <p class="font-semibold text-gray-50">Flag:</p>
+                        <input type="text" id="flag" name="flag" class="border border-gray-300 rounded p-2 w-full" placeholder="CSU{flag}" autocomplete="off">
+                        <button type="submit" id="submit-flag" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-700">
+                            Enviar
+                        </button>
+                    </div>
+                </form>`;
+                    document.getElementById('pistas-container').innerHTML += flagHtml;
 
                     document.getElementById('flag-form').addEventListener('submit', function(event) {
                         event.preventDefault();
-
                         const flag = document.getElementById('flag').value;
-                        const idreto = document.getElementById('idreto').innerText;
 
                         fetch(`/juegos/${idreto}`, {
                                 method: 'POST',
@@ -178,7 +204,7 @@
                                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                                 },
                                 body: JSON.stringify({
-                                    flag: flag
+                                    flag
                                 })
                             })
                             .then(response => response.json())
@@ -186,14 +212,13 @@
                                 const messageElement = document.getElementById('message');
                                 const resultado = document.getElementById('result');
 
-
                                 if (data.success) {
                                     messageElement.textContent = data.message;
                                     resultado.textContent = data.result;
                                     getResueltoCount();
                                 } else {
                                     messageElement.textContent = data.error;
-                                    messageElement.classList.remove('hidden'); //
+                                    messageElement.classList.remove('hidden');
                                 }
                             })
                             .catch(error => {
@@ -203,8 +228,11 @@
                     });
                 })
                 .catch(error => console.error('Error fetching reto data:', error));
+
             obtenerPistas(idreto);
         }
+
+
 
         function showResueltos() {
             const idreto = document.getElementById('idreto').innerText;
@@ -266,13 +294,14 @@
         }
 
         function closeModal() {
-
             document.getElementById('modal').style.display = 'none';
-
+            document.getElementById('message').innerText = '';
             document.getElementById('modal-title').innerText = '';
             document.getElementById('modal-description').innerText = '';
             document.getElementById('pistas-container').innerHTML = '';
+            document.getElementById('pistas').innerHTML = '';
             document.getElementById('resuelto-count').innerText = '0';
+            document.getElementById('modal-points').innerHTML = '';
         }
 
         function openModal(idreto) {
@@ -375,8 +404,6 @@
             pistasContainer.innerHTML = '';
 
             if (!pistas || pistas.length === 0) {
-                pistasContainer.innerHTML =
-                    '<p class="text-gray-50 text-center">No hay pistas disponibles para este reto.</p>';
                 return;
             }
 
@@ -398,7 +425,7 @@
                     } else {
                         pistaElement.innerHTML =
                             `
-                    <p class="text-red-500 font-bold pista-contenido">Pista desbloqueada: ${pista.contenido} (Descuento: ${pista.valor} puntos)</p>`;
+                    <p class="text-red-500 font-bold pista-contenido">${pista.contenido} </p>`;
 
                         pistaDesbloqueadaEncontrada = true;
                     }
@@ -460,16 +487,6 @@
                 console.log('Pista registrada:', data.juego);
             } catch (error) {
                 console.error(error);
-            }
-        }
-
-        function toggleButtonStyle(button) {
-            if (button.classList.contains('bg-blue-500')) {
-                button.classList.remove('bg-blue-500', 'hover:bg-blue-700');
-                button.classList.add('bg-green-500', 'hover:bg-green-700');
-            } else {
-                button.classList.remove('bg-green-500', 'hover:bg-green-700');
-                button.classList.add('bg-blue-500', 'hover:bg-blue-700');
             }
         }
     </script>
