@@ -12,15 +12,10 @@ class UserController extends Controller
     //
     public function index()
     {
-        // Obtener el nombre del usuario logueado
         $user = Auth::user();
-
-        // Realizar la consulta para obtener el nickname
         $nickname = DB::table('v_usuarios')
                     ->where('usuario', $user->name)
-                    ->value('nickname'); // Devuelve solo el valor de 'nickname'
-
-        // Pasar los datos a la vista
+                    ->value('nickname');
         return view('profile.perfil1', compact('user', 'nickname'));
     }
     public function categorias()

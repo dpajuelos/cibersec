@@ -9,19 +9,16 @@ class Juegos extends Model
 {
     use HasFactory;
     public $timestamps = false;
+    protected $primaryKey = 'idjuegos';
     protected $fillable = [
-        'fk_perfil',
-        'fk_reto_pistas',
         'cantidad',
         'tiempo',
         'bandera_enviada',
+        'fk_perfil',
         'fk_resultado',
-        'fk_retos'
+        'fk_retos',
+        'fk_reto_pistas'
     ];
-    protected $primaryKey = 'idjuegos'; 
 
-    public function juegos()
-    {
-        return $this->hasMany(Juegos::class, 'fk_perfil', 'idperfil');
-    }
+
 }

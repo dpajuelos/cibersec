@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UsuariosController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RetosController;
+use App\Http\Controllers\JuegoController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\NotificationController;
@@ -74,6 +75,10 @@ Route::post('/usuarios/puntos-por-fecha', [UsuariosController::class, 'obtenerPu
 Route::get('/ranking', [RankingController::class, 'index'])->name('ranking');
 
 Route::get('/rankings/top5', [RankingController::class, 'getTop5']);
+
+Route::post('/retos/{idreto}/{idpista}', [RetosController::class, 'registrarPista']);
+
+Route::post('/juegos/{idreto}', [JuegoController::class, 'updateJuego']);
 
 Route::get('/dashboard', function () {
     return view('welcome');

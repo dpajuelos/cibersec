@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Retos;
 use App\Models\Pistas;
 use App\Models\User;
+use App\Models\Perfiles;
 use App\Models\juegos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,12 +16,42 @@ class RetosController extends Controller
 {
     public function index()
     {
+        if (Auth::check()) {
+            $perfilId = Perfiles::join('usuarios', 'perfiles.fk_usuario', '=', 'usuarios.idusuario')
+            ->where('usuarios.idusuario', Auth::id())
+            ->select('perfiles.idperfil')
+            ->first()->idperfil;
+            
+            $retos = DB::table('retos AS rt') ->select(
+                'rt.idretos',
+                'rt.nomreto',
+                'rt.puntos',
+                'rt.descripcion',
+                'ct.nomcategoria',
+                'pt.nombre',
+                'pt.url',
+                'pt.tipo',
+                DB::raw('MAX(IF(j.fk_resultado=1 AND j.fk_perfil=' . $perfilId . ', 1, 0)) AS resuelto')
+            )
+            ->join('niveles_reto AS lvl', 'rt.fk_nivel', '=', 'lvl.idnivel_reto')
+            ->join('categorias AS ct', 'rt.fk_categoria', '=', 'ct.idcategoria')
+            ->join('estados_reto AS et', 'rt.fk_estado_reto', '=', 'et.idestado_reto')
+            ->join('archivos_reto AS pt', 'rt.fk_archivo', '=', 'pt.idarchivo')
+            ->leftJoin('juegos AS j', 'rt.idretos', '=', 'j.fk_retos')
+            ->leftJoin('perfiles AS pf', 'j.fk_perfil', '=', 'pf.idperfil')
+            ->where('et.estadoreto', '=', 'Activo')
+            ->groupBy('rt.idretos', 'rt.nomreto', 'rt.puntos', 'rt.descripcion', 'ct.nomcategoria', 'pt.nombre', 'pt.url', 'pt.tipo')
+            ->get();
 
-        $retos = Retos::all();
-
-        $retosPorCategoria = $retos->groupBy('nomcategoria');
-
-        return view('retos', compact('retosPorCategoria'));
+            $retosPorCategoria = $retos->groupBy('nomcategoria');
+            return view('retos', compact('retosPorCategoria'));
+    
+        } else {
+            $retos = Retos::all();
+            $retosPorCategoria = $retos->groupBy('nomcategoria');
+            return view('retos', compact('retosPorCategoria'));
+        }
+        
     }
 
     public function detalles($id)
@@ -36,12 +67,22 @@ class RetosController extends Controller
 
     public function obtenerPistas($idretos)
     {
-        $pistas = Pistas::select('idpistas','valor', 'contenido')
-            ->join('reto_pistas as rp', 'rp.fk_pistas', '=', 'idpistas')
-            ->join('retos as r', 'rp.fk_retos', '=', 'r.idretos')
+        $idPerfil = Perfiles::join('usuarios', 'perfiles.fk_usuario', '=', 'usuarios.idusuario')
+            ->where('usuarios.idusuario', Auth::id())
+            ->select('perfiles.idperfil')
+            ->first()->idperfil;
+    
+            $pistas = Pistas::select('p.idpistas', 'p.valor', 'p.contenido', 'j.fk_reto_pistas')
+            ->from('pistas as p')
+            ->leftJoin('reto_pistas as rp', 'rp.fk_pistas', '=', 'p.idpistas') 
+            ->leftJoin('retos as r', 'rp.fk_retos', '=', 'r.idretos')  
+            ->leftJoin('juegos as j', function ($join) use ($idPerfil) {    
+                $join->on('j.fk_reto_pistas', '=', 'rp.idreto_pistas')       
+                     ->where('j.fk_perfil', $idPerfil);       
+            })
             ->where('rp.fk_retos', $idretos)
-            ->get();
-
+            ->orderBy('j.fk_reto_pistas','desc') ->get();
+    
         return response()->json($pistas);
     }
    
@@ -50,66 +91,38 @@ class RetosController extends Controller
         $resueltos = DB::select('CALL obtener_retos_usuario(?)', [$idreto]);
         return response()->json($resueltos);
     }
-
-    public function RegistroPistas(Request $request)
-    {
-        try {
-            $request->validate([
-                'idreto' => 'required',
-                'idpista' => 'required',
-            ]);
-
-            $idusuario = Auth::id();
-            if (!$idusuario) {
-                return response()->json(['message' => 'Usuario no autenticado.'], 401);
-            }
-
-            $fk_perfil = DB::table('perfiles as pf')
-                ->join('usuarios as u', 'pf.fk_usuario', '=', 'u.idusuario')
-                ->where('u.idusuario', $idusuario)
-                ->value('pf.idperfil');
-
-            if (!$fk_perfil) {
-                return response()->json(['message' => 'Perfil no encontrado.'], 404);
-            }
-
-            $fk_reto_pistas = DB::table('reto_pistas as rp')
-                ->join('retos as r', 'rp.fk_retos', '=', 'r.idretos')
-                ->join('pistas as p', 'rp.fk_pistas', '=', 'p.idpistas')
-                ->where('rp.fk_pistas', $request->idpista)
-                ->where('rp.fk_retos', $request->idreto)
-                ->value('rp.idreto_pistas');
-
-            if (!$fk_reto_pistas) {
-                return response()->json(['message' => 'Reto pista no encontrada.'], 404);
-            }
-
-            $juego = juegos::where('fk_perfil', $fk_perfil)
-                ->where('fk_retos', $request->idreto)
-                ->first();
-
-            $tiempo = Carbon::now(); 
-
-            if ($juego) {
-                $juego->cantidad += 1;
-                $juego->tiempo = $tiempo;
-                $juego->bandera_enviada = 0; 
-                $juego->save();
-            } else {
-                juegos::create([
-                    'fk_perfil' => $fk_perfil,
-                    'fk_reto_pistas' => $fk_reto_pistas,
-                    'cantidad' => 1,
-                    'tiempo' => $tiempo,
-                    'bandera_enviada' => 0,
-                    'fk_resultado' => 2, 
-                    'fk_retos' => $request->idreto, 
-                ]);
-            }
-            return response()->json(['message' => 'Pista registrada correctamente.']);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Error al registrar la pista: ' . $e->getMessage()], 500);
-        }
-    }
     
+    public function registrarPista($idreto, $idpista)
+    {
+      
+        $perfilId = Perfiles::join('usuarios', 'perfiles.fk_usuario', '=', 'usuarios.idusuario')
+            ->where('usuarios.idusuario', Auth::id())
+            ->select('perfiles.idperfil')
+            ->first()->idperfil;
+    
+        $fkRetoPistas = DB::table('reto_pistas as rp')
+            ->join('retos as r', 'rp.fk_retos', '=', 'r.idretos')
+            ->join('pistas as p', 'rp.fk_pistas', '=', 'p.idpistas')
+            ->where('p.idpistas', $idpista)
+            ->where('r.idretos', $idreto) 
+            ->select('rp.idreto_pistas')
+            ->first();
+    
+        if (is_null($fkRetoPistas)) {
+            return response()->json(['success' => false, 'error' => 'No se encontró la pista para el reto especificado.'], 404);
+        }
+    
+        $juego = Juegos::updateOrCreate(
+            ['fk_retos' => $idreto, 'fk_perfil' => $perfilId],
+            [
+                'tiempo' => now(),
+                'cantidad' => \DB::raw('cantidad + 1'), 
+                'bandera_enviada' => 'hola',
+                'fk_resultado' => '2',
+                'fk_reto_pistas' => $fkRetoPistas->idreto_pistas 
+            ]
+        );
+    
+        return response()->json(['success' => true, 'message' => 'Pista registrada correctamente.']);
+    }
 }

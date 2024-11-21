@@ -13,11 +13,11 @@
                 
                 <div class="bg-gray-700 rounded-lg shadow-lg p-6">
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-bold text-white">{{   Auth::user()->name ?? 'usuario' }}</h2>
+                        <h2 class="text-xl font-bold text-white">{{   Auth::user()->usuario ?? 'usuario' }}</h2>
                         <p class="text-gray-400">{{ $nickname ?? 'nickname' }}</p>
                     </div>
                     <div class="flex justify-center items-center space-x-4 mb-4">
-                        <span id="puntos" class="text-xl text-white rounded-lg px-3 py-1 bg-blue-600 shadow-md">Cargando puntos gaa</span>
+                        <span id="puntos" class="text-xl text-white rounded-lg px-3 py-1 bg-blue-600 shadow-md">Cargando puntos</span>
                         <span id="puesto" class="text-xl text-white rounded-lg px-3 py-1 bg-yellow-400 shadow-md">:3</span>
                     </div>
                     <div class="flex items-center space-x-4 mb-4">
@@ -89,14 +89,14 @@
     
 
     function puesto_puntos() {
-        const nickname = "{{ $nickname }}";
+        const nickname = "{{ Auth::user()->usuario }}";
         fetch(`/usuarios/puesto_puntos?nickname=${encodeURIComponent(nickname)}`)
             .then(response => response.json())
             .then(data => {
                 
                 if (data.message) {
-                    document.getElementById('puntos').innerText = `participa mrd :v`;
-                    document.getElementById('puesto').innerText = `jilow`;
+                    document.getElementById('puntos').innerText = `Sin puntos`;
+                    document.getElementById('puesto').innerText = `Sin ranking`;
                 } else {
                     document.getElementById('puntos').innerText = `${data.total_puntos} puntos`;
                     document.getElementById('puesto').innerText = `${data.puesto}° puesto`;

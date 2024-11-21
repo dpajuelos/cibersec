@@ -95,8 +95,8 @@
             .then(data => {
                 
                 if (data.message) {
-                    document.getElementById('puntos').innerText = `participa mrd :v`;
-                    document.getElementById('puesto').innerText = `jilow`;
+                    document.getElementById('puntos').innerText = `Aun no hay datos`;
+                    document.getElementById('puesto').innerText = `Sin ranking para este usuario`;
                 } else {
                     document.getElementById('puntos').innerText = `${data.total_puntos} puntos`;
                     document.getElementById('puesto').innerText = `${data.puesto}° puesto`;
@@ -152,7 +152,7 @@
         if (barraProgreso) {
             barraProgreso.style.display = 'none';
         }
-        document.getElementById('puntos').textContent = 'Cargando puntos gaa';
+        document.getElementById('puntos').textContent = 'Cargando puntos';
         document.getElementById('puesto').textContent = ':3';
         scoreChart.data.labels = [];
         scoreChart.data.datasets[0].data = [];

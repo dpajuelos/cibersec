@@ -36,7 +36,7 @@
 
     <x-slot name="actions">
         <x-action-message class="me-3" on="saved">
-            {{ __('Guardo.') }}
+            {{ __('Guardado.') }}
         </x-action-message>
 
         <x-button>
