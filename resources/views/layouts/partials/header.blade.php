@@ -50,6 +50,11 @@
                                             {{ __('Administrar cuenta') }}
                                         </div>
 
+                                        <x-dropdown-link href="{{ route('profile.perfil1') }}">
+                                            {{ __('Perfil') }}
+                                        </x-dropdown-link>
+                                        
+                                        
                                         <x-dropdown-link href="{{ route('profile') }}">
                                             <i class="mr-1 fas fa-cog"></i> {{ __('Configuración') }}
                                         </x-dropdown-link>

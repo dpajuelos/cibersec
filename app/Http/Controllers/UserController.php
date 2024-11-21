@@ -13,10 +13,10 @@ class UserController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $nickname = DB::table('v_usuarios')
-                    ->where('usuario', $user->name)
-                    ->value('nickname');
-        return view('profile.perfil1', compact('user', 'nickname'));
+        $usu = DB::table('v_usuarios')
+                    ->where('nickname', $user->usuario)
+                    ->value('usuario');
+        return view('profile.perfil1', compact('user', 'usu'));
     }
     public function categorias()
     {

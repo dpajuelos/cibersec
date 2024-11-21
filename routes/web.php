@@ -90,10 +90,10 @@ Route::get('/notificaciones', [NotificationController::class, 'index'])->name('n
 
 
 Route::get('/perfil1', [UserController::class, 'index'])->name('profile.perfil1');
-Route::get('/usuarios/puesto_puntos', [UserController::class, 'puesto_puntos'])->name('usuarios.puesto_puntos');
-Route::get('/usuarios/detalle', [UserController::class, 'detalle'])->name('usuarios.detalle');
-Route::post('/usuarios/porcentaje-acierto', [UserController::class, 'obtenerPorcentajeAcierto']);
-Route::post('/usuarios/puntos-por-fecha', [UserController::class, 'obtenerPuntosPorFecha']);
+Route::get('/perfil/puesto_puntos', [UserController::class, 'puesto_puntos'])->name('perfil.puestopuntos');
+Route::get('/perfil/detalle', [UserController::class, 'detalle'])->name('perfil.detalle');
+Route::post('/perfil/porcentaje-acierto', [UserController::class, 'obtenerPorcentajeAcierto']);
+Route::post('/perfil/puntos-por-fecha', [UserController::class, 'obtenerPuntosPorFecha']);
 
 
 

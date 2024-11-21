@@ -8,13 +8,13 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
-                <h1 class="text-2xl font-bold mb-4">Perfil de Usuario</h1>
-                <p class="text-gray-600 mb-6">Detalles del usuario aquí...</p>
+                <h1 class="text-2xl font-bold mb-4">__________________________________________________________</h1>
+                <p class="text-gray-600 mb-6">---------------------------------------------------------------------------</p>
                 
                 <div class="bg-gray-700 rounded-lg shadow-lg p-6">
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-bold text-white">{{   Auth::user()->usuario ?? 'usuario' }}</h2>
-                        <p class="text-gray-400">{{ $nickname ?? 'nickname' }}</p>
+                        <h2 class="text-xl font-bold text-white">{{   $usu  ?? 'usuario' }}</h2>
+                        <p class="text-gray-400">{{ Auth::user()->usuario ?? 'nickname' }}</p>
                     </div>
                     <div class="flex justify-center items-center space-x-4 mb-4">
                         <span id="puntos" class="text-xl text-white rounded-lg px-3 py-1 bg-blue-600 shadow-md">Cargando puntos</span>
@@ -90,7 +90,7 @@
 
     function puesto_puntos() {
         const nickname = "{{ Auth::user()->usuario }}";
-        fetch(`/usuarios/puesto_puntos?nickname=${encodeURIComponent(nickname)}`)
+        fetch(`/perfil/puesto_puntos?nickname=${encodeURIComponent(nickname)}`)
             .then(response => response.json())
             .then(data => {
                 
@@ -107,8 +107,8 @@
 
     
     function detalle() {
-        const userName   = "{{  Auth::user()->name  }}";
-        fetch(`/usuarios/detalle?userName=${encodeURIComponent(userName)}`)
+        const userName   = "{{   $usu  }}";
+        fetch(`/perfil/detalle?userName=${encodeURIComponent(userName)}`)
             .then(response => response.json())
             .then(data => {
                 // Limpia el contenido actual de la tabla
@@ -149,10 +149,10 @@
  
     function actualizarProgreso() {
         const categoria = document.getElementById('categoriaselect').value;
-        const userName = "{{  Auth::user()->name  }}"; // Usa el nombre de usuario actual
+        const userName = "{{   $usu  }}"; // Usa el nombre de usuario actual
         
         // Realiza una solicitud al nuevo método del controlador para obtener el porcentaje de aciertos
-        fetch(`/usuarios/porcentaje-acierto`, {
+        fetch(`/perfil/porcentaje-acierto`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -176,7 +176,7 @@
         })
         .catch(error => console.error('Error:', error));
         // Actualizar el gráfico de puntuación
-        fetch(`/usuarios/puntos-por-fecha`, {
+        fetch(`/perfil/puntos-por-fecha`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
