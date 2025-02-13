@@ -47,27 +47,40 @@ Antes de instalar y ejecutar el proyecto, asegúrate de tener instalados los sig
    php artisan key:generate
    ```
 
-2. Crea la base de datos:
+5. Modifica el archivo .env
+   ```sh
+   APP_NAME=CibersecUnasam
+   APP_URL=http://127.0.0.1:8000
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=cibersecunasam
+   DB_USERNAME=root
+   DB_PASSWORD=
+   FILESYSTEM_DISK=local
+   ```
+   
+6. Crea la base de datos:
    ```sh
    CREATE DATABASE cibersecunasam;
    ```
 
-6. Ejecuta las migraciones para generar las tablas:
+7. Ejecuta las migraciones para generar las tablas:
    ```sh
    php artisan migrate
    ```
 
-7. Ejecuta los seeders para generar los datos:
+8. Ejecuta los seeders para generar los datos:
    ```sh
    php artisan db:seed
    ```
    
-7. Enlace del almacenamiento para visualizar las fotos
+9. Enlace del almacenamiento para visualizar las fotos
    ```sh
    php artisan storage:link
    ```
    
-8. Inicia el servidor de desarrollo:
+10. Inicia el servidor de desarrollo:
    ```sh
    php artisan serve
    ```
