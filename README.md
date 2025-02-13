@@ -62,6 +62,11 @@ Antes de instalar y ejecutar el proyecto, asegúrate de tener instalados los sig
    php artisan db:seed
    ```
    
+7. Enlace del almacenamiento para visualizar las fotos
+   ```sh
+   php artisan storage:link
+   ```
+   
 8. Inicia el servidor de desarrollo:
    ```sh
    php artisan serve
