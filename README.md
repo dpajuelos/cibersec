@@ -47,8 +47,8 @@ Antes de instalar y ejecutar el proyecto, asegúrate de tener instalados los sig
    php artisan key:generate
    ```
 
-5.Crea la base de datos:
-   ```env
+2. Crea la base de datos:
+   ```sh
    CREATE DATABASE cibersecunasam;
    ```
 
