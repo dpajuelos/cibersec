@@ -60,27 +60,22 @@ Antes de instalar y ejecutar el proyecto, asegúrate de tener instalados los sig
    FILESYSTEM_DISK=public
    ```
    
-6. Crea la base de datos:
-   ```sh
-   CREATE DATABASE cibersecunasam;
-   ```
-
-7. Ejecuta las migraciones para generar las tablas:
+6. Ejecuta las migraciones para generar las tablas:
    ```sh
    php artisan migrate
    ```
 
-8. Ejecuta los seeders para generar los datos:
+7. Ejecuta los seeders para generar los datos:
    ```sh
    php artisan db:seed
    ```
    
-9. Enlace del almacenamiento para visualizar las fotos
+8. Enlace del almacenamiento para visualizar las fotos
    ```sh
    php artisan storage:link
    ```
    
-10. Inicia el servidor de desarrollo:
+9. Inicia el servidor de desarrollo:
    ```sh
    php artisan serve
    ```
