@@ -57,7 +57,7 @@ Antes de instalar y ejecutar el proyecto, asegúrate de tener instalados los sig
    DB_DATABASE=cibersecunasam
    DB_USERNAME=root
    DB_PASSWORD=
-   FILESYSTEM_DISK=local
+   FILESYSTEM_DISK=public
    ```
    
 6. Crea la base de datos:
