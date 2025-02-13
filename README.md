@@ -21,8 +21,8 @@ Antes de instalar y ejecutar el proyecto, asegúrate de tener instalados los sig
 - ✅ Node.js y NPM
 - ✅ MySQL
 - ✅ Laravel 10
-- ✅ XAMPP
-
+- ✅ XAMPP>v.3.3.0 o MySQL WorkBench 8.0
+ 
 ## 📥 Instalación
 
 1. Clona el repositorio:
@@ -47,26 +47,22 @@ Antes de instalar y ejecutar el proyecto, asegúrate de tener instalados los sig
    php artisan key:generate
    ```
 
-5. Configura la base de datos en el archivo `.env`:
+5.Crea la base de datos:
    ```env
-   DB_CONNECTION=mysql
-   DB_HOST=127.0.0.1
-   DB_PORT=3306
-   DB_DATABASE=nombre_de_tu_base_de_datos
-   DB_USERNAME=root
-   DB_PASSWORD=
+   CREATE DATABASE cibersecunasam;
    ```
-   
+
 6. Ejecuta las migraciones para generar las tablas:
    ```sh
    php artisan migrate
    ```
-   
-7. Inicia el servidor de desarrollo:
+
+7. Ejecuta los seeders para generar los datos:
    ```sh
-   php artisan serve
+   php artisan db:seed
    ```
-8. Inicia el servidor de Vite:
+   
+8. Inicia el servidor de desarrollo:
    ```sh
    php artisan serve
    ```
