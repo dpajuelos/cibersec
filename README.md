@@ -20,7 +20,7 @@ Antes de instalar y ejecutar el proyecto, asegúrate de tener instalados los sig
 - ✅ Composer
 - ✅ Node.js y NPM
 - ✅ MySQL
-- ✅ Laravel 10
+- ✅ Laravel 11
 - ✅ XAMPP>v.3.3.0 o MySQL WorkBench 8.0
  
 ## 📥 Instalación
