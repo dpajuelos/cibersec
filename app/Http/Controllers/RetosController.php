@@ -43,7 +43,7 @@ class RetosController extends Controller
             ->groupBy('rt.idretos', 'rt.nomreto', 'rt.puntos', 'rt.descripcion', 'ct.nomcategoria', 'pt.nombre', 'pt.url', 'pt.tipo')
             ->get();
 
-            $retosPorCategoria = $retos->groupBy('nomcategoria');
+            $retosPorCategoria = $retos->groupBy('nomcategoria'); 
             return view('retos', compact('retosPorCategoria'));
     
         } else {

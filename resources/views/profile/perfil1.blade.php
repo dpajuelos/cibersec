@@ -1,81 +1,287 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Perfil') }}
-        </h2>
+        <div class="bg-gradient-to-r from-emerald-600 to-teal-600 -mx-6 -my-4 px-6 py-8">
+            <div class="flex items-center space-x-4">
+                <div class="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
+                    <i class="fas fa-user-circle text-3xl text-white"></i>
+                </div>
+                <div>
+                    <h2 class="text-3xl font-black text-white leading-tight">
+                        Perfil del Hacker
+                    </h2>
+                    <p class="text-emerald-100 font-medium">Dashboard personal de rendimiento</p>
+                </div>
+            </div>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
-                <h1 class="text-2xl font-bold mb-4">__________________________________________________________</h1>
-                <p class="text-gray-600 mb-6">---------------------------------------------------------------------------</p>
-                
-                <div class="bg-gray-700 rounded-lg shadow-lg p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-bold text-white">{{   $usu  ?? 'usuario' }}</h2>
-                        <p class="text-gray-400">{{ Auth::user()->usuario ?? 'nickname' }}</p>
-                    </div>
-                    <div class="flex justify-center items-center space-x-4 mb-4">
-                        <span id="puntos" class="text-xl text-white rounded-lg px-3 py-1 bg-blue-600 shadow-md">Cargando puntos</span>
-                        <span id="puesto" class="text-xl text-white rounded-lg px-3 py-1 bg-yellow-400 shadow-md">:3</span>
-                    </div>
-                    <div class="flex items-center space-x-4 mb-4">
-                        <span class="text-xl font-medium text-gray-300">PROBLEMAS RESUELTOS</span>
-                    </div>
-                    <table id="userTable" class="min-w-full border-collapse border border-gray-700 mb-4">
-                        <thead>
-                            <tr class="bg-gray-800">
-                                <th class="border border-gray-600 p-2 text-left text-gray-300 font-semibold">Retos</th>
-                                <th class="border border-gray-600 p-2 text-center text-gray-300 font-semibold">Categorias</th>
-                                <th class="border border-gray-600 p-2 text-center text-gray-300 font-semibold">Puntaje</th>
-                                <th class="border border-gray-600 p-2 text-center text-gray-300 font-semibold">Hora</th>
-                                <th class="border border-gray-600 p-2 text-center text-gray-300 font-semibold">Resultado</th>
-                            </tr>
-                        </thead>
-                        <tbody id="userTableBody">
-                        </tbody>
-                    </table>
-                    <div class="flex items-center justify-between my-4">
-                        <span class="text-xl font-bold text-gray-300">PORCENTAJE DE ACIERTOS</span>
-                        <select id="categoriaselect" class="bg-gray-700 text-gray-300 border border-gray-500 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-600" onchange="actualizarProgreso()">
-                            <option value="" disabled selected>Seleccionar</option>
-                        </select>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full dark:bg-gray-600">
-                        <div id="barrita" class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 0%"></div>
-                    </div>
-                    <div class="bg-gray-700 rounded-lg p-6 mt-4">
-                        <h2 class="text-xl font-semibold text-gray-300 mb-4 text-center">Score Over Time</h2>
-                        <div class="relative w-full" style="padding-top: 56.25%">
-                            <div class="absolute top-0 left-0 w-full h-full">
-                                <canvas id="scoreChart"></canvas>
+    <!-- Main Profile Container -->
+    <div class="min-h-screen bg-gradient-to-br from-blue-300 via-emerald-200 to-blue-300 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <!-- Hero Profile Card -->
+            <div class="relative mb-12">
+                <!-- Background Pattern -->
+                <div class="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-3xl opacity-90">
+                </div>
+
+
+                <!-- Content -->
+                <div class="relative p-8 lg:p-12 text-white">
+                    <div
+                        class="flex flex-col lg:flex-row items-start lg:items-center justify-between space-y-6 lg:space-y-0">
+
+                        <!-- User Info -->
+                        <div class="flex items-center space-x-6">
+                            <div class="relative">
+                                <div
+                                    class="w-20 h-20 lg:w-24 lg:h-24 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border-4 border-white/30">
+                                    <i class="fas fa-user-ninja text-4xl lg:text-5xl text-white"></i>
+                                </div>
+                                <div
+                                    class="absolute -bottom-2 -right-2 w-8 h-8 bg-emerald-400 rounded-full flex items-center justify-center border-4 border-white">
+                                    <i class="fas fa-shield-alt text-xs text-white"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-3xl lg:text-4xl font-black mb-2">{{ $usu ?? 'Hacker' }}</h3>
+                                <p class="text-emerald-100 text-lg font-medium flex items-center">
+                                    <i class="fas fa-at mr-2"></i>
+                                    {{ Auth::user()->usuario ?? 'nickname' }}
+                                </p>
+                                <div class="flex items-center mt-2 space-x-4">
+                                    <span
+                                        class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold">
+                                        <i class="fas fa-clock mr-1"></i>
+                                        Activo
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                        <div class="mt-4 flex items-center justify-center text-sm text-gray-400">
-                            <span class="inline-block w-3 h-3 bg-emerald-400 opacity-30 rounded mr-2"></span>
-                            <span>Área de puntuación</span>
-                            <span class="inline-block w-3 h-0.5 bg-emerald-400 mx-2 ml-4"></span>
-                            <span>Línea de tendencia</span>
+
+                        <!-- Stats -->
+                        <div class="grid grid-cols-2 gap-6 lg:gap-8">
+                            <div class="text-center">
+                                <div id="puntos" class="text-3xl lg:text-4xl font-black mb-1 text-white">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </div>
+                                <p class="text-emerald-100 text-sm font-medium">Puntos Totales</p>
+                            </div>
+                            <div class="text-center">
+                                <div id="puesto" class="text-3xl lg:text-4xl font-black mb-1 text-white">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </div>
+                                <p class="text-emerald-100 text-sm font-medium">Ranking Global</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <!-- Fin del contenido adaptado -->
+            </div>
+
+            <!-- Content Grid -->
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+
+                <!-- Main Content Area -->
+                <div class="xl:col-span-2 space-y-8">
+
+                    <!-- Challenges Solved Table -->
+                    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                        <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-5 border-b border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="p-2 bg-emerald-100 rounded-lg">
+                                        <i class="fas fa-trophy text-emerald-600 text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-xl font-bold text-gray-900">Retos Completados</h3>
+                                        <p class="text-gray-600 text-sm">Historial de desafíos resueltos</p>
+                                    </div>
+                                </div>
+                                <div
+                                    class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm font-semibold">
+                                    <i class="fas fa-fire mr-1"></i>
+                                    En progreso
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table id="userTable" class="w-full">
+                                <thead class="bg-gray-50 border-b border-gray-100">
+                                    <tr>
+                                        <th
+                                            class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                            <i class="fas fa-puzzle-piece mr-2 text-emerald-600"></i>Reto
+                                        </th>
+                                        <th
+                                            class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                            <i class="fas fa-tags mr-2 text-blue-600"></i>Categoría
+                                        </th>
+                                        <th
+                                            class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                            <i class="fas fa-star mr-2 text-yellow-600"></i>Puntos
+                                        </th>
+                                        <th
+                                            class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                            <i class="fas fa-clock mr-2 text-purple-600"></i>Tiempo
+                                        </th>
+                                        <th
+                                            class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                            <i class="fas fa-check-circle mr-2 text-green-600"></i>Estado
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="userTableBody" class="bg-white divide-y divide-gray-100">
+                                    <!-- Dynamic content will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Performance Chart -->
+                    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                        <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-5 border-b border-gray-100">
+                            <div class="flex items-center space-x-3">
+                                <div class="p-2 bg-blue-100 rounded-lg">
+                                    <i class="fas fa-chart-line text-blue-600 text-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Evolución de Puntuación</h3>
+                                    <p class="text-gray-600 text-sm">Progreso temporal de tu rendimiento</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6">
+                            <div class="relative h-80">
+                                <canvas id="scoreChart"></canvas>
+                            </div>
+                            <div class="mt-4 flex items-center justify-center space-x-6 text-sm text-gray-600">
+                                <div class="flex items-center">
+                                    <div class="w-3 h-3 bg-emerald-400 rounded-full mr-2"></div>
+                                    <span>Área de puntuación</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-3 h-0.5 bg-emerald-600 mr-2"></div>
+                                    <span>Tendencia</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="space-y-8">
+
+                    <!-- Category Performance -->
+                    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                        <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-5 border-b border-gray-100">
+                            <div class="flex items-center space-x-3">
+                                <div class="p-2 bg-purple-100 rounded-lg">
+                                    <i class="fas fa-chart-pie text-purple-600 text-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Rendimiento por Categoría</h3>
+                                    <p class="text-gray-600 text-sm">Análisis de aciertos</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6 space-y-6">
+                            <!-- Category Selector -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                    <i class="fas fa-filter mr-2 text-gray-600"></i>
+                                    Seleccionar Categoría
+                                </label>
+                                <select id="categoriaselect"
+                                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+                                    onchange="actualizarProgreso()">
+                                    <option value="" disabled selected>Elige una categoría...</option>
+                                </select>
+                            </div>
+
+                            <!-- Progress Bar -->
+                            <div>
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="text-sm font-semibold text-gray-700">Porcentaje de Éxito</span>
+                                    <span id="barrita-text" class="text-sm font-bold text-emerald-600">0%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                                    <div id="barrita"
+                                        class="bg-gradient-to-r from-emerald-500 to-teal-500 h-3 rounded-full transition-all duration-700 ease-out flex items-center justify-center"
+                                        style="width: 0%">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                        <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-5 border-b border-gray-100">
+                            <div class="flex items-center space-x-3">
+                                <div class="p-2 bg-amber-100 rounded-lg">
+                                    <i class="fas fa-bolt text-amber-600 text-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Estadísticas Rápidas</h3>
+                                    <p class="text-gray-600 text-sm">Resumen de actividad</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6 space-y-4">
+                            <div
+                                class="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-check text-green-600"></i>
+                                    </div>
+                                    <span class="text-gray-700 font-medium">Retos Resueltos</span>
+                                </div>
+                                <span id="retos-resueltos" class="text-2xl font-black text-green-600">0</span>
+                            </div>
+
+                            <div
+                                class="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-layer-group text-blue-600"></i>
+                                    </div>
+                                    <span class="text-gray-700 font-medium">Categorías Activas</span>
+                                </div>
+                                <span id="categorias-activas" class="text-2xl font-black text-blue-600">0</span>
+                            </div>
+
+                            <div class="flex items-center justify-between py-3">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-medal text-purple-600"></i>
+                                    </div>
+                                    <span class="text-gray-700 font-medium">Mejor Puntuación</span>
+                                </div>
+                                <span id="mejor-puntuacion" class="text-2xl font-black text-purple-600">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </x-app-layout>
 
-
-
 <script>
+    // Global variables
+    let allChallengesData = [];
+
     function cargarCategorias() {
         fetch(`/categorias`)
             .then(response => response.json())
             .then(data => {
                 const categorySelect = document.getElementById('categoriaselect');
-                categorySelect.innerHTML = `<option value="" disabled selected>Seleccionar</option>`;
-                
+                categorySelect.innerHTML = `<option value="" disabled selected>Elige una categoría...</option>`;
+
                 data.forEach(categoria => {
                     const option = document.createElement('option');
                     option.value = categoria.nomcategoria;
@@ -86,56 +292,85 @@
             .catch(error => console.error('Error al cargar las categorías', error));
     }
 
-    
-
     function puesto_puntos() {
         const nickname = "{{ Auth::user()->usuario }}";
         fetch(`/perfil/puesto_puntos?nickname=${encodeURIComponent(nickname)}`)
             .then(response => response.json())
             .then(data => {
-                
+                const puntosElement = document.getElementById('puntos');
+                const puestoElement = document.getElementById('puesto');
+
                 if (data.message) {
-                    document.getElementById('puntos').innerText = `Sin puntos`;
-                    document.getElementById('puesto').innerText = `Sin ranking`;
+                    puntosElement.innerHTML = `<span class="text-2xl">0</span>`;
+                    puestoElement.innerHTML = `<span class="text-2xl">--</span>`;
                 } else {
-                    document.getElementById('puntos').innerText = `${data.total_puntos} puntos`;
-                    document.getElementById('puesto').innerText = `${data.puesto}° puesto`;
+                    puntosElement.innerHTML = `<span class="text-2xl">${data.total_puntos}</span>`;
+                    puestoElement.innerHTML = `<span class="text-2xl">#${data.puesto}</span>`;
                 }
             })
             .catch(error => console.error('Error al cargar datos', error));
     }
 
-    
     function detalle() {
-        const userName   = "{{   $usu  }}";
+        const userName = "{{ $usu }}";
         fetch(`/perfil/detalle?userName=${encodeURIComponent(userName)}`)
             .then(response => response.json())
             .then(data => {
-                // Limpia el contenido actual de la tabla
                 const tableBody = document.getElementById('userTableBody');
                 tableBody.innerHTML = '';
+
                 if (data.message) {
-                    // Si se encuentra el mensaje de error
-                    tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-gray-100">${data.message}</td></tr>`;
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                                <div class="flex flex-col items-center space-y-3">
+                                    <i class="fas fa-search text-4xl text-gray-300"></i>
+                                    <p class="text-lg font-medium">${data.message}</p>
+                                    <p class="text-sm">¡Comienza a resolver retos para ver tu progreso aquí!</p>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
                 } else {
-                    // Si se encuentran resultados
+                    allChallengesData = data.results;
+                    updateQuickStats(data.results);
+
                     data.results.forEach(result => {
-                        // Define la clase CSS condicionalmente según el valor de resultado
-                        let resultadoClass = 'text-gray-300 text-xs'; // Clase por defecto
-                        if (result.resultado === 'Flag Encontrada') {
-                            resultadoClass = 'text-green-500 font-bold text-xs'; // Verde para un buen resultado
-                        } else if (result.resultado === 'Tiempo agotado') {
-                            resultadoClass = 'text-yellow-500 text-xs'; // Amarillo para un resultado medio
-                        } else {
-                            resultadoClass = 'text-red-500 text-xs'; // Rojo para un resultado bajo
-                        }
+                        let statusConfig = getStatusConfig(result.resultado);
+                        let categoryConfig = getCategoryConfig(result.nomcategoria);
+
                         const row = document.createElement('tr');
+                        row.className = 'hover:bg-gray-50 transition-colors';
                         row.innerHTML = `
-                            <td class="border border-gray-600 p-1 text-left text-gray-300 text-xs">${result.nomreto}</td>
-                            <td class="border border-gray-600 p-1 text-center text-gray-300 text-xs">${result.nomcategoria}</td>
-                            <td class="border border-gray-600 p-1 text-center text-gray-300 text-xs">${result.puntos}</td>
-                            <td class="border border-gray-600 p-1 text-center text-gray-300 text-xs">${result.tiempo}</td>
-                            <td class="border border-gray-600 p-1 text-center ${resultadoClass}">${result.resultado}</td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 ${categoryConfig.bg} rounded-lg flex items-center justify-center">
+                                        <i class="${categoryConfig.icon} ${categoryConfig.color}"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-gray-900">${result.nomreto}</div>
+                                        <div class="text-sm text-gray-500">Challenge</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <span class="px-3 py-1 ${categoryConfig.bg} ${categoryConfig.color} rounded-full text-xs font-semibold">
+                                    ${result.nomcategoria}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <span class="text-lg font-bold text-gray-900">${result.puntos}</span>
+                                <div class="text-xs text-gray-500">pts</div>
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <span class="font-medium text-gray-700">${result.tiempo}</span>
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <span class="inline-flex items-center px-3 py-1 ${statusConfig.bg} ${statusConfig.color} rounded-full text-xs font-semibold">
+                                    <i class="${statusConfig.icon} mr-1"></i>
+                                    ${statusConfig.text}
+                                </span>
+                            </td>
                         `;
                         tableBody.appendChild(row);
                     });
@@ -144,139 +379,268 @@
             .catch(error => console.error('Error al cargar los detalles del usuario:', error));
     }
 
-    
+    function getStatusConfig(resultado) {
+        const configs = {
+            'Flag Encontrada': {
+                bg: 'bg-green-100',
+                color: 'text-green-800',
+                icon: 'fas fa-check-circle',
+                text: 'Completado'
+            },
+            'Tiempo agotado': {
+                bg: 'bg-yellow-100',
+                color: 'text-yellow-800',
+                icon: 'fas fa-clock',
+                text: 'Tiempo agotado'
+            }
+        };
+        return configs[resultado] || {
+            bg: 'bg-red-100',
+            color: 'text-red-800',
+            icon: 'fas fa-times-circle',
+            text: 'Fallido'
+        };
+    }
 
- 
+    function getCategoryConfig(categoria) {
+        const configs = {
+            'Criptografía': {
+                bg: 'bg-blue-100',
+                color: 'text-blue-600',
+                icon: 'fas fa-lock'
+            },
+            'Esteganografía': {
+                bg: 'bg-purple-100',
+                color: 'text-purple-600',
+                icon: 'fas fa-eye-slash'
+            },
+            'Web Exploitation': {
+                bg: 'bg-red-100',
+                color: 'text-red-600',
+                icon: 'fas fa-globe'
+            },
+            'OSINT': {
+                bg: 'bg-green-100',
+                color: 'text-green-600',
+                icon: 'fas fa-satellite-dish'
+            },
+            'Forense Digital': {
+                bg: 'bg-indigo-100',
+                color: 'text-indigo-600',
+                icon: 'fas fa-search-plus'
+            },
+            'Knowledge Check': {
+                bg: 'bg-yellow-100',
+                color: 'text-yellow-600',
+                icon: 'fas fa-brain'
+            }
+        };
+        return configs[categoria] || {
+            bg: 'bg-gray-100',
+            color: 'text-gray-600',
+            icon: 'fas fa-question'
+        };
+    }
+
+    function updateQuickStats(results) {
+        // Retos resueltos
+        const retosResueltos = results.filter(r => r.resultado === 'Flag Encontrada').length;
+        document.getElementById('retos-resueltos').textContent = retosResueltos;
+
+        // Categorías activas
+        const categoriasUnicas = [...new Set(results.map(r => r.nomcategoria))].length;
+        document.getElementById('categorias-activas').textContent = categoriasUnicas;
+
+        // Mejor puntuación
+        const mejorPuntuacion = Math.max(...results.map(r => parseInt(r.puntos) || 0));
+        document.getElementById('mejor-puntuacion').textContent = mejorPuntuacion > 0 ? mejorPuntuacion : 0;
+    }
+
     function actualizarProgreso() {
         const categoria = document.getElementById('categoriaselect').value;
-        const userName = "{{   $usu  }}"; // Usa el nombre de usuario actual
-        
+        const userName = "{{ $usu }}";
+
         fetch(`/perfil/porcentaje-acierto`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({ userName, categoria })
-        })
-        .then(response => response.json())
-        .then(data => {
-            const barraProgreso = document.getElementById('barrita');
-            if (data.porcentaje !== undefined && data.porcentaje !== null) {
-                barraProgreso.style.width = `${data.porcentaje}%`;
-                barraProgreso.textContent = `${data.porcentaje}%`;
-                barraProgreso.style.display = 'block';
-                
-            } else {
-                barraProgreso.style.display = 'none';
-                alert(data.message || 'No se encontraron datos para esta categoria');
-                
-            }
-        })
-        .catch(error => console.error('Error:', error));
-        // Actualizar el gráfico de puntuación
-        fetch(`/perfil/puntos-por-fecha`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({ userName, categoria })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.puntos) {
-                const fechas = data.puntos.map(p => p.fecha);
-                const puntos = data.puntos.map(p => p.puntos);
-                
-                // Actualizar datos del gráfico
-                scoreChart.data.labels = fechas;
-                scoreChart.data.datasets[0].data = puntos;
-                scoreChart.update();
-            } else {
-                // alert(data.message || 'Error al obtener los datos de puntos.');
-                scoreChart.data.labels = [];
-                scoreChart.data.datasets[0].data = [];
-                scoreChart.update();
-            }
-        })
-        .catch(error => console.error('Error al actualizar el gráfico:', error));
-    }
-   
-const ctx = document.getElementById('scoreChart').getContext('2d');
-        
-const scoreChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Puntuación',
-                    data: [],
-                    fill: true,
-                    borderColor: 'rgb(52, 211, 153)', // emerald-400
-                    backgroundColor: 'rgba(52, 211, 153, 0.2)',
-                    tension: 0.4,
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                aspectRatio: 16/9,
-                interaction: {
-                    intersect: false,
-                    mode: 'index'
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 800,
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        },
-                        ticks: {
-                            color: '#9ca3af', // gray-400
-                            font: {
-                                family: 'Inter, sans-serif'
-                            }
-                        }
+                body: JSON.stringify({
+                    userName,
+                    categoria
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const barraProgreso = document.getElementById('barrita');
+                const barraText = document.getElementById('barrita-text');
+
+                if (data.porcentaje !== undefined && data.porcentaje !== null) {
+                    barraProgreso.style.width = `${data.porcentaje}%`;
+                    barraText.textContent = `${data.porcentaje}%`;
+                } else {
+                    barraProgreso.style.width = '0%';
+                    barraText.textContent = '0%';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+
+        // Actualizar gráfico
+        fetch(`/perfil/puntos-por-fecha`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    userName,
+                    categoria
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.puntos && data.puntos.length > 0) {
+                    const fechas = data.puntos.map(p => p.fecha);
+                    const puntos = data.puntos.map(p => p.puntos);
+
+                    scoreChart.data.labels = fechas;
+                    scoreChart.data.datasets[0].data = puntos;
+                    scoreChart.update();
+                } else {
+                    scoreChart.data.labels = [];
+                    scoreChart.data.datasets[0].data = [];
+                    scoreChart.update();
+                }
+            })
+            .catch(error => console.error('Error al actualizar el gráfico:', error));
+    }
+
+    // Chart.js configuration
+    const ctx = document.getElementById('scoreChart').getContext('2d');
+    const scoreChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Puntuación',
+                data: [],
+                fill: true,
+                borderColor: 'rgb(16, 185, 129)',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                tension: 0.4,
+                borderWidth: 3,
+                pointBackgroundColor: 'rgb(16, 185, 129)',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 3,
+                pointRadius: 6,
+                pointHoverRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)',
+                        drawBorder: false
                     },
-                    x: {
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
+                    ticks: {
+                        color: '#6b7280',
+                        font: {
+                            family: 'Inter, sans-serif',
+                            size: 12
                         },
-                        ticks: {
-                            color: '#9ca3af', // gray-400
-                            font: {
-                                family: 'Inter, sans-serif'
-                            }
-                        }
+                        padding: 10
                     }
                 },
-                plugins: {
-                    legend: {
-                        display: false
+                x: {
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)',
+                        drawBorder: false
                     },
-                    tooltip: {
-                        backgroundColor: 'rgba(17, 24, 39, 0.8)', // gray-900 con opacidad
-                        titleColor: '#fff',
-                        bodyColor: '#fff',
-                        padding: 12,
-                        bodyFont: {
-                            family: 'Inter, sans-serif'
+                    ticks: {
+                        color: '#6b7280',
+                        font: {
+                            family: 'Inter, sans-serif',
+                            size: 12
                         },
-                        bodySpacing: 4,
-                        boxPadding: 4
+                        padding: 10
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    cornerRadius: 8,
+                    padding: 12,
+                    displayColors: false,
+                    callbacks: {
+                        title: function(context) {
+                            return `Fecha: ${context[0].label}`;
+                        },
+                        label: function(context) {
+                            return `Puntos: ${context.parsed.y}`;
+                        }
                     }
                 }
             }
-        });
-        
-        
-document.addEventListener('DOMContentLoaded', function() {
-    cargarCategorias();
-    puesto_puntos();
-    detalle();
-});
-      
+        }
+    });
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+        cargarCategorias();
+        puesto_puntos();
+        detalle();
+    });
 </script>
+
+<style>
+    /* Custom scrollbar for table */
+    .overflow-x-auto::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .overflow-x-auto::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 4px;
+    }
+
+    .overflow-x-auto::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+    }
+
+    .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+
+    /* Loading animation */
+    @keyframes pulse-gentle {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.5;
+        }
+    }
+
+    .fa-spinner {
+        animation: pulse-gentle 1.5s ease-in-out infinite;
+    }
+</style>
