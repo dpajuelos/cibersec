@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Jetstream\HasProfilePhoto;
 
-
-class Usuario extends Authenticatable
+class User extends Authenticatable
 {
     use HasFactory;
-
+    use HasProfilePhoto;
     protected $table = 'usuarios';
     protected $primaryKey = 'idusuario';
     public $timestamps = false;
@@ -19,7 +19,7 @@ class Usuario extends Authenticatable
         'email',
         'password',
         'fec_registro',
-        'foto'
+        'profile_photo_path'
     ];
 
     public function perfiles()

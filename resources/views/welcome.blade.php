@@ -69,7 +69,7 @@
                         <div class="flex items-center justify-center mb-3">
                             <i class="fas fa-users text-cyan-400 text-2xl mr-3"></i>
                             <div class="text-4xl font-black text-cyan-400 group-hover:text-cyan-300 transition-colors">
-                                {{ \App\Models\Usuario::count() }}+
+                                {{ \App\Models\User::count() }}+
                             </div>
                         </div>
                         <div class="text-gray-300 text-sm font-medium">Candidatos Registrados</div>

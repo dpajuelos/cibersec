@@ -23,6 +23,6 @@ class Notification extends Model
     // (Opcional) Relación con Usuario si existe
     public function usuario()
     {
-        return $this->belongsTo(Usuario::class, 'fk_idusuario');
+        return $this->belongsTo(User::class, 'fk_idusuario');
     }
 }
