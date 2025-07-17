@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\personas;
-use App\Models\perfiles;
+use App\Models\Persona;
+use App\Models\Perfil;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -33,7 +33,7 @@ class RegisterController extends Controller
     if ($validator->fails()) {
         return response()->json(['errors' => $validator->errors()], 422);
     } else {
-        $persona = Personas::create([
+        $persona = Persona::create([
             'nombres' => $request->name,
             'ape_paterno' => $request->paterno,
             'ape_materno' => $request->materno,
@@ -48,11 +48,11 @@ class RegisterController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'fec_registro' => now(),
-            'fk_estadousuario' => 1,
+            'fk_idestados' => 1,
         ]);
     
-        Perfiles::create([
-            'fk_persona' => $persona->idpersona,
+        Perfil::create([
+            'fk_persona' => $persona->dni,
             'fk_usuario' => $usuario->idusuario,
             'fk_universidad' => $request->universidad,
             'fk_nivel'  => 1,

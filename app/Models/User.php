@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
+use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
@@ -19,8 +20,14 @@ class User extends Authenticatable
         'email',
         'password',
         'fec_registro',
-        'profile_photo_path'
+        'profile_photo_path',
+        'fk_idestados'
     ];
+
+    public function estado()
+    {
+        return $this->belongsTo(Estado::class, 'fk_idestados', 'idestados');
+    }
 
     public function perfiles()
     {
@@ -35,5 +42,9 @@ class User extends Authenticatable
     {
         return 'idusuario'; 
     }
-    
+    public function updatePassword(string $newPassword): bool
+    {
+        $this->password = Hash::make($newPassword);
+        return $this->save();
+    }
 }
