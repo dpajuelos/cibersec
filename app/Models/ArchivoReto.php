@@ -20,8 +20,5 @@ class ArchivoReto extends Model
         'fk_retos'
     ];
 
-    public function reto()
-    {
-        return $this->belongsTo(Reto::class, 'fk_retos');
-    }
+    
 }

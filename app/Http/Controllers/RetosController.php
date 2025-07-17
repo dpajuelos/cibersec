@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Retos;
+use App\Models\Reto;
 use App\Models\Pistas;
 use App\Models\User;
-use App\Models\Perfiles;
+use App\Models\Perfil;
 use App\Models\juegos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,44 +17,66 @@ class RetosController extends Controller
     public function index()
     {
         if (Auth::check()) {
-            $perfilId = Perfiles::join('usuarios', 'perfiles.fk_usuario', '=', 'usuarios.idusuario')
+            $perfilId = Perfil::join('usuarios', 'perfiles.fk_usuario', '=', 'usuarios.idusuario')
             ->where('usuarios.idusuario', Auth::id())
             ->select('perfiles.idperfil')
             ->first()->idperfil;
             
-            $retos = DB::table('retos AS rt') ->select(
-                'rt.idretos',
-                'rt.nomreto',
-                'rt.puntos',
-                'rt.descripcion',
-                'ct.nomcategoria',
-                'pt.nombre',
-                'pt.url',
-                'pt.tipo',
-                DB::raw('MAX(IF(j.fk_resultado=1 AND j.fk_perfil=' . $perfilId . ', 1, 0)) AS resuelto')
-            )
-            ->join('niveles_reto AS lvl', 'rt.fk_nivel', '=', 'lvl.idnivel_reto')
-            ->join('categorias AS ct', 'rt.fk_categoria', '=', 'ct.idcategoria')
-            ->join('estados_reto AS et', 'rt.fk_estado_reto', '=', 'et.idestado_reto')
-            ->leftjoin('archivos_reto AS pt', 'rt.fk_archivo', '=', 'pt.idarchivo')
-            ->leftJoin('juegos AS j', 'rt.idretos', '=', 'j.fk_retos')
-            ->leftJoin('perfiles AS pf', 'j.fk_perfil', '=', 'pf.idperfil')
-            ->where('et.estadoreto', '=', 'Activo')
-            ->groupBy('rt.idretos', 'rt.nomreto', 'rt.puntos', 'rt.descripcion', 'ct.nomcategoria', 'pt.nombre', 'pt.url', 'pt.tipo')
-            ->get();
+            
+
+            $retos = DB::table('retos AS rt')
+                ->select(
+                    'rt.idretos',
+                    'rt.nomreto',
+                    'rt.puntos',
+                    'rt.descripcion',
+                    'ct.nomcategoria',
+                    'pt.nombre',
+                    'pt.url',
+                    'pt.tipo',
+                    DB::raw('IF(MAX(sp.idsolve IS NOT NULL), 1, 0) AS resuelto')
+                )
+                ->join('niveles_reto AS lvl', 'rt.fk_nivel', '=', 'lvl.idnivel_reto')
+                ->join('categorias AS ct', 'rt.fk_categoria', '=', 'ct.idcategoria')
+                ->join('estados_reto AS et', 'rt.fk_estado_reto', '=', 'et.idestado_reto')
+                ->leftJoin('archivos_reto AS pt', 'rt.fk_archivo', '=', 'pt.idarchivo')
+                
+                // Submissions del usuario actual
+                ->leftJoin('submissions_personas AS sb', function ($join) use ($perfilId) {
+                    $join->on('sb.fk_idretos', '=', 'rt.idretos')
+                        ->where('sb.fk_idregistros', '=', $perfilId);
+                })
+
+                // Solve relacionado al intento
+                ->leftJoin('solve_personas AS sp', 'sp.fk_idsubmissions_personas', '=', 'sb.idsubmissions_personas')
+
+                ->where('et.estadoreto', '=', 'Activo')
+
+                ->groupBy(
+                    'rt.idretos',
+                    'rt.nomreto',
+                    'rt.puntos',
+                    'rt.descripcion',
+                    'ct.nomcategoria',
+                    'pt.nombre',
+                    'pt.url',
+                    'pt.tipo'
+                )
+                ->get();
+
 
             $retosPorCategoria = $retos->groupBy('nomcategoria'); 
             return view('retos', compact('retosPorCategoria'));
     
         } else {
-            $retos = Retos::all();
+            $retos = Reto::all();
             $retosPorCategoria = $retos->groupBy('nomcategoria');
             return view('retos', compact('retosPorCategoria'));
         }
         
     }
 
-    public function detalles($id)
+    /*public function detalles($id)
     {
         $detalle = Retos::find($id);
 
@@ -124,5 +146,5 @@ class RetosController extends Controller
         );
     
         return response()->json(['success' => true, 'message' => 'Pista registrada correctamente.']);
-    }
+    }*/
 }
