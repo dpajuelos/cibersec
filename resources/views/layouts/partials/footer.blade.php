@@ -104,7 +104,7 @@
                 <!-- Stats rápidas -->
                 <div class="bg-blue-900/20 rounded-lg p-4 border border-blue-500/20">
                     <div class="text-center">
-                        <div class="text-cyan-400 font-bold text-lg">{{ \App\Models\User::count() }}+</div>
+                        <div class="text-cyan-400 font-bold text-lg">{{ \App\Models\Usuario::count() }}+</div>
                         <div class="text-gray-400 text-sm">Hackers Éticos</div>
                     </div>
                 </div>

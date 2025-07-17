@@ -3,14 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Usuario extends Model
+
+class Usuario extends Authenticatable
 {
     use HasFactory;
 
     protected $table = 'usuarios';
-    protected $primaryKey = 'id_usuario';
+    protected $primaryKey = 'idusuario';
     public $timestamps = false;
 
     protected $fillable = [
@@ -25,4 +26,14 @@ class Usuario extends Model
     {
         return $this->hasMany(Perfil::class, 'fk_usuario');
     }
+
+    public function isActive()
+    {
+        return true; // o alguna lógica como: return $this->estado === 'activo';
+    }
+    public function getAuthIdentifierName()
+    {
+        return 'idusuario'; 
+    }
+    
 }
