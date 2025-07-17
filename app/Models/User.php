@@ -10,6 +10,7 @@ class User extends Authenticatable
 {
     use HasFactory;
     use HasProfilePhoto;
+
     protected $table = 'usuarios';
     protected $primaryKey = 'idusuario';
     public $timestamps = false;
@@ -19,6 +20,7 @@ class User extends Authenticatable
         'email',
         'password',
         'fec_registro',
+        'fk_idestados',
         'profile_photo_path'
     ];
 
@@ -29,11 +31,11 @@ class User extends Authenticatable
 
     public function isActive()
     {
-        return true; // o alguna lógica como: return $this->estado === 'activo';
+        return true;  // o alguna lógica como: return $this->estado === 'activo';
     }
+
     public function getAuthIdentifierName()
     {
-        return 'idusuario'; 
+        return 'idusuario';
     }
-    
 }

@@ -1,40 +1,40 @@
 <?php
-use App\Http\Controllers\RankingController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UsuariosController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\RetosController;
-use App\Http\Controllers\JuegoController;
-use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\JuegoController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\RankingController;
+use App\Http\Controllers\RetosController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\UsuariosController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
 Route::get('/usuario', function () {
-    return view('usuario'); 
+    return view('usuario');
 })->name('usuario');
 
 Route::get('/register', function () {
     return view('auth.register');
 })->name('register');
 
+Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
+
 Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
+
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 
 Route::get('/profile', function () {
     return view('profile.show');
 })->name('profile');
 
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-
-Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
 
 Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
 
@@ -42,12 +42,9 @@ Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])
 
 Route::get('/universidades', [RegisterController::class, 'universidades']);
 
-
-
 Route::get('/detalles/{id}', [RetosController::class, 'detalles']);
 
 Route::middleware(['auth'])->group(function () {
-
     Route::get('/resueltos/{id}', [RetosController::class, 'obtenerResueltos']);
 
     Route::get('/retos/{idretos}/pistas', [RetosController::class, 'obtenerPistas']);
@@ -95,17 +92,16 @@ Route::post('/perfil/puntos-por-fecha', [UserController::class, 'obtenerPuntosPo
 
 // Rutas de administración
 Route::prefix('admin')->middleware(['auth', 'can:admin'])->name('admin.')->group(function () {
-    
     // Dashboard principal
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard.main');
-    
+
     // Gestión de usuarios
     Route::get('/users', [AdminController::class, 'users'])->name('users');
     Route::get('/users/{id}', [AdminController::class, 'showUser'])->name('users.show');
     Route::put('/users/{id}/permissions', [AdminController::class, 'assignPermissions'])->name('users.permissions');
     Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');
-    
+
     // Gestión de retos
     Route::get('/challenges', [AdminController::class, 'challenges'])->name('challenges');
     Route::get('/challenges/create', [AdminController::class, 'createChallenge'])->name('challenges.create');
@@ -113,32 +109,32 @@ Route::prefix('admin')->middleware(['auth', 'can:admin'])->name('admin.')->group
     Route::get('/challenges/{id}/edit', [AdminController::class, 'editChallenge'])->name('challenges.edit');
     Route::put('/challenges/{id}', [AdminController::class, 'updateChallenge'])->name('challenges.update');
     Route::delete('/challenges/{id}', [AdminController::class, 'deleteChallenge'])->name('challenges.delete');
-    
+
     // Gestión de categorías
     Route::get('/categories', [AdminController::class, 'categories'])->name('categories');
     Route::post('/categories', [AdminController::class, 'storeCategory'])->name('categories.store');
     Route::put('/categories/{id}', [AdminController::class, 'updateCategory'])->name('categories.update');
     Route::delete('/categories/{id}', [AdminController::class, 'deleteCategory'])->name('categories.delete');
-    
+
     // Sistema de notificaciones
     Route::get('/notifications', [AdminController::class, 'notifications'])->name('notifications');
     Route::get('/notifications/create', [AdminController::class, 'createNotification'])->name('notifications.create');
     Route::post('/notifications', [AdminController::class, 'storeNotification'])->name('notifications.store');
     Route::delete('/notifications/{id}', [AdminController::class, 'deleteNotification'])->name('notifications.delete');
-    
+
     // Configuración del sistema
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
     Route::put('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');
-    
+
     // Logs y monitoreo
     Route::get('/logs', [AdminController::class, 'logs'])->name('logs');
     Route::get('/system-status', [AdminController::class, 'systemStatus'])->name('system.status');
-    
+
     // Analytics y estadísticas
     Route::get('/analytics', [AdminController::class, 'analytics'])->name('analytics');
     Route::get('/analytics/users', [AdminController::class, 'userAnalytics'])->name('analytics.users');
     Route::get('/analytics/challenges', [AdminController::class, 'challengeAnalytics'])->name('analytics.challenges');
-    
+
     // APIs para datos en tiempo real
     Route::get('/api/stats', [AdminController::class, 'getStats'])->name('api.stats');
     Route::get('/api/activity', [AdminController::class, 'getActivity'])->name('api.activity');
@@ -147,7 +143,3 @@ Route::prefix('admin')->middleware(['auth', 'can:admin'])->name('admin.')->group
 
 // Mantener la ruta original para compatibilidad
 Route::get('/admin', [AdminController::class, 'dashboard'])->middleware('can:admin')->name('admin.dashboard.legacy');
-
-
-
-

@@ -29,7 +29,7 @@
                         <x-label for="universidad" value="{{ __('Universidad') }}" class="text-white" />
                         <select
                             class="block mt-1 w-full bg-black border-2 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-white placeholder-gray-400"
-                            name="universidad" id="universidad" required autocomplete="universidad">>
+                            name="universidad" id="universidad" required autocomplete="universidad">
                             <option value="" disabled selected>Seleccionar universidad</option>
                         </select>
                     </div>
@@ -85,7 +85,7 @@
                             <option value="" disabled selected>Seleccionar género</option>
                             <option value="Masculino">Masculino</option>
                             <option value="Femenino">Femenino</option>
-                            <option value="Femenino">Prefiero no decirlo</option>
+                            <option value="Otro">Prefiero no decirlo</option>
                         </select>
                     </div>
 
@@ -96,7 +96,8 @@
                             class="block mt-1 w-full bg-black border-2  text-white placeholder-gray-400"
                             type="email" name="email" required autocomplete="email" autocomplete="off"
                             placeholder="Ingrese su email" />
-                        <div class="invalid-feedback text-red-600 hidden">El email ya está registrado o no es del formato @domain.edu.pe</div>
+                        <div class="invalid-feedback text-red-600 hidden">El email ya está registrado o no es del
+                            formato @domain.edu.pe</div>
                     </div>
 
                     <div>
@@ -105,7 +106,8 @@
                             class="block mt-1 w-full bg-black border-2  text-white placeholder-gray-400"
                             type="password" name="password" required autocomplete="new-password"
                             placeholder="Contraseña" />
-                        <div class="invalid-feedback text-red-600 hidden">Formato incorrecto o contraseñas no coinciden</div>
+                        <div class="invalid-feedback text-red-600 hidden">Formato incorrecto o contraseñas no coinciden
+                        </div>
                     </div>
 
                     <div>
@@ -115,35 +117,35 @@
                             class="block mt-1 w-full bg-black border-2  text-white placeholder-gray-400"
                             type="password" name="password_confirmation" required autocomplete="new-password"
                             placeholder="Confirmar contraseña" />
-                        
+
                     </div>
                 </div>
                 @if (Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature())
-                <div class="my-6">
-                    <x-label for="terms" class="text-white">
-                        <div class="flex items-center">
-                            <x-checkbox name="terms" id="terms" required />
+                    <div class="my-6">
+                        <x-label for="terms" class="text-white">
+                            <div class="flex items-center">
+                                <x-checkbox name="terms" id="terms" required />
 
-                            <div class="ms-2 text-white">
-                                {!! __('Estoy de acuerdo con los :terms_of_service y :privacy_policy', [
-                                    'terms_of_service' =>
-                                        '<a target="_blank" href="' .
-                                        route('terms.show') .
-                                        '" class="underline text-blue-500 hover:text-blue-300">' .
-                                        __('términos de servicio') .
-                                        '</a>',
-                                    'privacy_policy' =>
-                                        '<a target="_blank" href="' .
-                                        route('policy.show') .
-                                        '" class="underline text-blue-500 hover:text-blue-300">' .
-                                        __('políticas de privacidad') .
-                                        '</a>',
-                                ]) !!}
+                                <div class="ms-2 text-white">
+                                    {!! __('Estoy de acuerdo con los :terms_of_service y :privacy_policy', [
+                                        'terms_of_service' =>
+                                            '<a target="_blank" href="' .
+                                            route('terms.show') .
+                                            '" class="underline text-blue-500 hover:text-blue-300">' .
+                                            __('términos de servicio') .
+                                            '</a>',
+                                        'privacy_policy' =>
+                                            '<a target="_blank" href="' .
+                                            route('policy.show') .
+                                            '" class="underline text-blue-500 hover:text-blue-300">' .
+                                            __('políticas de privacidad') .
+                                            '</a>',
+                                    ]) !!}
+                                </div>
                             </div>
-                        </div>
-                    </x-label>
-                </div>
-            @endif
+                        </x-label>
+                    </div>
+                @endif
 
 
                 <div class="flex items-center justify-center mt-4 shrink-1">
@@ -192,9 +194,9 @@
                             }
                         } else {
                             alert(
-                                'Ocurrió un error inesperado. Por favor, intenta nuevamente' + 
-                                xhr.responseJSON.message + errors
-                                );
+                                'Ocurrió un error inesperado. Por favor, intenta nuevamente: ' +
+                                (xhr.responseJSON?.message || 'Error desconocido')
+                            );
                         }
                     }
                 });
