@@ -14,10 +14,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/usuario', function () {
-    return view('usuario');
-})->name('usuario');
-
 Route::get('/register', function () {
     return view('auth.register');
 })->name('register');
@@ -56,13 +52,17 @@ Route::get('/retos', [RetosController::class, 'index'])->name('retos');
 
 Route::post('/juegos/{idreto}', [JuegoController::class, 'updateJuego']);
 
+// Rutas para usuarios
 Route::get('/usuario', [UsuariosController::class, 'index'])->name('usuarios');
 
-Route::get('/usuario/buscar', [UsuariosController::class, 'buscarusuario'])->name('usuarios.buscar');
+// Ruta para la búsqueda
+Route::get('/usuarios/buscar', [UsuariosController::class, 'buscar'])->name('usuarios.buscar');
 
-Route::get('/usuario/filtrar', [UsuariosController::class, 'filtrarusuarios'])->name('usuarios.filtrar');
+// Ruta para obtener información detallada del usuario (para el modal)
+Route::get('/usuarios/{usuario}/{nickname}', [UsuariosController::class, 'show'])->name('usuarios.show');
 
-Route::get('/usuario/ordenar', [UsuariosController::class, 'ordenarusuarios'])->name('usuarios.ordenar');
+// Ruta para estadísticas
+Route::get('/usuarios/estadisticas', [UsuariosController::class, 'estadisticas'])->name('usuarios.estadisticas');
 
 Route::get('/categorias', [RankingController::class, 'categorias']);
 

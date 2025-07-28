@@ -103,7 +103,7 @@
                             <i class="fas fa-stopwatch text-green-400 text-2xl mr-3"></i>
                             <div
                                 class="text-4xl font-black text-green-400 group-hover:text-green-300 transition-colors">
-                                48H</div>
+                                36H</div>
                         </div>
                         <div class="text-gray-300 text-sm font-medium">Duración del Challenge</div>
                         <div class="text-xs text-green-400 mt-2 font-medium">

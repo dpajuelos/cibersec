@@ -9,6 +9,8 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.js',
+                'resources/css/usuario/index-usuario.css',
+                'resources/js/usuario/app-usuario.js'
             ],
             refresh: true,
         }),
