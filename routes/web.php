@@ -50,7 +50,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/resueltos/{id}', [RetosController::class, 'obtenerResueltos']);
 
-    Route::get('/retos/{idretos}/pistas', [RetosController::class, 'obtenerPistas']);
+    Route::get('/pistas/{idreto}', [RetosController::class, 'getPistas']);
+
+    Route::post('/pistas/desbloquear', [RetosController::class, 'desbloquearPista']);
+    Route::post('/retos/validar-flag', [RetosController::class, 'validarFlag']);
 });
 
 Route::post('/retos/{idreto}/{idpista}', [RetosController::class, 'registrarPista']);

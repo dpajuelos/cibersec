@@ -423,10 +423,14 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                     @foreach ($retos as $reto)
                                         <div class="challenge-card group cursor-pointer bg-slate-900/60 backdrop-blur-sm rounded-2xl border {{ $colores['border'] }} transition-all duration-500 hover:scale-105 hover:{{ str_replace('shadow-', 'shadow-2xl ', $colores['shadow']) }} hover:border-opacity-80 relative overflow-hidden"
-                                            data-challenge-name="{{ strtolower($reto->nomreto) }}"
+                                            onclick="openModal(this)"
+                                            data-id="{{ $reto->idretos }}"
+                                            data-challenge-name="{{ $reto->nomreto }}"
                                             data-points="{{ $reto->puntos }}"
-                                            data-solved="{{ Auth::check() && $reto->resuelto == 1 ? 'true' : 'false' }}"
-                                            onclick="openModal({{ $reto->idretos }})">
+                                            data-description="{{ $reto->descripcion }}"
+                                            data-url="{{ $reto->url ?? ''}}"
+                                            data-nombre-archivo="{{ $reto->nombre ?? ''}}"
+                                            data-solved="{{ Auth::check() && $reto->resuelto == 1 ? 'true' : 'false' }}">
 
                                             <!-- Status Badge Overlay -->
                                             <div class="absolute top-4 right-4 z-20">
@@ -558,29 +562,62 @@
     </div>
 
     {{-- Modal existente con mejoras menores --}}
-    <div id="modal" class="inset-0 items-center justify-center z-[10000] bg-black/80 backdrop-blur-sm hidden">
+    <div id="modal" class="fixed inset-0 items-center justify-center z-[10000] bg-black/80 backdrop-blur-sm hidden">
         <div
             class="bg-slate-900/95 backdrop-blur-md rounded-3xl shadow-2xl border border-slate-700/50 p-8 max-w-4xl w-full h-auto max-h-[90vh] overflow-auto mx-4">
             <!-- Modal content mantener el existente -->
             <div class="grid grid-cols-2 gap-6 border-b border-slate-700/50 py-6 mb-6">
                 <button
-                    class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold py-3 rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-all duration-300"
-                    onclick="showReto()">Reto</button>
-                <button id="btn-resuelto"
-                    class="border border-purple-500/50 bg-slate-800/50 font-semibold text-white rounded-xl hover:bg-purple-600/20 hover:text-purple-400 transition-all duration-300"
-                    onclick="showResueltos()">Resuelto por: <span id="resuelto-count">0</span></button>
+                    class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold py-3 rounded-xl hover:from-purple-800 hover:to-indigo-800 transition-all duration-300"
+                    onclick="volverAVistaReto()">Reto</button>
+                
+                <button id="btn-resuelto" onclick="showResueltos()"
+                    class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-3 rounded-xl hover:from-indigo-800 hover:to-purple-800 transition-all duration-300">
+                    Resuelto por: <span id="resuelto-count">0</span>
+                </button>
             </div>
+            <!-- Contenedor de Resueltos separado -->
+            <div id="resueltos-view" class="hidden">
+                <h3 class="text-2xl font-bold text-green-400 text-center mb-4">Resuelto por</h3>
+                
+                <div id="resueltos-tabla-container" class="bg-slate-800/60 p-4 rounded-lg text-gray-100 mb-6 space-y-2">
+                    <!-- Aquí va la tabla dinámica -->
+                </div>
+            </div>
+
             <div class="container">
                 <p class="hidden" id="idreto"></p>
                 <h2 id="modal-title" class="text-3xl font-bold mb-4 text-gray-50 text-center"></h2>
                 <p id="modal-points" class="mb-6 text-gray-100 text-center text-lg"></p>
                 <p id="modal-description" class="mb-6 text-gray-100 leading-relaxed"></p>
+            
 
-                <div id="pistas"></div>
-                <div id="pistas-container"></div>
-                <div id="message-container my-6">
+                <div id="pistas-container" class="hidden bg-slate-800/60 p-4 rounded-lg text-gray-100 mb-6 space-y-2">
+                    <h3 class="text-xl font-semibold text-yellow-400 mb-2">Pistas</h3>
+                    <!-- Las pistas se insertan aquí -->
+                </div>
+
+                <div id="enlace-container" class="hidden bg-slate-800/60 p-4 rounded-lg text-gray-100 mb-6 space-y-2">
+                    <h3 class="text-xl font-semibold text-yellow-400 mb-2">Enlace de descarga</h3>
+                    <!-- Las enlaces de descarga se insertan aquí -->
+                </div>
+                
+
+                <!-- Campo para ingresar la flag -->
+                <div class="flex flex-col sm:flex-row items-center gap-4 justify-center mb-6">
+                    <input type="text" id="flag-input" placeholder="CSU{flag}"
+                        class="w-full sm:max-w-2xl px-4 py-3 rounded-lg bg-slate-800 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-slate-400" />
+
+                    <button onclick="enviarFlag()"
+                        class="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300 shadow-md">
+                        Enviar
+                    </button>
+                </div>
+                
+                <!-- Mensajes -->
+                <div id="message-container" class="my-6">
                     <p id="message" class="text-red-300 text-center font-medium"></p>
-                    <p id="result" class="text-orange-300 text-center font-medium"></p>
+                    <p id="result" class="text-green-300 text-center font-medium"></p>
                 </div>
                 <div class="flex justify-center mt-8">
                     <button onclick="closeModal()"
@@ -594,6 +631,8 @@
 
     <!-- JavaScript mejorado -->
     <script>
+        let retoResuelto = false;
+
         let activeFilters = {
             category: 'all',
             difficulty: 'all',
@@ -895,225 +934,169 @@
             false
         @endauth ;
 
-        function showReto() {
-            const idreto = document.getElementById('idreto').innerText;
-            const retoButton = document.querySelector('button[onclick="showReto()"]');
-            const resueltoButton = document.getElementById('btn-resuelto');
-
-            retoButton.classList.add('bg-teal-500', 'text-white', 'font-semibold', 'h-8', 'hover:bg-teal-600');
-            retoButton.classList.remove('border', 'border-teal-500', 'bg-inherit', 'hover:bg-gray-100',
-                'hover:text-teal-500');
-            resueltoButton.classList.remove('bg-teal-500', 'hover:bg-teal-600');
-            resueltoButton.classList.add('border', 'border-teal-500', 'bg-inherit', 'font-semibold', 'text-white',
-                'hover:bg-gray-100', 'hover:text-teal-500');
-
-            fetch(`/detalles/${idreto}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('pistas').innerHTML = '';
-                    document.getElementById('pistas-container').innerHTML = '';
-                    document.getElementById('modal-title').innerText = data.nomreto;
-                    document.getElementById('modal-description').innerText = data.descripcion || 'Sin descripción';
-                    document.getElementById('modal-points').innerText = data.puntos + ' puntos';
-                    document.getElementById('message').innerHTML = '';
-                    document.getElementById('result').innerHTML = '';
-
-                    if (data.url) {
-                        const urlHtml = `
-                    <p class="mt-4 text-blue-500 underline cursor-pointer">
-                        <a href="${data.url}" target="_blank" rel="noopener noreferrer">${data.url}</a>
-                    </p>`;
-                        document.getElementById('modal-description').innerHTML += urlHtml;
-                    }
+        function showReto(element) {
+            const idreto = element.dataset.id;
+            const title = element.dataset.challengeName;
+            const points = element.dataset.points;
+            const description = element.dataset.description;
+            const url = element.dataset.url;
+            const nombreArchivo = element.dataset.nombreArchivo;
+            const solved = element.dataset.solved === 'true';
+            const inputFlag = document.getElementById('flag-input');
+            const botonEnviar = document.querySelector('button[onclick="enviarFlag()"]');
+            retoResuelto = solved;
 
 
-                    if (data.nombre) {
-                        const archivoNombre = data.nombre;
-                        const archivoPath = `store/${archivoNombre}`;
-                        const archivoHtml = `
-                    <div class="flex gap-4 justify-center">
-                        <p class="mt-4 font-semibold text-gray-50">Archivo:</p>
-                        <button id="download-button" class="mt-2 bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">
-                            Descargar
-                        </button>
-                    </div>`;
-                        document.getElementById('pistas-container').innerHTML += archivoHtml;
+            // Insertar datos en el modal
+            document.getElementById('idreto').innerText = idreto;
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-points').innerText = `Puntos: ${points}`;
+            document.getElementById('modal-description').innerText = description;
 
-                        const downloadUrl = `${window.location.origin}/${archivoPath}`;
-                        console.log('Intentando descargar:', downloadUrl);
+            // Mostrar enlace de descarga si existe
+            const enlaceContainer = document.getElementById('enlace-container');
+            if (url && nombreArchivo) {
+                enlaceContainer.classList.remove('hidden');
+                enlaceContainer.innerHTML = `
+                    <h3 class="text-xl font-semibold text-yellow-400 mb-2">Enlace de descarga</h3>
+                    <a href="${url}" download="${nombreArchivo}" class="text-blue-400 underline hover:text-blue-300 transition-all">
+                        Descargar ${nombreArchivo}
+                    </a>
+                `;
+            } else {
+                enlaceContainer.classList.add('hidden');
+                enlaceContainer.innerHTML = '';
+            }
+            if (solved) {
+                inputFlag.disabled = true;
+                inputFlag.placeholder = "Ya resolviste este reto papi...";
 
+                botonEnviar.disabled = true;
+                botonEnviar.textContent = "Resuelto";
+                botonEnviar.classList.remove('bg-green-600', 'hover:bg-green-700');
+                botonEnviar.classList.add('bg-gray-600', 'cursor-not-allowed');
+            } else {
+                inputFlag.disabled = false;
+                inputFlag.placeholder = "CSU{flag}";
 
-                        document.getElementById('pistas-container').addEventListener('click', (event) => {
-                            if (event.target && event.target.id === 'download-button') {
-                                console.log('Botón de descarga clicado');
-
-                                const archivoNombre = data.nombre;
-                                const archivoPath = `store/${archivoNombre}`;
-                                const downloadUrl = `${window.location.origin}/${archivoPath}`;
-                                console.log('Intentando descargar:', downloadUrl);
-
-                                fetch(downloadUrl, {
-                                        method: 'HEAD'
-                                    })
-                                    .then(response => {
-                                        if (!response.ok) {
-                                            throw new Error(
-                                                'El archivo no está disponible en el servidor.');
-                                        }
-                                        const a = document.createElement('a');
-                                        a.href = downloadUrl;
-                                        a.download = archivoNombre;
-                                        document.body.appendChild(a);
-                                        a.click();
-                                        document.body.removeChild(a);
-                                    })
-                                    .catch(error => {
-                                        console.error('Error descargando archivo:', error);
-                                        alert(
-                                            'No se pudo descargar el archivo. Por favor, inténtelo de nuevo.'
-                                        );
-                                    });
-                            }
-                        });
-
-                    }
-
-
-
-
-                    const flagHtml = `
-                <form id="flag-form" method="POST" action=""> 
-                    @csrf
-                    <div class="flex gap-4 mt-4 mb-6 justify-center items-center">
-                        <p class="font-semibold text-gray-50">Flag:</p>
-                        <input type="text" id="flag" name="flag" class="border border-gray-300 rounded p-2 w-full" placeholder="CSU{flag}" autocomplete="off">
-                        <button type="submit" id="submit-flag" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-700">
-                            Enviar
-                        </button>
-                    </div>
-                </form>`;
-                    document.getElementById('pistas-container').innerHTML += flagHtml;
-
-                    document.getElementById('flag-form').addEventListener('submit', function(event) {
-                        event.preventDefault();
-                        const flag = document.getElementById('flag').value;
-
-                        fetch(`/juegos/${idreto}`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                },
-                                body: JSON.stringify({
-                                    flag
-                                })
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                const messageElement = document.getElementById('message');
-                                const resultado = document.getElementById('result');
-
-                                if (data.success) {
-                                    messageElement.textContent = data.message;
-                                    resultado.textContent = data.result;
-                                    getResueltoCount();
-                                } else {
-                                    messageElement.textContent = data.error;
-                                    messageElement.classList.remove('hidden');
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                alert('Ocurrió un error al enviar la bandera.');
-                            });
-                    });
+                botonEnviar.disabled = false;
+                botonEnviar.textContent = "Enviar";
+                botonEnviar.classList.remove('bg-gray-600', 'cursor-not-allowed');
+                botonEnviar.classList.add('bg-green-600', 'hover:bg-green-700');
+            }
+            
+            fetch(`/resueltos/${idreto}`)
+                .then(response => {
+                    if (!response.ok) throw new Error("Error al obtener cantidad de resueltos");
+                    return response.json();
                 })
-                .catch(error => console.error('Error fetching reto data:', error));
+                .then(data => {
+                    document.getElementById('resuelto-count').innerText = data.count ?? 0;
+                })
+                .catch(error => {
+                    console.error(error);
+                    document.getElementById('resuelto-count').innerText = '0';
+                });
+            
 
-            obtenerPistas(idreto);
+            // Limpiar campos previos
+            document.getElementById('flag-input').value = '';
+            document.getElementById('message').innerText = '';
+            document.getElementById('result').innerText = '';
+            
+            
+            
         }
 
 
 
         function showResueltos() {
             const idreto = document.getElementById('idreto').innerText;
-            const retoButton = document.querySelector('button[onclick="showReto()"]');
-            const resueltoButton = document.getElementById('btn-resuelto');
-            resueltoButton.classList.add('bg-teal-500', 'text-white', 'font-semibold', 'h-8', 'hover:bg-teal-600');
-            resueltoButton.classList.remove('border', 'border-teal-500', 'bg-inherit', 'hover:bg-gray-100',
-                'hover:text-teal-500');
-            retoButton.classList.remove('bg-teal-500', 'hover:bg-teal-600');
-            retoButton.classList.add('border', 'border-teal-500', 'bg-inherit', 'font-semibold', 'text-white',
-                'hover:bg-gray-100', 'hover:text-teal-500');
+
+            // Mostrar el contenedor de resueltos y ocultar el contenido del reto
+            document.querySelector('.container').classList.add('hidden');
+            document.getElementById('resueltos-view').classList.remove('hidden');
+
+            const container = document.getElementById('resueltos-tabla-container');
+            container.innerHTML = `<p class="text-gray-400 italic">Cargando...</p>`;
 
             fetch(`/resueltos/${idreto}`)
-                .then(response => response.json())
+                .then(res => {
+                    if (!res.ok) throw new Error("Error al obtener usuarios.");
+                    return res.json();
+                })
                 .then(data => {
-                    const resueltoCount = data.length;
-                    document.getElementById('pistas').innerText = '';
-                    document.getElementById('resuelto-count').innerText = resueltoCount;
-                    document.getElementById('modal-title').innerText = '';
-                    document.getElementById('modal-points').innerText = '';
-                    document.getElementById('modal-description').innerText = '';
-                    document.getElementById('message').innerText = '';
-                    document.getElementById('result').innerText = '';
-                    if (resueltoCount === 0) {
-
-                        document.getElementById('pistas-container').innerHTML = `
-                    <p class="text-white text-center">Aún nadie lo ha resuelto, suerte :)</p>`;
+                    if (!data.data || data.data.length === 0) {
+                        container.innerHTML = `<p class="text-gray-300">Ningún usuario ha resuelto este reto aún.</p>`;
                         return;
                     }
 
-                    let tableHtml = `
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="text-white">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Nickname</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Nombre</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Fecha</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-black divide-y divide-gray-200">`;
+                    // Crear tabla
+                    let tabla = `
+                        <table class="w-full text-left border border-slate-600">
+                            <thead>
+                                <tr class="bg-slate-700 text-gray-100">
+                                    <th class="p-2 border-b border-slate-600">Usuario</th>
+                                    <th class="p-2 border-b border-slate-600">Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
 
-                    data.forEach(row => {
-                        tableHtml += `
-                    <tr class="text-green-400">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm">${row.nickname}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm">${row.nombre}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm">${row.tiempo_formateado}</td>
-                    </tr>`;
+                    data.data.forEach(item => {
+                        tabla += `
+                            <tr class="hover:bg-slate-700 transition">
+                                <td class="p-2 border-b border-slate-600">${item.usuario}</td>
+                                <td class="p-2 border-b border-slate-600">${new Date(item.time).toLocaleString()}</td>
+                            </tr>
+                        `;
                     });
 
-                    tableHtml += `
-                    </tbody>
-                </table>
-                </div>`
-                    document.getElementById('pistas-container').innerHTML = tableHtml;
+                    tabla += `</tbody></table>`;
+                    container.innerHTML = tabla;
                 })
-                .catch(error => console.error('Error fetching data:', error));
+                .catch(err => {
+                    console.error("Error al obtener datos:", err);
+                    container.innerHTML = `<p class="text-red-400">Hubo un error al cargar la información.</p>`;
+                });
         }
 
+        function volverAVistaReto() {
+            // Oculta la vista de resueltos
+            document.getElementById('resueltos-view').classList.add('hidden');
+
+            // Muestra el contenedor principal del reto
+            document.querySelector('.container').classList.remove('hidden');
+        }
+
+
         function closeModal() {
+            console.log('Cerrando modal...');
             document.getElementById('modal').style.display = 'none';
             document.getElementById('message').innerText = '';
             document.getElementById('modal-title').innerText = '';
             document.getElementById('modal-description').innerText = '';
             document.getElementById('pistas-container').innerHTML = '';
-            document.getElementById('pistas').innerHTML = '';
             document.getElementById('resuelto-count').innerText = '0';
             document.getElementById('modal-points').innerHTML = '';
+            location.reload();
+            
         }
 
-        function openModal(idreto) {
-            if (isLoggedIn) {
-                document.getElementById('idreto').innerText = idreto;
-                showReto();
-                getResueltoCount();
-                document.getElementById('modal').style.display = 'flex';
-            } else {
-                showOverlayPanel();
+        function openModal(element) {
+             if (!isLoggedIn) {
+                showOverlayPanel(); // Mostrar login requerido
+                return;
             }
+
+            // Guardamos el elemento para usarlo en showReto
+            showReto(element);
+            cargarPistas();
+            // Lógica extra (por si necesitas hacerlo siempre)
+            getResueltoCount(); // si lo usas para más que solo mostrar '1' o '0'
+
+            // Mostrar el modal
+            document.getElementById('modal').style.display = 'flex';
         }
 
         function getResueltoCount() {
@@ -1128,7 +1111,7 @@
                 .catch(error => console.error('Error fetching data:', error));
         }
 
-        closeModal();
+        
 
         function showOverlayPanel() {
             const overlay = document.createElement('div');
@@ -1187,109 +1170,178 @@
             document.body.appendChild(overlay);
         }
 
-        async function obtenerPistas(idretos) {
-            try {
-                const response = await fetch(`/retos/${idretos}/pistas`);
-                if (!response.ok) {
-                    throw new Error('Error al obtener las pistas');
-                }
-                const pistas = await response.json();
-                mostrarPistas(pistas, idretos);
-            } catch (error) {
-                console.error(error);
-            }
+        function cargarPistas() {
+            const idreto = document.getElementById('idreto').innerText;
+            const pistasContainer = document.getElementById('pistas-container');
+
+            pistasContainer.classList.remove('hidden');
+            pistasContainer.innerHTML = `<p class="text-gray-400 italic">Cargando pistas...</p>`;
+
+            fetch(`/pistas/${idreto}`)
+                .then(res => {
+                    if (!res.ok) throw new Error("Error al obtener pistas.");
+                    return res.json();
+                })
+                .then(data => {
+                    if (!data || data.length === 0) {
+                        pistasContainer.classList.add('hidden');
+                        pistasContainer.innerHTML = '';
+                        return;
+                    }
+
+                    pistasContainer.innerHTML = `<h3 class="text-xl font-semibold text-yellow-400 mb-2">Pistas</h3>`;
+
+                    let totalDescontado = 0;
+
+                    data.forEach(pista => {
+                        if (pista.usada) {
+                            totalDescontado += pista.valor;
+                            pistasContainer.innerHTML += `
+                                <div class="bg-slate-700/60 p-3 rounded text-gray-100 mb-2">
+                                    <p>${pista.contenido}</p>
+                                    <p class="text-sm text-red-300 italic mt-1">-${pista.valor} puntos</p>
+                                </div>
+                            `;
+                        } else {
+                            const botonHTML = retoResuelto
+                                ? `<button disabled class="bg-gray-500 text-white font-semibold px-4 py-2 rounded cursor-not-allowed">Reto Resuelto</button>`
+                                : `<button onclick="desbloquearPista(${pista.id}, this)" 
+                                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded">
+                                    Desbloquear
+                                </button>`;
+
+                            pistasContainer.innerHTML += `
+                                <div class="bg-slate-700/60 p-3 rounded text-gray-100 flex justify-between items-center mb-2">
+                                    <span>Pista oculta (Valor: ${pista.valor} pts)</span>
+                                    ${botonHTML}
+                                </div>
+                            `;
+
+                        }
+                    });
+
+                    // 🔽 ACTUALIZAR el valor de puntos en el modal
+                    const puntosText = document.getElementById('modal-points').innerText; // "Puntos: 200"
+                    const puntosOriginales = parseInt(puntosText.match(/\d+/)[0]); // Extrae número
+                    const puntosActualizados = Math.max(0, puntosOriginales - totalDescontado);
+
+                    document.getElementById('modal-points').innerText = `Puntos: ${puntosActualizados}`;
+                })
+                .catch(err => {
+                    console.error("Error al obtener pistas:", err);
+                    pistasContainer.classList.add('hidden');
+                    pistasContainer.innerHTML = '';
+                });
         }
 
-        function mostrarPistas(pistas, idreto) {
-            const pistasContainer = document.getElementById('pistas');
-            pistasContainer.innerHTML = '';
-
-            if (!pistas || pistas.length === 0) {
+        function desbloquearPista(idPista, boton) {
+            if (!boton) {
+                console.error("El botón no fue pasado correctamente.");
                 return;
             }
 
-            pistasContainer.innerHTML = '<h3 class="mb-4 text-gray-50 text-center font-semibold">Pistas</h3>';
+            const contenedor = boton.closest('div');
+            if (!contenedor) {
+                console.error("No se encontró el contenedor del botón.");
+                return;
+            }
 
-            let pistaDesbloqueadaEncontrada = false;
+            // Desactivar el botón mientras se hace la solicitud
+            boton.disabled = true;
+            boton.textContent = "Desbloqueando...";
 
-            pistas.forEach((pista, index) => {
-                if (!pistaDesbloqueadaEncontrada) {
-                    const pistaElement = document.createElement('div');
-                    pistaElement.className = 'flex items-center space-x-12 mb-8 justify-center';
-                    pistaElement.setAttribute('data-id', pista.idpistas);
-
-                    if (!pista.fk_reto_pistas) {
-                        pistaElement.innerHTML =
-                            `
-                    <p class="text-gray-50 pista-contenido">Pista: ${index + 1} (Descuento: ${pista.valor} puntos)</p>
-                    <button class='bg-indigo-500 hover:bg-indigo-700 text-gray-50 font-bold py-2 px-4 rounded button-pista' onclick="desbloquearPista('${pista.contenido}', '${pista.idpistas}', '${idreto}')">Desbloquear</button>`;
-                    } else {
-                        pistaElement.innerHTML =
-                            `
-                    <p class="text-red-500 font-bold pista-contenido">${pista.contenido} </p>`;
-
-                        pistaDesbloqueadaEncontrada = true;
-                    }
-
-                    pistasContainer.appendChild(pistaElement);
+            fetch('/pistas/desbloquear', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ idpista: idPista })
+            })
+            .then(async res => {
+                const contentType = res.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    const html = await res.text();
+                    console.error("Respuesta inesperada:", html);
+                    throw new Error("Respuesta no válida");
                 }
+                return res.json();
+            })
+            .then(data => {
+                if (data.success && data.contenido) {
+                    // Limpiar el contenedor
+                    contenedor.innerHTML = '';
+
+                    // Crear un nuevo elemento con el contenido
+                    const pistaElemento = document.createElement('div');
+                    pistaElemento.className = "bg-slate-700/60 p-3 rounded text-gray-100";
+                    pistaElemento.innerHTML = `
+                        <p>${data.contenido}</p>
+                        <p class="text-sm text-red-300 italic mt-1">-${data.valor} puntos</p>
+                    `;
+                    contenedor.appendChild(pistaElemento);
+
+                    // 🔽 Actualizar los puntos en el modal
+                    const puntosText = document.getElementById('modal-points').innerText; // "Puntos: 200"
+                    const puntosActuales = parseInt(puntosText.match(/\d+/)[0]);
+                    const nuevosPuntos = Math.max(0, puntosActuales - data.valor);
+                    document.getElementById('modal-points').innerText = `Puntos: ${nuevosPuntos}`;
+
+                } else {
+                    alert("No se pudo desbloquear la pista.");
+                    boton.disabled = false;
+                    boton.textContent = "Desbloquear";
+                }
+            })
+            .catch(err => {
+                console.error("Error al desbloquear pista:", err);
+                alert("Hubo un problema al desbloquear la pista.");
+                boton.disabled = false;
+                boton.textContent = "Desbloquear";
+            });
+        }
+        function enviarFlag() {
+            const flag = document.getElementById('flag-input').value.trim();
+            const idreto = document.getElementById('idreto').innerText;
+
+            // Limpiar mensajes anteriores
+            document.getElementById('message').innerText = '';
+            document.getElementById('result').innerText = '';
+
+            if (!flag) {
+                document.getElementById('message').innerText = "Por favor, ingresa una flag.";
+                return;
+            }
+
+            fetch('/retos/validar-flag', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                },
+                body: JSON.stringify({ idreto: idreto, flag: flag })
+            })
+            .then(async res => {
+                if (!res.ok) {
+                    const errText = await res.text();
+                    throw new Error(errText);
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('result').innerText = data.mensaje || "¡Flag correcta!";
+                } else {
+                    document.getElementById('message').innerText = data.mensaje || "Flag incorrecta.";
+                }
+            })
+            .catch(err => {
+                console.error("Error al enviar flag:", err);
+                document.getElementById('message').innerText = "Hubo un error al enviar la flag.";
             });
         }
 
-        function desbloquearPista(contenido, idPista, idretos) {
-            const pistaElement = document.querySelector(`[data-id='${idPista}']`);
 
-            if (pistaElement) {
-                const button = pistaElement.querySelector('.button-pista');
-                if (button) {
-                    button.remove();
-                }
-
-                const contenidoRojo = document.createElement('p');
-                contenidoRojo.className = 'text-red-500 font-bold';
-                contenidoRojo.textContent = `Pista desbloqueada: ${contenido}`;
-
-                pistaElement.appendChild(contenidoRojo);
-
-                const todasLasPistas = document.querySelectorAll('[data-id]');
-
-                todasLasPistas.forEach(pista => {
-                    const btn = pista.querySelector('.button-pista');
-                    const pistaContenido = pista.querySelector('.pista-contenido');
-
-                    if (pista !== pistaElement) {
-                        if (btn) {
-                            btn.remove();
-                        }
-                        if (pistaContenido) {
-                            pistaContenido.remove();
-                        }
-                    }
-                });
-                registrarPista(idretos, idPista);
-            }
-        }
-
-        async function registrarPista(idretos, idPista) {
-            try {
-
-                const response = await fetch(`/retos/${idretos}/${idPista}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                });
-
-                const data = await response.json();
-                if (!response.ok) {
-                    throw new Error(data.message || 'Error al registrar la pista');
-                }
-                console.log('Pista registrada:', data.juego);
-            } catch (error) {
-                console.error(error);
-            }
-        }
     </script>
 
     <style>
