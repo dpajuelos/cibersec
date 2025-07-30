@@ -508,7 +508,7 @@
                                                     class="flex items-center justify-between pt-4 border-t border-slate-700/50">
                                                     <div class="flex items-center space-x-2 text-gray-400 text-sm">
                                                         <i class="fas fa-users text-xs"></i>
-                                                        <span>Intentos: ---</span>
+                                                        <span>Intentos:<span class="intentos-count">{{ $reto->intentos }}</span>
                                                     </div>
 
                                                     <div
@@ -573,7 +573,7 @@
                 
                 <button id="btn-resuelto" onclick="showResueltos()"
                     class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-3 rounded-xl hover:from-indigo-800 hover:to-purple-800 transition-all duration-300">
-                    Resuelto por: <span id="resuelto-count">0</span>
+                    Resuelto por: <span id="resuelto-count"></span>
                 </button>
             </div>
             <!-- Contenedor de Resueltos separado -->
@@ -1071,15 +1071,14 @@
 
 
         function closeModal() {
-            console.log('Cerrando modal...');
             document.getElementById('modal').style.display = 'none';
             document.getElementById('message').innerText = '';
             document.getElementById('modal-title').innerText = '';
             document.getElementById('modal-description').innerText = '';
             document.getElementById('pistas-container').innerHTML = '';
-            document.getElementById('resuelto-count').innerText = '0';
+            document.getElementById('resuelto-count').innerText = '';
             document.getElementById('modal-points').innerHTML = '';
-            location.reload();
+            //location.reload();
             
         }
 
@@ -1093,23 +1092,13 @@
             showReto(element);
             cargarPistas();
             // Lógica extra (por si necesitas hacerlo siempre)
-            getResueltoCount(); // si lo usas para más que solo mostrar '1' o '0'
+        
 
             // Mostrar el modal
             document.getElementById('modal').style.display = 'flex';
         }
 
-        function getResueltoCount() {
-            const idreto = document.getElementById('idreto').innerText;
-            fetch(`/resueltos/${idreto}`)
-                .then(response => response.json())
-                .then(data => {
-                    const resueltoCount = data.length;
-                    document.getElementById('resuelto-count').innerText =
-                        resueltoCount;
-                })
-                .catch(error => console.error('Error fetching data:', error));
-        }
+        
 
         
 
@@ -1331,6 +1320,7 @@
             .then(data => {
                 if (data.success) {
                     document.getElementById('result').innerText = data.mensaje || "¡Flag correcta!";
+                    actualizarEstado(idreto);
                 } else {
                     document.getElementById('message').innerText = data.mensaje || "Flag incorrecta.";
                 }
@@ -1339,7 +1329,44 @@
                 console.error("Error al enviar flag:", err);
                 document.getElementById('message').innerText = "Hubo un error al enviar la flag.";
             });
+            actualizarIntentos(idreto);
         }
+
+        function actualizarIntentos(idreto) {
+        fetch(`/intentos/${idreto}`)
+            .then(res => res.json())
+            .then(json => {
+            const c = json.count;
+            document.getElementById('resuelto-count').innerText = c;
+            const card = document.querySelector(`.challenge-card[data-id="${idreto}"]`);
+            if (card) {
+                const span = card.querySelector('.intentos-count');
+                if (span) span.innerText = c;
+            }
+            })
+            .catch(console.error);
+        }
+        function actualizarEstado(idreto) {
+        // Encuentra la tarjeta
+        const card = document.querySelector(`.challenge-card[data-id="${idreto}"]`);
+        if (!card) return;
+
+        // 1) Actualiza el atributo data-solved
+        card.dataset.solved = 'true';
+
+        // 2) Sustituye el badge
+        const badgeWrapper = card.querySelector('.absolute.top-4.right-4');
+        if (badgeWrapper) {
+            badgeWrapper.innerHTML = `
+            <div class="flex items-center space-x-1 bg-green-600/90 border border-green-500/50 rounded-full px-3 py-1 backdrop-blur-sm">
+                <div class="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
+                <span class="text-green-200 text-xs font-bold">RESUELTO</span>
+            </div>
+            `;
+        }
+        }
+
+
 
 
     </script>

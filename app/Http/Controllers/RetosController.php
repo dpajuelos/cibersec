@@ -34,7 +34,8 @@ class RetosController extends Controller
                     'pt.nombre',
                     'pt.url',
                     'pt.tipo',
-                    DB::raw('IF(MAX(sp.idsolve IS NOT NULL), 1, 0) AS resuelto')
+                    DB::raw('IF(MAX(sp.idsolve IS NOT NULL), 1, 0) AS resuelto'),
+                    DB::raw('(SELECT COUNT(*) FROM submissions_personas AS sub WHERE sub.fk_idretos = rt.idretos) AS intentos')
                 )
                 ->join('niveles_reto AS lvl', 'rt.fk_nivel', '=', 'lvl.idnivel_reto')
                 ->join('categorias AS ct', 'rt.fk_categoria', '=', 'ct.idcategoria')
@@ -278,10 +279,12 @@ class RetosController extends Controller
     ]);
     }
 
-
-
-
-
+    public function contarIntentos($idreto) {
+    $count = DB::table('submissions_personas')
+        ->where('fk_idretos', $idreto)
+        ->count();
+    return response()->json(['count' => $count]);
+    }
 
 
 }
