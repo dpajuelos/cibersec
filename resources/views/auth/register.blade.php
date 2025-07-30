@@ -37,7 +37,7 @@
                 <!-- Hex Viewer -->
                 <div class="bg-slate-900/90 backdrop-blur-md border border-cyan-500/30 rounded-lg p-4 w-64 shadow-xl">
                     <div class="text-white text-xs font-bold mb-2 flex items-center">
-                        <i class="fas fa-code mr-2"></i>
+                        <i class="fas fa-terminal mr-2"></i>
                         HEX VIEWER
                     </div>
                     <div class="font-mono text-xs space-y-1 text-gray-300">
@@ -132,7 +132,7 @@
             <x-slot name="logo">
                 <div class="flex flex-col items-center justify-center text-center">
                     <x-authentication-card-logo class="mx-auto" />
-                    <p class="text-lg text-gray-300 mt-4">Forma parte de la élite en ciberseguridad</p>
+                    <p class="text-lg text-gray-300 mt-4">Forma parte de nuestra comunidad</p>
                     <div class="w-24 h-1 bg-gradient-to-r from-cyan-400 to-purple-400 mx-auto mt-2 rounded-full"></div>
                 </div>
             </x-slot>
@@ -141,177 +141,253 @@
                 <form method="POST" action="{{ route('register') }}" id="register" name="register">
                     @csrf
                     <div class="grid lg:grid-cols-2 sm:grid-cols-1 gap-6">
+                        <!-- Nombres -->
                         <div class="">
                             <x-label for="name" value="{{ __('Nombres') }}"
                                 class="text-white font-medium mb-2 flex items-center">
-                                <i class="fas fa-user mr-2 text-white"></i>
                                 {{ __('Nombres') }}
                             </x-label>
-                            <x-input id="name"
-                                class="block mt-1 w-full bg-slate-800/60 border-2 border-cyan-500/30 focus:border-cyan-400 focus:ring-cyan-400/20 text-white placeholder-gray-400 rounded-xl backdrop-blur-sm transition-all duration-300 hover:border-cyan-400/50"
-                                type="text" name="name" required autofocus autocomplete="name" autocomplete="off"
-                                placeholder="Ingrese sus nombres" />
+                            <div class="relative">
+                                <x-input id="name"
+                                    class="block mt-1 w-full bg-slate-800/60 border-2 border-blue-500/30 focus:border-blue-400 focus:ring-blue-400/20 text-white placeholder-gray-400 rounded-xl backdrop-blur-sm transition-all duration-300 hover:border-blue-400/50 pl-12"
+                                    type="text" name="name" required autofocus autocomplete="name"
+                                    autocomplete="off" placeholder="Ingrese sus nombres" />
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4">
+                                    <i class="fas fa-user text-blue-400 text-sm"></i>
+                                </div>
+                            </div>
                         </div>
 
+                        <!-- Usuario -->
                         <div>
                             <x-label for="usuario" value="{{ __('Usuario') }}"
                                 class="text-white font-medium mb-2 flex items-center">
-                                <i class="fas fa-at mr-2 text-white"></i>
                                 {{ __('Usuario') }}
                             </x-label>
-                            <x-input id="usuario"
-                                class="block mt-1 w-full bg-slate-800/60 border-2 border-cyan-500/30 focus:border-cyan-400 focus:ring-cyan-400/20 text-white placeholder-gray-400 rounded-xl backdrop-blur-sm transition-all duration-300 hover:border-cyan-400/50"
-                                type="text" name="usuario" required autofocus autocomplete="usuario"
-                                autocomplete="off" placeholder="Nickname o usuario" />
+                            <div class="relative">
+                                <x-input id="usuario"
+                                    class="block mt-1 w-full bg-slate-800/60 border-2 border-blue-500/30 focus:border-blue-400 focus:ring-blue-400/20 text-white placeholder-gray-400 rounded-xl backdrop-blur-sm transition-all duration-300 hover:border-blue-400/50 pl-12"
+                                    type="text" name="usuario" required autofocus autocomplete="usuario"
+                                    autocomplete="off" placeholder="Nickname o usuario" />
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4">
+                                    <i class="fas fa-user-circle text-indigo-400 text-sm"></i>
+                                </div>
+                            </div>
                             <div class="invalid-feedback text-red-400 hidden items-center mt-2">
                                 <i class="fas fa-exclamation-triangle mr-2"></i>
                                 Este usuario ya existe
                             </div>
                         </div>
 
-                        <div class="lg:col-span-2 sm:cols-span-1">
-                            <x-label for="universidad" value="{{ __('Universidad') }}"
-                                class="text-white font-medium mb-2 flex items-center">
-                                <i class="fas fa-university mr-2 text-white"></i>
-                                {{ __('Universidad') }}
-                            </x-label>
-                            <select
-                                class="block mt-1 w-full bg-slate-800/60 border-2 border-cyan-500/30 focus:border-cyan-400 focus:ring-cyan-400/20 rounded-xl text-white placeholder-gray-400 backdrop-blur-sm transition-all duration-300 hover:border-cyan-400/50"
-                                name="universidad" id="universidad" required autocomplete="universidad">
-                                <option value="" disabled selected>Seleccionar universidad</option>
-                            </select>
-                        </div>
-
+                        <!-- Apellido paterno -->
                         <div>
                             <x-label for="paterno" value="{{ __('Apellido paterno') }}"
                                 class="text-white font-medium mb-2 flex items-center">
-                                <i class="fas fa-id-card mr-2 text-white"></i>
                                 {{ __('Apellido paterno') }}
                             </x-label>
-                            <x-input id="paterno"
-                                class="block mt-1 w-full bg-slate-800/60 border-2 border-cyan-500/30 focus:border-cyan-400 focus:ring-cyan-400/20 text-white placeholder-gray-400 rounded-xl backdrop-blur-sm transition-all duration-300 hover:border-cyan-400/50"
-                                type="text" name="paterno" required autofocus autocomplete="paterno"
-                                autocomplete="off" placeholder="Apellido paterno" />
+                            <div class="relative">
+                                <x-input id="paterno"
+                                    class="block mt-1 w-full bg-slate-800/60 border-2 border-blue-500/30 focus:border-blue-400 focus:ring-blue-400/20 text-white placeholder-gray-400 rounded-xl backdrop-blur-sm transition-all duration-300 hover:border-blue-400/50 pl-12"
+                                    type="text" name="paterno" required autofocus autocomplete="paterno"
+                                    autocomplete="off" placeholder="Apellido paterno" />
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4">
+                                    <i class="fas fa-user-tag text-blue-400 text-sm"></i>
+                                </div>
+                            </div>
                         </div>
 
+                        <!-- Apellido materno -->
                         <div>
                             <x-label for="materno" value="{{ __('Apellido materno') }}"
                                 class="text-white font-medium mb-2 flex items-center">
-                                <i class="fas fa-id-card-alt mr-2 text-white"></i>
                                 {{ __('Apellido materno') }}
                             </x-label>
-                            <x-input id="materno"
-                                class="block mt-1 w-full bg-slate-800/60 border-2 border-cyan-500/30 focus:border-cyan-400 focus:ring-cyan-400/20 text-white placeholder-gray-400 rounded-xl backdrop-blur-sm transition-all duration-300 hover:border-cyan-400/50"
-                                type="text" name="materno" required autofocus autocomplete="materno"
-                                autocomplete="off" placeholder="Apellido materno" />
+                            <div class="relative">
+                                <x-input id="materno"
+                                    class="block mt-1 w-full bg-slate-800/60 border-2 border-blue-500/30 focus:border-blue-400 focus:ring-blue-400/20 text-white placeholder-gray-400 rounded-xl backdrop-blur-sm transition-all duration-300 hover:border-blue-400/50 pl-12"
+                                    type="text" name="materno" required autofocus autocomplete="materno"
+                                    autocomplete="off" placeholder="Apellido materno" />
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4">
+                                    <i class="fas fa-user-tag text-indigo-400 text-sm"></i>
+                                </div>
+                            </div>
                         </div>
 
+                        <!-- DNI -->
                         <div>
                             <x-label for="dni" value="{{ __('DNI') }}"
                                 class="text-white font-medium mb-2 flex items-center">
-                                <i class="fas fa-fingerprint mr-2 text-white"></i>
                                 {{ __('DNI') }}
                             </x-label>
-                            <x-input id="dni"
-                                class="block mt-1 w-full bg-slate-800/60 border-2 border-cyan-500/30 focus:border-cyan-400 focus:ring-cyan-400/20 text-white placeholder-gray-400 rounded-xl backdrop-blur-sm transition-all duration-300 hover:border-cyan-400/50"
-                                type="text" name="dni" required autocomplete="dni" autocomplete="off"
-                                placeholder="Ingrese el número de su DNI" />
+                            <div class="relative">
+                                <x-input id="dni"
+                                    class="block mt-1 w-full bg-slate-800/60 border-2 border-blue-500/30 focus:border-blue-400 focus:ring-blue-400/20 text-white placeholder-gray-400 rounded-xl backdrop-blur-sm transition-all duration-300 hover:border-blue-400/50 pl-12"
+                                    type="text" name="dni" required autocomplete="dni" autocomplete="off"
+                                    placeholder="Ingrese el número de su DNI" />
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4">
+                                    <i class="fas fa-fingerprint text-purple-400 text-sm"></i>
+                                </div>
+                            </div>
                             <div class="invalid-feedback text-red-400 hidden items-center mt-2">
                                 <i class="fas fa-exclamation-triangle mr-2"></i>
                                 DNI inválido o registrado
                             </div>
                         </div>
 
+                        <!-- Fecha de nacimiento -->
                         <div>
                             <x-label for="fecnac" value="{{ __('Fecha de nacimiento') }}"
                                 class="text-white font-medium mb-2 flex items-center">
-                                <i class="fas fa-calendar-alt mr-2 text-white"></i>
                                 {{ __('Fecha de nacimiento') }}
                             </x-label>
-                            <x-input id="fecnac"
-                                class="block mt-1 w-full bg-slate-800/60 border-2 border-cyan-500/30 focus:border-cyan-400 focus:ring-cyan-400/20 text-white placeholder-gray-400 rounded-xl backdrop-blur-sm transition-all duration-300 hover:border-cyan-400/50"
-                                type="date" name="fecnac" required autocomplete="fecnac" autocomplete="off"
-                                placeholder="Ingrese su fecha de nacimiento" />
+                            <div class="relative">
+                                <x-input id="fecnac"
+                                    class="block mt-1 w-full bg-slate-800/80 border-2 border-blue-500/30 focus:border-cyan-400 focus:ring-cyan-400/20 text-white placeholder-gray-400 rounded-xl backdrop-blur-sm transition-all duration-300 hover:border-cyan-400/50 pl-12 pr-12 py-3"
+                                    type="date" name="fecnac" required autocomplete="fecnac" />
+
+                                <!-- Icono izquierdo -->
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                                    <i class="fas fa-calendar-alt text-cyan-400 text-sm"></i>
+                                </div>
+
+                                <!-- Icono derecho para indicar que es clickeable -->
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                                    <i class="fas fa-chevron-down text-cyan-400/60 text-xs"></i>
+                                </div>
+                            </div>
                             <div class="invalid-feedback text-red-400 hidden items-center mt-2">
                                 <i class="fas fa-exclamation-triangle mr-2"></i>
                                 Ingrese una fecha válida
                             </div>
                         </div>
 
+                        <!-- Celular -->
                         <div>
                             <x-label for="celular" value="{{ __('Celular') }}"
                                 class="text-white font-medium mb-2 flex items-center">
-                                <i class="fas fa-mobile-alt mr-2 text-white"></i>
                                 {{ __('Celular') }}
                             </x-label>
-                            <x-input id="celular"
-                                class="block mt-1 w-full bg-slate-800/60 border-2 border-cyan-500/30 focus:border-cyan-400 focus:ring-cyan-400/20 text-white placeholder-gray-400 rounded-xl backdrop-blur-sm transition-all duration-300 hover:border-cyan-400/50"
-                                type="text" name="celular" required autocomplete="celular" autocomplete="off"
-                                placeholder="Ingrese su celular" />
+                            <div class="relative">
+                                <x-input id="celular"
+                                    class="block mt-1 w-full bg-slate-800/60 border-2 border-blue-500/30 focus:border-blue-400 focus:ring-blue-400/20 text-white placeholder-gray-400 rounded-xl backdrop-blur-sm transition-all duration-300 hover:border-blue-400/50 pl-12"
+                                    type="text" name="celular" required autocomplete="celular" autocomplete="off"
+                                    placeholder="Ingrese su celular" />
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4">
+                                    <i class="fas fa-mobile-alt text-blue-400 text-sm"></i>
+                                </div>
+                            </div>
                             <div class="invalid-feedback text-red-400 hidden items-center mt-2">
                                 <i class="fas fa-exclamation-triangle mr-2"></i>
                                 Ingrese un número válido
                             </div>
                         </div>
 
+                        <!-- Género -->
                         <div>
                             <x-label for="genero" value="{{ __('Género') }}"
                                 class="text-white font-medium mb-2 flex items-center">
-                                <i class="fas fa-venus-mars mr-2 text-white"></i>
                                 {{ __('Género') }}
                             </x-label>
-                            <select
-                                class="block mt-1 w-full bg-slate-800/60 border-2 border-cyan-500/30 focus:border-cyan-400 focus:ring-cyan-400/20 rounded-xl text-white placeholder-gray-400 backdrop-blur-sm transition-all duration-300 hover:border-cyan-400/50"
-                                name="genero" id="genero" required autocomplete="genero">
-                                <option value="" disabled selected>Seleccionar género</option>
-                                <option value="Masculino">Masculino</option>
-                                <option value="Femenino">Femenino</option>
-                                <option value="Otro">Prefiero no decirlo</option>
-                            </select>
+                            <div class="relative">
+                                <select
+                                    class="custom-select block mt-1 w-full bg-slate-800/80 border-2 border-blue-500/30 focus:border-cyan-400 focus:ring-cyan-400/20 rounded-xl text-white backdrop-blur-sm transition-all duration-300 hover:border-cyan-400/50 pl-12 pr-12 py-3 appearance-none cursor-pointer"
+                                    name="genero" id="genero" required autocomplete="genero">
+                                    <option value="" disabled selected class="bg-slate-800 text-gray-400">
+                                        Seleccionar género
+                                    </option>
+                                    <option value="Masculino" class="bg-slate-800 text-white hover:bg-cyan-600">
+                                        Masculino
+                                    </option>
+                                    <option value="Femenino" class="bg-slate-800 text-white hover:bg-cyan-600">
+                                        Femenino
+                                    </option>
+                                    <option value="Otro" class="bg-slate-800 text-white hover:bg-cyan-600">Prefiero
+                                        no
+                                        decirlo</option>
+                                </select>
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                                    <i class="fas fa-user-friends text-indigo-400 text-sm"></i>
+                                </div>
+                            </div>
                         </div>
 
+                        <!-- Universidad -->
+                        <div class="lg:col-span-2 sm:cols-span-1">
+                            <x-label for="universidad" value="{{ __('Universidad') }}"
+                                class="text-white font-medium mb-2 flex items-center">
+                                {{ __('Universidad') }}
+                            </x-label>
+                            <div class="relative">
+                                <select
+                                    class="custom-select block mt-1 w-full bg-slate-800/80 border-2 border-blue-500/30 focus:border-cyan-400 focus:ring-cyan-400/20 rounded-xl text-white backdrop-blur-sm transition-all duration-300 hover:border-cyan-400/50 pl-12 pr-12 py-3 appearance-none cursor-pointer"
+                                    name="universidad" id="universidad" required autocomplete="universidad">
+                                    <option value="" disabled selected class="bg-slate-800 text-gray-400">
+                                        Seleccionar
+                                        universidad</option>
+                                </select>
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                                    <i class="fas fa-graduation-cap text-cyan-400 text-sm"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
                         <div class="lg:col-span-2 sm:cols-span-1">
                             <x-label for="email" value="{{ __('Email') }}"
                                 class="text-white font-medium mb-2 flex items-center">
-                                <i class="fas fa-envelope mr-2 text-white"></i>
                                 {{ __('Email') }}
                             </x-label>
-                            <x-input id="email"
-                                class="block mt-1 w-full bg-slate-800/60 border-2 border-cyan-500/30 focus:border-cyan-400 focus:ring-cyan-400/20 text-white placeholder-gray-400 rounded-xl backdrop-blur-sm transition-all duration-300 hover:border-cyan-400/50"
-                                type="email" name="email" required autocomplete="email" autocomplete="off"
-                                placeholder="Ingrese su email" />
+                            <div class="relative">
+                                <x-input id="email"
+                                    class="block mt-1 w-full bg-slate-800/60 border-2 border-blue-500/30 focus:border-blue-400 focus:ring-blue-400/20 text-white placeholder-gray-400 rounded-xl backdrop-blur-sm transition-all duration-300 hover:border-blue-400/50 pl-12"
+                                    type="email" name="email" required autocomplete="email" autocomplete="off"
+                                    placeholder="usuario@universidad.edu.pe" />
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4">
+                                    <i class="fas fa-at text-blue-400 text-sm"></i>
+                                </div>
+                            </div>
                             <div class="invalid-feedback text-red-400 hidden items-center mt-2">
                                 <i class="fas fa-exclamation-triangle mr-2"></i>
                                 El email ya está registrado o no es del formato @domain.edu.pe
                             </div>
                         </div>
 
+                        <!-- Contraseña -->
                         <div>
                             <x-label for="password" value="{{ __('Contraseña') }}"
                                 class="text-white font-medium mb-2 flex items-center">
-                                <i class="fas fa-lock mr-2 text-white"></i>
                                 {{ __('Contraseña') }}
                             </x-label>
-                            <x-input id="password"
-                                class="block mt-1 w-full bg-slate-800/60 border-2 border-cyan-500/30 focus:border-cyan-400 focus:ring-cyan-400/20 text-white placeholder-gray-400 rounded-xl backdrop-blur-sm transition-all duration-300 hover:border-cyan-400/50"
-                                type="password" name="password" required autocomplete="new-password"
-                                placeholder="Contraseña" />
+                            <div class="relative">
+                                <x-input id="password"
+                                    class="block mt-1 w-full bg-slate-800/60 border-2 border-blue-500/30 focus:border-blue-400 focus:ring-blue-400/20 text-white placeholder-gray-400 rounded-xl backdrop-blur-sm transition-all duration-300 hover:border-blue-400/50 pl-12"
+                                    type="password" name="password" required autocomplete="new-password"
+                                    placeholder="Ingrese su contraseña segura" />
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4">
+                                    <i class="fas fa-key text-indigo-400 text-sm"></i>
+                                </div>
+                            </div>
                             <div class="invalid-feedback text-red-400 hidden items-center mt-2">
                                 <i class="fas fa-exclamation-triangle mr-2"></i>
                                 Formato incorrecto o contraseñas no coinciden
                             </div>
                         </div>
 
+                        <!-- Repetir contraseña -->
                         <div>
                             <x-label for="password_confirmation" value="{{ __('Repetir contraseña') }}"
                                 class="text-white font-medium mb-2 flex items-center">
-                                <i class="fas fa-key mr-2 text-white"></i>
                                 {{ __('Repetir contraseña') }}
                             </x-label>
-                            <x-input id="password_confirmation"
-                                class="block mt-1 w-full bg-slate-800/60 border-2 border-cyan-500/30 focus:border-cyan-400 focus:ring-cyan-400/20 text-white placeholder-gray-400 rounded-xl backdrop-blur-sm transition-all duration-300 hover:border-cyan-400/50"
-                                type="password" name="password_confirmation" required autocomplete="new-password"
-                                placeholder="Confirmar contraseña" />
+                            <div class="relative">
+                                <x-input id="password_confirmation"
+                                    class="block mt-1 w-full bg-slate-800/60 border-2 border-blue-500/30 focus:border-blue-400 focus:ring-blue-400/20 text-white placeholder-gray-400 rounded-xl backdrop-blur-sm transition-all duration-300 hover:border-blue-400/50 pl-12"
+                                    type="password" name="password_confirmation" required autocomplete="new-password"
+                                    placeholder="Confirmar contraseña" />
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4">
+                                    <i class="fas fa-lock text-purple-400 text-sm"></i>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -321,7 +397,7 @@
                             <x-label for="terms" class="text-white">
                                 <div class="flex items-center">
                                     <x-checkbox name="terms" id="terms" required
-                                        class="border-cyan-400 text-white focus:ring-cyan-400/20" />
+                                        class="border-cyan-400 text-black focus:ring-cyan-400/20" />
 
                                     <div class="ms-2 text-gray-200">
                                         {!! __('Estoy de acuerdo con los :terms_of_service y :privacy_policy', [
@@ -382,19 +458,59 @@
     </div>
 
     <script>
+        // Script existente para cargar universidades
         fetch(`/universidades`)
             .then(response => response.json())
             .then(data => {
                 const categorySelect = document.getElementById('universidad');
-                categorySelect.innerHTML = `<option value="" disabled selected>Seleccionar universidad</option>`;
+                categorySelect.innerHTML =
+                    `<option value="" disabled selected class="bg-slate-800 text-gray-400">Seleccionar universidad</option>`;
                 data.forEach(universidad => {
                     const option = document.createElement('option');
                     option.value = universidad.iduniversidad;
                     option.text = universidad.nomuniversidad;
+                    option.className = 'bg-slate-800 text-white hover:bg-cyan-600';
                     categorySelect.appendChild(option);
                 });
             })
             .catch(error => console.error('Error al cargar las universidades', error));
+
+        // Efectos adicionales para los selects
+        document.addEventListener('DOMContentLoaded', function() {
+            const selects = document.querySelectorAll('select');
+
+            selects.forEach(select => {
+                select.addEventListener('focus', function() {
+                    this.classList.add('ring-2', 'ring-cyan-400/20');
+                });
+
+                select.addEventListener('blur', function() {
+                    this.classList.remove('ring-2', 'ring-cyan-400/20');
+                });
+
+                select.addEventListener('change', function() {
+                    if (this.value) {
+                        this.classList.add('text-cyan-100');
+                        this.classList.remove('text-gray-400');
+                    }
+                });
+            });
+
+            // Efecto para el input de fecha
+            const dateInput = document.getElementById('fecnac');
+            if (dateInput) {
+                dateInput.addEventListener('focus', function() {
+                    this.style.borderColor = '#06b6d4';
+                    this.style.boxShadow = '0 0 0 3px rgba(6, 182, 212, 0.1)';
+                });
+
+                dateInput.addEventListener('blur', function() {
+                    this.style.borderColor = '#3b82f6';
+                    this.style.boxShadow = 'none';
+                });
+            }
+        });
+
         $(document).ready(function() {
             $('#register').on('submit', function(e) {
                 e.preventDefault();

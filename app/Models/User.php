@@ -25,9 +25,14 @@ class User extends Authenticatable
         'profile_photo_path'
     ];
 
-    public function perfiles()
+    public function roles()
     {
-        return $this->hasMany(Perfil::class, 'fk_usuario');
+        return $this->belongsToMany(Rol::class, 'usuarios_has_roles', 'usuarios_idusuario', 'roles_idroles');
+    }
+
+    public function perfil()
+    {
+        return $this->hasOne(Perfil::class, 'fk_usuario');
     }
 
     public function isActive()

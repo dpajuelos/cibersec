@@ -25,7 +25,7 @@ class AdminController extends Controller
     {
         $stats = [
             'total_users' => User::count(),
-            'total_challenges' => Challenge::count() ?? 45,  // fallback si no existe el modelo
+            'total_challenges' => Challenge::count() ?? 45,
             'submissions_today' => Submission::whereDate('created_at', today())->count() ?? 127,
             'system_uptime' => '99.9%',
             'active_users' => User::where('last_activity', '>=', now()->subMinutes(30))->count(),
@@ -35,7 +35,7 @@ class AdminController extends Controller
         $recent_activity = $this->getRecentActivity();
         $system_status = $this->getSystemStatus();
 
-        return view('admin.dashboard', compact('stats', 'recent_activity', 'system_status'));
+        return view('admin.main', compact('stats', 'recent_activity', 'system_status'));
     }
 
     /**

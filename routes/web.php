@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
 Route::get('/register', function () {
     return view('auth.register');
@@ -20,11 +20,8 @@ Route::get('/register', function () {
 
 Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
 
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
-
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 
 Route::get('/profile', function () {
     return view('profile.show');
@@ -79,6 +76,10 @@ Route::get('/ranking', [RankingController::class, 'index'])->name('ranking');
 Route::get('/rankings/top5', [RankingController::class, 'getTop5']);
 
 Route::get('/dashboard', function () {
+    if (!Auth::check()) {
+        return redirect('/login');
+    }
+
     return view('welcome');
 })->name('dashboard');
 
@@ -91,9 +92,12 @@ Route::post('/perfil/porcentaje-acierto', [UserController::class, 'obtenerPorcen
 Route::post('/perfil/puntos-por-fecha', [UserController::class, 'obtenerPuntosPorFecha']);
 
 // Rutas de administración
-Route::prefix('admin')->middleware(['auth', 'can:admin'])->name('admin.')->group(function () {
+Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(function () {
     // Dashboard principal
-    Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/', function () {
+        return view('admin.main');
+    })->name('dashboard');
+
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard.main');
 
     // Gestión de usuarios
@@ -140,6 +144,3 @@ Route::prefix('admin')->middleware(['auth', 'can:admin'])->name('admin.')->group
     Route::get('/api/activity', [AdminController::class, 'getActivity'])->name('api.activity');
     Route::get('/api/system-health', [AdminController::class, 'getSystemHealth'])->name('api.system-health');
 });
-
-// Mantener la ruta original para compatibilidad
-Route::get('/admin', [AdminController::class, 'dashboard'])->middleware('can:admin')->name('admin.dashboard.legacy');
