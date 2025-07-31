@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Providers;
-use Livewire\Livewire;
+
 use App\Http\Livewire\ManageSessions;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,6 +22,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-      
+        Blade::component('layouts.admin', 'admin-layout');
     }
 }

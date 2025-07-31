@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Pista extends Model
@@ -20,6 +21,13 @@ class Pista extends Model
     // Relación con Retos (N:M)
     public function retos()
     {
-        return $this->belongsToMany(Reto::class, 'retos_has_pistas', 'idpistas', 'idretos');
+        return $this->belongsToMany(
+            Reto::class,
+            'retos_has_pistas',
+            'fk_idpistas',
+            'fk_idretos',
+            'idpistas',
+            'idretos'
+        );
     }
 }

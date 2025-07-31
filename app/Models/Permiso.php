@@ -9,7 +9,7 @@ class Permiso extends Model
 {
     use HasFactory;
 
-    protected $table = 'permisos';
+    protected $table = 'permiisos';
     protected $primaryKey = 'idpermisos';
     protected $fillable = ['namepermiso'];
     public $timestamps = 'false';

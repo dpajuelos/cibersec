@@ -18,7 +18,7 @@
             </div>
         </div>
 
-        <div class="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+        <div class="relative pt-16 pb-20 px-4 sm:px-6 lg:px-8">
             <div class="max-w-7xl mx-auto text-center">
                 <!-- Main Title with better hierarchy -->
                 <div class="mb-12">
@@ -46,7 +46,7 @@
                 </div>
 
                 <!-- Enhanced Subtitle with visual separator -->
-                <div class="mb-12">
+                <div class="mb-6">
                     <div class="w-24 h-1 bg-gradient-to-r from-cyan-400 to-purple-400 mx-auto mb-6 rounded-full"></div>
                     <p class="text-xl md:text-2xl text-gray-300 mb-6 max-w-4xl mx-auto leading-relaxed">
                         ¿Tienes lo necesario para unirte a la élite de
@@ -63,7 +63,7 @@
                 </div>
 
                 <!-- Enhanced Stats Counter with micro-interactions -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 max-w-4xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 max-w-4xl mx-auto">
                     <div
                         class="group bg-blue-900/40 backdrop-blur-md rounded-xl p-6 border border-blue-500/30 hover:border-cyan-400/50 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-cyan-500/20">
                         <div class="flex items-center justify-center mb-3">
@@ -103,7 +103,7 @@
                             <i class="fas fa-stopwatch text-green-400 text-2xl mr-3"></i>
                             <div
                                 class="text-4xl font-black text-green-400 group-hover:text-green-300 transition-colors">
-                                72H</div>
+                                36H</div>
                         </div>
                         <div class="text-gray-300 text-sm font-medium">Duración del Challenge</div>
                         <div class="text-xs text-green-400 mt-2 font-medium">
@@ -113,8 +113,8 @@
                     </div>
                 </div>
 
-                <!-- Enhanced CTA Buttons with better accessibility -->
-                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+                <!-- Enhanced CTA Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
                     @auth
                         <a href="{{ route('retos') }}"
                             class="group relative px-10 py-5 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold rounded-xl hover:from-cyan-700 hover:to-blue-700 transition-all duration-300 shadow-2xl hover:shadow-cyan-500/30 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-cyan-500/50"
@@ -158,7 +158,7 @@
             </div>
         </div>
 
-        <!-- Enhanced scroll indicator -->
+        <!-- Scroll indicator -->
         <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2">
             <div class="flex flex-col items-center animate-bounce">
                 <span class="text-cyan-400 text-xs mb-2 font-medium">Explorar categorías</span>
@@ -167,10 +167,10 @@
         </div>
     </div>
 
-    <!-- Challenge Categories Section with improved UX -->
-    <div class="bg-gradient-to-b from-slate-800 to-slate-900 py-24">
+    <!-- Challenge Categories -->
+    <div class="bg-gradient-to-b from-slate-800 to-slate-900 py-14">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Enhanced Section Header -->
+            <!-- Section Header -->
             <div class="text-center mb-20">
                 <div
                     class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-cyan-600/10 to-purple-600/10 border border-cyan-400/20 rounded-full text-cyan-400 text-sm font-medium mb-6">
@@ -188,7 +188,7 @@
                 </p>
             </div>
 
-            <!-- Enhanced Categories Grid with better visual hierarchy -->
+            <!-- Enhanced Categories-->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Cryptography -->
                 <div

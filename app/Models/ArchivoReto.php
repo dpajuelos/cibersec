@@ -11,7 +11,7 @@ class ArchivoReto extends Model
 
     protected $table = 'archivos_reto';
     protected $primaryKey = 'idarchivo';
-    public $timestamps = 'false';
+    public $timestamps = false;
 
     protected $fillable = [
         'nombre',
@@ -20,5 +20,14 @@ class ArchivoReto extends Model
         'fk_retos'
     ];
 
-    
+    public function getUrlCompletatAttribute()
+    {
+        return asset($this->url);
+    }
+
+    // Relación con Reto
+    public function reto()
+    {
+        return $this->belongsTo(Reto::class, 'fk_retos', 'idretos');
+    }
 }

@@ -560,9 +560,8 @@
             </div>
         </div>
     </div>
-
-    {{-- Modal existente con mejoras menores --}}
-    <div id="modal" class="fixed inset-0 items-center justify-center z-[10000] bg-black/80 backdrop-blur-sm hidden">
+    {{-- Modal existente --}}
+    <div id="modal" class="inset-0 items-center justify-center z-[10000] bg-black/80 backdrop-blur-sm hidden">
         <div
             class="bg-slate-900/95 backdrop-blur-md rounded-3xl shadow-2xl border border-slate-700/50 p-8 max-w-4xl w-full h-auto max-h-[90vh] overflow-auto mx-4">
             <!-- Modal content mantener el existente -->

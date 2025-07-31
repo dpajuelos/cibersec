@@ -1,0 +1,124 @@
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.6s ease-out;
+}
+
+.animation-delay-300 {
+    animation-delay: 300ms;
+}
+
+.animation-delay-700 {
+    animation-delay: 700ms;
+}
+
+.animation-delay-1000 {
+    animation-delay: 1000ms;
+}
+
+@keyframes gradient-x {
+
+    0%,
+    100% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+.animate-gradient-x {
+    animation: gradient-x 3s ease infinite;
+    background-size: 200% 200%;
+}
+
+/* Estilos específicos para los menús desplegables */
+#filterMenu,
+#sortMenu {
+    position: fixed;
+    z-index: 99999 !important;
+    transform-origin: top left;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(20px);
+    will-change: transform, opacity;
+}
+
+/* Asegurar que los contenedores no limiten el overflow */
+.relative {
+    overflow: visible !important;
+}
+
+/* Crear contextos de apilamiento apropiados */
+.bg-slate-800\/60,
+.bg-slate-900\/60,
+[class*="backdrop-blur"] {
+    isolation: isolate;
+}
+
+/* Mejorar las transiciones de los menús */
+#filterMenu.scale-100,
+#sortMenu.scale-100 {
+    transform: scale(1) translateY(0);
+}
+
+#filterMenu.scale-95,
+#sortMenu.scale-95 {
+    transform: scale(0.95) translateY(-10px);
+}
+
+/* Loading states */
+.loading-skeleton {
+    background: linear-gradient(90deg, #334155 25%, #475569 50%, #334155 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Search input focus states */
+.search-input:focus {
+    background: rgba(15, 23, 42, 0.8);
+    transform: scale(1.02);
+}
+
+/* Dropdown menu animations */
+.dropdown-enter {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+}
+
+.dropdown-enter-active {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    transition: all 0.3s ease;
+}
+
+.dropdown-exit {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+
+.dropdown-exit-active {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+    transition: all 0.3s ease;
+}

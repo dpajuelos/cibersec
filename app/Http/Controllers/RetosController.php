@@ -246,7 +246,7 @@ class RetosController extends Controller
             ->sum('pt.valor');
 
         $puntosFinales = max(0, $reto->puntos - $pistasUsadas); // Nunca menos de 0
-
+|
         // Insertar en solve_personas
         DB::table('solve_personas')->insert([
             'puntos' => $puntosFinales,
