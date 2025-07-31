@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\JuegoController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RankingController;
+use App\Http\Controllers\RetoController;
 use App\Http\Controllers\RetosController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UsuariosController;
@@ -98,21 +99,20 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
         return view('admin.main');
     })->name('dashboard');
 
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard.main');
-
     // Gestión de usuarios
     Route::get('/users', [AdminController::class, 'users'])->name('users');
     Route::get('/users/{id}', [AdminController::class, 'showUser'])->name('users.show');
     Route::put('/users/{id}/permissions', [AdminController::class, 'assignPermissions'])->name('users.permissions');
     Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');
 
-    // Gestión de retos
-    Route::get('/challenges', [AdminController::class, 'challenges'])->name('challenges');
-    Route::get('/challenges/create', [AdminController::class, 'createChallenge'])->name('challenges.create');
-    Route::post('/challenges', [AdminController::class, 'storeChallenge'])->name('challenges.store');
-    Route::get('/challenges/{id}/edit', [AdminController::class, 'editChallenge'])->name('challenges.edit');
-    Route::put('/challenges/{id}', [AdminController::class, 'updateChallenge'])->name('challenges.update');
-    Route::delete('/challenges/{id}', [AdminController::class, 'deleteChallenge'])->name('challenges.delete');
+    // Gestión de retos (challenges)
+    Route::get('/challenges', [\App\Http\Controllers\Admin\RetoController::class, 'index'])->name('challenges');
+    Route::post('/challenges', [\App\Http\Controllers\Admin\RetoController::class, 'store'])->name('challenges.create');
+    Route::get('/challenges/{id}/edit', [\App\Http\Controllers\Admin\RetoController::class, 'edit'])->name('challenges.edit');
+    Route::put('/challenges/{id}', [\App\Http\Controllers\Admin\RetoController::class, 'update'])->name('challenges.update');
+    Route::delete('/challenges/{id}', [\App\Http\Controllers\Admin\RetoController::class, 'destroy'])->name('challenges.destroy');
+    Route::delete('/challenges/{retoId}/pistas/{pistaId}', [\App\Http\Controllers\Admin\RetoController::class, 'eliminarPista'])->name('challenges.pistas.destroy');
+    Route::delete('/challenges/{retoId}/archivo', [\App\Http\Controllers\Admin\RetoController::class, 'eliminarArchivo'])->name('challenges.archivo.destroy');
 
     // Gestión de categorías
     Route::get('/categories', [AdminController::class, 'categories'])->name('categories');
