@@ -109,7 +109,7 @@ class RegisterController extends Controller
 
         // Generar nombre único para la imagen
         $fileName = Str::random(40) . '.png';
-        $filePath = 'profile-photos/' . $fileName;
+        $filePath = 'profile-photos/' . $fileNa|me;
         $fullPath = storage_path('app/public/' . $filePath);
 
         // Crear imagen con GD
@@ -158,3 +158,4 @@ class RegisterController extends Controller
         return response()->json($universidades);
     }
 }
+|

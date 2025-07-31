@@ -21,6 +21,7 @@ class Reto extends Model
         'fk_nivel',
         'fk_competencia',
         'fk_estado_reto',
+        'fk_archivo'
     ];
 
     // Relación con Categoría (N:1)
@@ -51,6 +52,10 @@ class Reto extends Model
     public function archivo()
     {
         return $this->hasOne(ArchivoReto::class, 'fk_retos', 'idretos');
+    }
+    public function archivo()
+    {
+        return $this->belongsTo(ArchivoReto::class, 'fk_archivo', 'idarchivo');
     }
 
     // Relación con Pistas (N:M)

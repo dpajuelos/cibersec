@@ -15,13 +15,13 @@ class HitlogPersona extends Model
 
     protected $fillable = [
         'fecha',
-        'fk_idsubmissions_personas',
+        'fk_idregistros',
         'fk_idpistas'
     ];
 
-    public function submission()
+    public function registro()
     {
-        return $this->belongsTo(SubmissionPersona::class, 'fk_idsubmissions_personas');
+        return $this->belongsTo(RegistroPersona::class, 'fk_idregistros');
     }
 
     public function pista()
