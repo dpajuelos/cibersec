@@ -1,72 +1,78 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Models;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Storage;
+use Laravel\Jetstream\HasProfilePhoto;
 
-class UserController extends Controller
+class User extends Authenticatable
 {
-    //
-    public function index()
+    use HasFactory;
+    use HasProfilePhoto;
+
+    protected $table = 'usuarios';
+    protected $primaryKey = 'idusuario';
+    public $timestamps = false;
+
+    protected $fillable = [
+        'usuario',
+        'email',
+        'password',
+        'fec_registro',
+        'fk_idestados',
+        'profile_photo_path'
+    ];
+
+    public function roles()
     {
-        $user = Auth::user();
-        $usu = DB::table('usuarios')
-            ->where('usuario', $user->usuario)
-            ->value('usuario');
-        return view('profile.perfil1', compact('user', 'usu'));
+        return $this->belongsToMany(Rol::class, 'usuarios_has_roles', 'usuarios_idusuario', 'roles_idroles');
     }
 
-    public function categorias()
+    public function perfil()
     {
-        $categorias = DB::table('categorias')->select('nomcategoria')->get();
-        return response()->json($categorias);
+        return $this->hasOne(Perfil::class, 'fk_usuario');
     }
 
-    public function puesto_puntos(Request $request)
+    public function isActive()
     {
-        $name = $request->input('nickname');
-        $puesto_puntos = DB::select('call puntos_puesto(?)', [$name]);
-        if (empty($puesto_puntos)) {
-            return response()->json(['message' => 'No se encontraron datos para este usuario.']);
+        return true;
+    }
+
+    public function getAuthIdentifierName()
+    {
+        return 'idusuario';
+    }
+
+    public function getProfilePhotoUrlAttribute()
+    {
+        if ($this->profile_photo_path) {
+            return Storage::url($this->profile_photo_path);
         }
-        return response()->json(['total_puntos' => $puesto_puntos[0]->total_puntos, 'puesto' => $puesto_puntos[0]->puesto]);
     }
 
-    public function detalle(Request $request)
+    /**
+     * Eliminar usuario con todas sus relaciones
+     */
+    public function deleteWithRelations()
     {
-        $nombreCompleto = $request->input('userName');
-        $resultados = DB::select('CALL datos_usuario(?)', [$nombreCompleto]);
-
-        if (empty($resultados)) {
-            return response()->json(['message' => 'No se encontraron datos para este usuario.']);
-        }
-        return response()->json(['results' => $resultados]);
-    }
-
-    public function obtenerPorcentajeAcierto(Request $request)
-    {
-        $nombreCompleto = $request->input('userName');
-        $categoria = $request->input('categoria');
-
-        $porcentajeAcierto = DB::select('SELECT obtener_porcentaje_acierto(?, ?) AS porcentaje_acierto', [$nombreCompleto, $categoria]);
-        if (empty($porcentajeAcierto)) {
-            return response()->json(['message' => 'No se encontraron datos categoría.']);
+        // Eliminar la foto de perfil del storage si existe
+        if ($this->profile_photo_path) {
+            Storage::disk('public')->delete($this->profile_photo_path);
         }
 
-        return response()->json(['porcentaje' => $porcentajeAcierto[0]->porcentaje_acierto]);
-    }
+        $dniPersonas = $this->perfiles()->pluck('fk_persona')->toArray();
 
-    public function obtenerPuntosPorFecha(Request $request)
-    {
-        $nombreCompleto = $request->input('userName');
-        $categoria = $request->input('categoria');
+        // Eliminar perfiles
+        $this->perfiles()->delete();
 
-        $puntos = DB::select('call fechas_puntos(?,?)', [$nombreCompleto, $categoria]);
-        if (empty($puntos)) {
-            return response()->json(['message' => 'No se encontraron datos para la grafica']);
+        // Eliminar personas por DNI
+        if (!empty($dniPersonas)) {
+            \App\Models\Persona::whereIn('dni', $dniPersonas)->delete();
         }
-        return response()->json(['puntos' => $puntos]);
+
+        // Eliminar el usuario
+        $this->delete();
     }
 }

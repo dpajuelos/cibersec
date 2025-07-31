@@ -84,6 +84,14 @@ class RetosController extends Controller
                 ->join('estados_reto AS et', 'rt.fk_estado_reto', '=', 'et.idestado_reto')
                 ->where('et.estadoreto', 'Activo')
                 ->get();
+            // Agregar los intentos cuando no esta autenticado el usuario
+            foreach ($retos as $reto) {
+                $intentos = DB::table('submissions_personas')
+                    ->where('fk_idretos', $reto->idretos)
+                    ->count();
+
+                $reto->intentos = $intentos;
+            }
 
             // 2) Agrupar en la colección por nomcategoria
             $retosPorCategoria = $retos->groupBy('nomcategoria');
@@ -246,7 +254,7 @@ class RetosController extends Controller
             ->sum('pt.valor');
 
         $puntosFinales = max(0, $reto->puntos - $pistasUsadas); // Nunca menos de 0
-|
+
         // Insertar en solve_personas
         DB::table('solve_personas')->insert([
             'puntos' => $puntosFinales,
