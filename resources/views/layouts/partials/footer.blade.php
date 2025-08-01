@@ -105,7 +105,7 @@
                 <div class="bg-blue-900/20 rounded-lg p-4 border border-blue-500/20">
                     <div class="text-center">
                         <div class="text-cyan-400 font-bold text-lg">{{ \App\Models\User::count() }}+</div>
-                        <div class="text-gray-400 text-sm">Hackers Éticos</div>
+                        <div class="text-gray-400 text-sm">Miembros registrados</div>
                     </div>
                 </div>
             </div>
@@ -119,7 +119,7 @@
                         © {{ date('Y') }} CIBERSEC-UNASAM. Todos los derechos reservados.
                     </p>
                     <p class="text-gray-500 text-xs mt-1">
-                        Desarrollado con <i class="fas fa-heart text-red-500"></i> para la comunidad hacker ética
+                        Desarrollado con <i class="fas fa-heart text-red-500"></i> para la comunidad
                     </p>
                 </div>
 

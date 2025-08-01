@@ -48,14 +48,9 @@ class Reto extends Model
         return $this->belongsTo(EstadoReto::class, 'fk_estado_reto', 'idestado_reto');
     }
 
-    // Relación con ArchivoReto (1:1) - Cambiar a hasOne ya que fk_retos está en ArchivoReto
     public function archivo()
     {
         return $this->hasOne(ArchivoReto::class, 'fk_retos', 'idretos');
-    }
-    public function archivo()
-    {
-        return $this->belongsTo(ArchivoReto::class, 'fk_archivo', 'idarchivo');
     }
 
     // Relación con Pistas (N:M)

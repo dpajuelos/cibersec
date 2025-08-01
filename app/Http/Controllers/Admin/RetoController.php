@@ -311,4 +311,42 @@ class RetoController extends Controller
             ], 500);
         }
     }
+
+    public function eliminarArchivo($id)
+    {
+        DB::beginTransaction();
+
+        try {
+            $reto = Reto::with('archivo')->findOrFail($id);
+
+            if (!$reto->archivo) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No hay archivo para eliminar'
+                ], 404);
+            }
+
+            // Eliminar el archivo físico del storage
+            $rutaArchivo = str_replace('storage/', '', $reto->archivo->url);
+            if (Storage::disk('public')->exists($rutaArchivo)) {
+                Storage::disk('public')->delete($rutaArchivo);
+            }
+
+            // Eliminar el registro de la base de datos
+            $reto->archivo->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Archivo eliminado correctamente'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al eliminar el archivo: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

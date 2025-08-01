@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Reto;
-use App\Models\Pistas;
-use App\Models\User;
-use App\Models\Perfil;
 use App\Models\juegos;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Perfil;
+use App\Models\Pistas;
+use App\Models\Reto;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class RetosController extends Controller
 {
@@ -18,11 +18,10 @@ class RetosController extends Controller
     {
         if (Auth::check()) {
             $perfilId = Perfil::join('usuarios', 'perfiles.fk_usuario', '=', 'usuarios.idusuario')
-            ->where('usuarios.idusuario', Auth::id())
-            ->select('perfiles.idperfil')
-            ->first()->idperfil;
-            
-            
+                ->where('usuarios.idusuario', Auth::id())
+                ->select('perfiles.idperfil')
+                ->first()
+                ->idperfil;
 
             $retos = DB::table('retos AS rt')
                 ->select(
@@ -41,18 +40,15 @@ class RetosController extends Controller
                 ->join('categorias AS ct', 'rt.fk_categoria', '=', 'ct.idcategoria')
                 ->join('estados_reto AS et', 'rt.fk_estado_reto', '=', 'et.idestado_reto')
                 ->leftJoin('archivos_reto AS pt', 'pt.fk_retos', '=', 'rt.idretos')
-                
                 // Submissions del usuario actual
                 ->leftJoin('submissions_personas AS sb', function ($join) use ($perfilId) {
-                    $join->on('sb.fk_idretos', '=', 'rt.idretos')
+                    $join
+                        ->on('sb.fk_idretos', '=', 'rt.idretos')
                         ->where('sb.fk_idregistros', '=', $perfilId);
                 })
-
                 // Solve relacionado al intento
                 ->leftJoin('solve_personas AS sp', 'sp.fk_idsubmissions_personas', '=', 'sb.idsubmissions_personas')
-
                 ->where('et.estadoreto', '=', 'Activo')
-
                 ->groupBy(
                     'rt.idretos',
                     'rt.nomreto',
@@ -65,12 +61,9 @@ class RetosController extends Controller
                 )
                 ->get();
 
-
-            $retosPorCategoria = $retos->groupBy('nomcategoria'); 
+            $retosPorCategoria = $retos->groupBy('nomcategoria');
             return view('retos', compact('retosPorCategoria'));
-    
         } else {
-                   
             $retos = DB::table('retos AS rt')
                 ->select(
                     'rt.idretos',
@@ -78,7 +71,7 @@ class RetosController extends Controller
                     'rt.puntos',
                     'rt.descripcion',
                     'ct.nomcategoria',
-                    DB::raw('0 AS resuelto')   // siempre 0 para no autenticados
+                    DB::raw('0 AS resuelto')  // siempre 0 para no autenticados
                 )
                 ->join('categorias AS ct', 'rt.fk_categoria', '=', 'ct.idcategoria')
                 ->join('estados_reto AS et', 'rt.fk_estado_reto', '=', 'et.idestado_reto')
@@ -90,8 +83,8 @@ class RetosController extends Controller
 
             return view('retos', compact('retosPorCategoria'));
         }
-        
     }
+
     public function getPistas($idreto)
     {
         $perfilId = Perfil::join('usuarios', 'perfiles.fk_usuario', '=', 'usuarios.idusuario')
@@ -124,10 +117,9 @@ class RetosController extends Controller
         return response()->json($pistas);
     }
 
-
-   public function desbloquearPista(Request $request)
+    public function desbloquearPista(Request $request)
     {
-        $retosHasPistasId = $request->input('idpista'); // ID de retos_has_pistas
+        $retosHasPistasId = $request->input('idpista');  // ID de retos_has_pistas
 
         $perfilId = Perfil::join('usuarios', 'perfiles.fk_usuario', '=', 'usuarios.idusuario')
             ->where('usuarios.idusuario', Auth::id())
@@ -171,6 +163,7 @@ class RetosController extends Controller
             'valor' => $pista->valor,
         ]);
     }
+
     public function validarFlag(Request $request)
     {
         $request->validate([
@@ -245,8 +238,7 @@ class RetosController extends Controller
             ->where('h.fk_idregistros', $regId)
             ->sum('pt.valor');
 
-        $puntosFinales = max(0, $reto->puntos - $pistasUsadas); // Nunca menos de 0
-|
+        $puntosFinales = max(0, $reto->puntos - $pistasUsadas);  // Nunca menos de 0
         // Insertar en solve_personas
         DB::table('solve_personas')->insert([
             'puntos' => $puntosFinales,
@@ -263,28 +255,27 @@ class RetosController extends Controller
     public function obtenerResueltos($idreto)
     {
         $resueltos = DB::table('solve_personas as sp')
-        ->join('submissions_personas as s', 'sp.fk_idsubmissions_personas', '=', 's.idsubmissions_personas')
-        ->join('registros_personas as rp', 's.fk_idregistros', '=', 'rp.idregistros')
-        ->join('perfiles as p', 'rp.fk_perfil', '=', 'p.idperfil')
-        ->join('usuarios as us', 'p.fk_usuario', '=', 'us.idusuario')
-        ->join('retos as r', 's.fk_idretos', '=', 'r.idretos')
-        ->select('us.usuario', 'sp.time')
-        ->where('s.fk_idretos', $idreto)
-        ->orderBy('sp.time', 'desc')
-        ->get();
+            ->join('submissions_personas as s', 'sp.fk_idsubmissions_personas', '=', 's.idsubmissions_personas')
+            ->join('registros_personas as rp', 's.fk_idregistros', '=', 'rp.idregistros')
+            ->join('perfiles as p', 'rp.fk_perfil', '=', 'p.idperfil')
+            ->join('usuarios as us', 'p.fk_usuario', '=', 'us.idusuario')
+            ->join('retos as r', 's.fk_idretos', '=', 'r.idretos')
+            ->select('us.usuario', 'sp.time')
+            ->where('s.fk_idretos', $idreto)
+            ->orderBy('sp.time', 'desc')
+            ->get();
 
-    return response()->json([
-        'count' => $resueltos->count(),
-        'data' => $resueltos
-    ]);
+        return response()->json([
+            'count' => $resueltos->count(),
+            'data' => $resueltos
+        ]);
     }
 
-    public function contarIntentos($idreto) {
-    $count = DB::table('submissions_personas')
-        ->where('fk_idretos', $idreto)
-        ->count();
-    return response()->json(['count' => $count]);
+    public function contarIntentos($idreto)
+    {
+        $count = DB::table('submissions_personas')
+            ->where('fk_idretos', $idreto)
+            ->count();
+        return response()->json(['count' => $count]);
     }
-
-
 }

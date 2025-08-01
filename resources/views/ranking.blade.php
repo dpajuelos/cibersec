@@ -228,22 +228,30 @@
                                             class="px-6 py-4 text-center text-xs font-bold text-gray-300 uppercase tracking-wider">
                                             <div class="flex items-center justify-center space-x-2">
                                                 <i class="fas fa-user-ninja text-purple-400"></i>
-                                                <span>Hacker</span>
+                                                <span>Usuario</span>
+                                            </div>
+                                        </th>
+                                        <th scope="col"
+                                            class="px-6 py-4 text-center text-xs font-bold text-gray-300 uppercase tracking-wider">
+                                            <div class="flex items-center justify-center space-x-2">
+                                                <i class="fas fa-user-ninja text-purple-400"></i>
+                                                <span>Universidad</span>
                                             </div>
                                         </th>
                                         <th scope="col"
                                             class="px-6 py-4 text-center text-xs font-bold text-gray-300 uppercase tracking-wider">
                                             <div class="flex items-center justify-center space-x-2">
                                                 <i class="fas fa-star text-yellow-400"></i>
-                                                <span>Pts</span>
+                                                <span>Puntos</span>
                                             </div>
                                         </th>
+
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-700/50" id="rankingTableBody">
                                     @foreach ($rankings as $index => $ranking)
                                         <tr class="group hover:bg-gradient-to-r hover:from-slate-700/30 hover:to-slate-600/20 transition-all duration-500 cursor-pointer relative overflow-hidden"
-                                            onclick="openModal('{{ $ranking->usuario }}', '{{ $ranking->nickname }}')">
+                                            onclick="openModal('{{ $ranking->usuario }}'">
 
                                             <!-- Position -->
                                             <td class="px-6 py-4 whitespace-nowrap text-center relative">
