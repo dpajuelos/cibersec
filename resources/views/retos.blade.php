@@ -508,7 +508,9 @@
                                                     class="flex items-center justify-between pt-4 border-t border-slate-700/50">
                                                     <div class="flex items-center space-x-2 text-gray-400 text-sm">
                                                         <i class="fas fa-users text-xs"></i>
-                                                        <span>Intentos:<span class="intentos-count">{{ $reto->intentos }}</span>
+
+                                                        <span>Intentos: <span class="intentos-count">{{ $reto->intentos }}</span>
+
                                                     </div>
 
                                                     <div
@@ -561,7 +563,7 @@
         </div>
     </div>
     {{-- Modal existente --}}
-    <div id="modal" class="inset-0 items-center justify-center z-[10000] bg-black/80 backdrop-blur-sm hidden">
+    <div id="modal" class="fixed top-0 left-0 w-full h-full flex items-center justify-center z-[10000] bg-black/80 backdrop-blur-sm hidden">
         <div
             class="bg-slate-900/95 backdrop-blur-md rounded-3xl shadow-2xl border border-slate-700/50 p-8 max-w-4xl w-full h-auto max-h-[90vh] overflow-auto mx-4">
             <!-- Modal content mantener el existente -->
@@ -1092,15 +1094,12 @@
             cargarPistas();
             // Lógica extra (por si necesitas hacerlo siempre)
         
-
             // Mostrar el modal
             document.getElementById('modal').style.display = 'flex';
         }
 
-        
 
         
-
         function showOverlayPanel() {
             const overlay = document.createElement('div');
             overlay.id = 'overlay';

@@ -52,6 +52,10 @@ class Reto extends Model
     {
         return $this->hasOne(ArchivoReto::class, 'fk_retos', 'idretos');
     }
+    public function archivo()
+    {
+        return $this->belongsTo(ArchivoReto::class, 'fk_archivo', 'idarchivo');
+    }
 
     // Relación con Pistas (N:M)
     public function pistas()
