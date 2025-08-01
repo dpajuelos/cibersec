@@ -508,7 +508,9 @@
                                                     class="flex items-center justify-between pt-4 border-t border-slate-700/50">
                                                     <div class="flex items-center space-x-2 text-gray-400 text-sm">
                                                         <i class="fas fa-users text-xs"></i>
+
                                                         <span>Intentos: <span class="intentos-count">{{ $reto->intentos }}</span>
+
                                                     </div>
 
                                                     <div
@@ -1092,10 +1094,10 @@
             cargarPistas();
             // Lógica extra (por si necesitas hacerlo siempre)
         
-
             // Mostrar el modal
             document.getElementById('modal').style.display = 'flex';
         }
+
 
         
         function showOverlayPanel() {

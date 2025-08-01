@@ -1,4 +1,7 @@
 <?php
+use App\Http\Controllers\Admin\CategoriaController;
+use App\Http\Controllers\Admin\CompetenciaController;
+use App\Http\Controllers\Admin\NotificacionController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AdminController;
@@ -87,8 +90,6 @@ Route::get('/dashboard', function () {
     return view('welcome');
 })->name('dashboard');
 
-Route::get('/notificaciones', [NotificationController::class, 'index'])->name('notificaciones');
-
 Route::get('/perfil1', [UserController::class, 'index'])->name('profile.perfil1');
 Route::get('/perfil/puesto_puntos', [UserController::class, 'puesto_puntos'])->name('perfil.puestopuntos');
 Route::get('/perfil/detalle', [UserController::class, 'detalle'])->name('perfil.detalle');
@@ -96,17 +97,11 @@ Route::post('/perfil/porcentaje-acierto', [UserController::class, 'obtenerPorcen
 Route::post('/perfil/puntos-por-fecha', [UserController::class, 'obtenerPuntosPorFecha']);
 
 // Rutas de administración
-Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     // Dashboard principal
     Route::get('/', function () {
         return view('admin.main');
     })->name('dashboard');
-
-    // Gestión de usuarios
-    Route::get('/users', [AdminController::class, 'users'])->name('users');
-    Route::get('/users/{id}', [AdminController::class, 'showUser'])->name('users.show');
-    Route::put('/users/{id}/permissions', [AdminController::class, 'assignPermissions'])->name('users.permissions');
-    Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');
 
     // Gestión de retos (challenges)
     Route::get('/challenges', [\App\Http\Controllers\Admin\RetoController::class, 'index'])->name('challenges');
@@ -114,20 +109,42 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::get('/challenges/{id}/edit', [\App\Http\Controllers\Admin\RetoController::class, 'edit'])->name('challenges.edit');
     Route::put('/challenges/{id}', [\App\Http\Controllers\Admin\RetoController::class, 'update'])->name('challenges.update');
     Route::delete('/challenges/{id}', [\App\Http\Controllers\Admin\RetoController::class, 'destroy'])->name('challenges.destroy');
+    // Elimina todas las pistas de un reto
     Route::delete('/challenges/{retoId}/pistas/{pistaId}', [\App\Http\Controllers\Admin\RetoController::class, 'eliminarPista'])->name('challenges.pistas.destroy');
     Route::delete('/challenges/{retoId}/archivo', [\App\Http\Controllers\Admin\RetoController::class, 'eliminarArchivo'])->name('challenges.archivo.destroy');
-
-    // Gestión de categorías
-    Route::get('/categories', [AdminController::class, 'categories'])->name('categories');
-    Route::post('/categories', [AdminController::class, 'storeCategory'])->name('categories.store');
-    Route::put('/categories/{id}', [AdminController::class, 'updateCategory'])->name('categories.update');
-    Route::delete('/categories/{id}', [AdminController::class, 'deleteCategory'])->name('categories.delete');
+    // Elimina pistas específicas de un reto
+    Route::delete('/admin/challenges/{reto}/pistas/{pista}', [RetoController::class, 'eliminarPista'])->name('admin.retos.eliminar-pista');
+    // Gestión de categorías - Rutas actualizadas
+    Route::get('/categories', [CategoriaController::class, 'index'])->name('categories');
+    Route::get('/categories/search', [CategoriaController::class, 'search'])->name('categories.search');  // Nueva ruta
+    Route::post('/categories', [CategoriaController::class, 'store'])->name('categories.store');
+    Route::get('/categories/{id}', [CategoriaController::class, 'show'])->name('categories.show');
+    Route::put('/categories/{id}', [CategoriaController::class, 'update'])->name('categories.update');
+    Route::delete('/categories/{id}', [CategoriaController::class, 'destroy'])->name('categories.delete');
+    Route::get('/categories/stats', [CategoriaController::class, 'estadisticas'])->name('categories.stats');
 
     // Sistema de notificaciones
-    Route::get('/notifications', [AdminController::class, 'notifications'])->name('notifications');
-    Route::get('/notifications/create', [AdminController::class, 'createNotification'])->name('notifications.create');
-    Route::post('/notifications', [AdminController::class, 'storeNotification'])->name('notifications.store');
-    Route::delete('/notifications/{id}', [AdminController::class, 'deleteNotification'])->name('notifications.delete');
+    Route::get('/notificaciones', [NotificacionController::class, 'index'])->name('notifications');
+    Route::post('/notificaciones', [NotificacionController::class, 'store'])->name('notifications.store');
+    Route::get('/notificaciones/{id}', [NotificacionController::class, 'show'])->name('notifications.show');
+    Route::delete('/notificaciones/{id}', [NotificacionController::class, 'destroy'])->name('notifications.destroy');
+    Route::get('/notificaciones/buscar/usuarios', [NotificacionController::class, 'buscarUsuarios'])->name('notifications.buscar-usuarios');
+    Route::post('/notificaciones/filtrar', [NotificacionController::class, 'filtrar'])->name('notifications.filtrar');
+
+    // Rutas para competencias
+    Route::get('/competencias', [CompetenciaController::class, 'index'])->name('competitions');
+    Route::get('/competencias/create', [CompetenciaController::class, 'create'])->name('competitions.create');
+    Route::post('/competencias', [CompetenciaController::class, 'store'])->name('competitions.store');
+    Route::get('/competencias/{competencia}', [CompetenciaController::class, 'show'])->name('competitions.show');
+    Route::get('/competencias/{competencia}/edit', [CompetenciaController::class, 'edit'])->name('competitions.edit');
+    Route::put('/competencias/{competencia}', [CompetenciaController::class, 'update'])->name('competitions.update');
+    Route::delete('/competencias/{competencia}', [CompetenciaController::class, 'destroy'])->name('competitions.destroy');
+    Route::post('/competencias/{competencia}/activate', [CompetenciaController::class, 'activate'])->name('competitions.activate');
+    Route::post('/competencias/{competencia}/finalize', [CompetenciaController::class, 'finalize'])->name('competitions.finalize');
+    Route::get('/competencias-filter', [CompetenciaController::class, 'filter'])->name('competitions.filter');
+
+    // Rutas para usuarios
+    Route::get('/users', [\App\Http\Controllers\Admin\UsuarioController::class, 'index'])->name('users');
 
     // Configuración del sistema
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
@@ -146,4 +163,15 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::get('/api/stats', [AdminController::class, 'getStats'])->name('api.stats');
     Route::get('/api/activity', [AdminController::class, 'getActivity'])->name('api.activity');
     Route::get('/api/system-health', [AdminController::class, 'getSystemHealth'])->name('api.system-health');
+});
+
+// Rutas de notificaciones para usuarios
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::post('/notificaciones/{id}/marcar-leida',
+            [NotificationController::class, 'marcarLeida'])
+        ->middleware('protect.notifications')
+        ->name('notificaciones.marcar-leida');
+
+    Route::post('/notificaciones/marcar-todas-leidas',
+        [NotificationController::class, 'marcarTodasLeidas'])->name('notificaciones.marcar-todas-leidas');
 });

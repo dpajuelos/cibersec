@@ -35,6 +35,14 @@
                     <!-- User Section -->
                     <div class="hidden sm:flex sm:items-center space-x-4">
                         @if (@Auth::user())
+                            @php
+                                $notificaciones = Auth::user()
+                                    ->notifications()
+                                    ->orderBy('created_at', 'desc')
+                                    ->limit(10)
+                                    ->get();
+                                $noLeidas = $notificaciones->where('is_read', 0)->count();
+                            @endphp
                             <!-- User Dropdown -->
                             <x-dropdown align="right" width="48">
                                 <x-slot name="trigger">
@@ -76,37 +84,87 @@
                             </x-dropdown>
 
                             <!-- Notifications -->
-                            <div class="relative">
-                                <button @click="open = ! open"
-                                    class="flex items-center text-gray-200 hover:text-cyan-400 transition-colors bg-blue-800/30 px-3 py-2 rounded-lg">
-                                    <i class="fas fa-bell text-cyan-400"></i>
-                                    <span
-                                        class="ml-2 bg-gradient-to-r from-cyan-400 to-blue-400 text-transparent bg-clip-text font-bold">
-                                        {{ $notifications->where('is_read', false)->count() + $generalNotifications->count() }}
-                                    </span>
+
+                            <div class="relative" x-data="{ notificationsOpen: false }">
+                                <button @click="notificationsOpen = !notificationsOpen"
+                                    class="relative p-2 text-gray-300 hover:text-cyan-400 hover:bg-blue-800/30 rounded-lg transition-all duration-200 focus:outline-none focus:text-cyan-400">
+                                    <i class="fas fa-bell text-xl"></i>
+                                    @if ($noLeidas > 0)
+                                        <span
+                                            class="absolute -top-1 -right-1 h-5 w-5 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse border-2 border-slate-800">
+                                            {{ $noLeidas > 9 ? '9+' : $noLeidas }}
+                                        </span>
+                                    @endif
                                 </button>
 
-                                <div x-show="open" @click.away="open = false"
-                                    class="absolute right-0 mt-2 w-80 bg-slate-800/95 border border-blue-500/30 rounded-lg shadow-2xl shadow-blue-500/20 z-50 p-4 backdrop-blur-md max-h-96 overflow-y-auto"
-                                    x-transition>
-                                    <!-- Notification content here -->
-                                    <div class="py-1">
-                                        @if ($generalNotifications->isNotEmpty())
-                                            <div
-                                                class="font-semibold text-lg mb-2 text-center text-white border-b border-blue-500/30 pb-2">
-                                                Notificaciones Generales
-                                            </div>
-                                            @foreach ($generalNotifications as $notification)
-                                                <div
-                                                    class="block px-2 py-2 text-sm text-gray-300 hover:bg-blue-800/30 rounded">
-                                                    {{ $notification->message }}
+                                <!-- Notifications Dropdown -->
+                                <div x-show="notificationsOpen" @click.away="notificationsOpen = false"
+                                    x-transition:enter="transition ease-out duration-200"
+                                    x-transition:enter-start="opacity-0 scale-95"
+                                    x-transition:enter-end="opacity-100 scale-100"
+                                    x-transition:leave="transition ease-in duration-75"
+                                    x-transition:leave-start="opacity-100 scale-100"
+                                    x-transition:leave-end="opacity-0 scale-95"
+                                    class="absolute right-0 mt-2 w-96 bg-slate-800/95 backdrop-blur-md rounded-xl shadow-2xl border border-slate-600/50 z-50"
+                                    style="display: none;">
+
+                                    <!-- Header del dropdown -->
+                                    <div class="px-4 py-3 border-b border-slate-600/50">
+                                        <div class="flex items-center justify-between">
+                                            <h3 class="text-white font-semibold flex items-center">
+                                                <i class="fas fa-bell mr-2 text-cyan-400"></i>
+                                                Notificaciones
+                                            </h3>
+                                            @if ($noLeidas > 0)
+                                                <button onclick="marcarTodasLeidas()"
+                                                    class="text-xs text-cyan-400 hover:text-cyan-300 transition-colors">
+                                                    Marcar todas como leídas
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <!-- Lista de notificaciones -->
+                                    <div class="max-h-96 overflow-y-auto">
+                                        @forelse($notificaciones as $notificacion)
+                                            <div class="px-4 py-3 border-b border-slate-600/30 hover:bg-slate-700/30 transition-colors cursor-pointer {{ $notificacion->is_read ? '' : 'bg-blue-900/20 border-l-4 border-l-cyan-400' }}"
+                                                onclick="marcarLeida({{ $notificacion->id }})">
+                                                <div class="flex items-start space-x-3">
+                                                    <div class="flex-shrink-0">
+                                                        <div
+                                                            class="w-8 h-8 bg-gradient-to-br {{ $notificacion->is_read ? 'from-slate-500/20 to-gray-500/20' : 'from-cyan-500/20 to-blue-500/20' }} rounded-lg flex items-center justify-center">
+                                                            <i
+                                                                class="fas fa-info-circle {{ $notificacion->is_read ? 'text-gray-400' : 'text-cyan-400' }} text-sm"></i>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex-1 min-w-0">
+                                                        <p
+                                                            class="{{ $notificacion->is_read ? 'text-gray-300' : 'text-white font-medium' }} text-sm leading-relaxed">
+                                                            {{ Str::limit($notificacion->message, 80) }}
+                                                        </p>
+                                                        <p
+                                                            class="text-xs {{ $notificacion->is_read ? 'text-gray-500' : 'text-cyan-400' }} mt-1">
+                                                            <i class="fas fa-clock mr-1"></i>
+                                                            {{ $notificacion->created_at->diffForHumans() }}
+                                                        </p>
+                                                    </div>
+                                                    @if (!$notificacion->is_read)
+                                                        <div class="flex-shrink-0">
+                                                            <div class="w-2 h-2 bg-cyan-400 rounded-full animate-pulse">
+                                                            </div>
+                                                        </div>
+                                                    @endif
                                                 </div>
-                                            @endforeach
-                                        @else
-                                            <div class="text-gray-400 text-sm text-center py-4">
-                                                No hay notificaciones generales.
                                             </div>
-                                        @endif
+                                        @empty
+                                            <div class="px-4 py-8 text-center">
+                                                <div
+                                                    class="w-12 h-12 bg-gradient-to-br from-gray-500/20 to-slate-500/20 rounded-xl flex items-center justify-center mx-auto mb-3">
+                                                    <i class="fas fa-bell-slash text-gray-400 text-xl"></i>
+                                                </div>
+                                                <p class="text-gray-400 text-sm">No tienes notificaciones</p>
+                                            </div>
+                                        @endforelse
                                     </div>
                                 </div>
                             </div>
@@ -204,6 +262,54 @@
             </div>
         </nav>
     </div>
+    <script>
+        // Función para marcar una notificación como leída
+        function marcarLeida(id) {
+            fetch(`/notificaciones/${id}/marcar-leida`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Recargar la página para actualizar el contador
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        // Función para marcar todas las notificaciones como leídas
+        function marcarTodasLeidas() {
+            fetch('/notificaciones/marcar-todas-leidas', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Recargar la página para actualizar el contador
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        // Función para ver todas las notificaciones (opcional)
+        function verTodasNotificaciones() {
+            window.location.href = '/mis-notificaciones';
+        }
+    </script>
 @endif
 
 <!-- Main content with proper spacing -->

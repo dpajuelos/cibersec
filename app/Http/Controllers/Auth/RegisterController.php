@@ -109,7 +109,8 @@ class RegisterController extends Controller
 
         // Generar nombre único para la imagen
         $fileName = Str::random(40) . '.png';
-        $filePath = 'profile-photos/' . $fileNa|me;
+
+        $filePath = 'profile-photos/' . $fileName;
         $fullPath = storage_path('app/public/' . $filePath);
 
         // Crear imagen con GD

@@ -75,4 +75,10 @@ class User extends Authenticatable
         // Eliminar el usuario
         $this->delete();
     }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class, 'fk_idusuario', 'idusuario');
+    }
 }
+

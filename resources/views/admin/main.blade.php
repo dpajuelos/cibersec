@@ -1,4 +1,5 @@
 <x-admin-layout>
+    @section('title', 'Panel de Administración')
     <div class="relative font-sans antialiased bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 py-16">
         <!-- Elementos decorativos de fondo -->
         <div class="absolute inset-0 overflow-hidden">
@@ -24,8 +25,8 @@
                 </h1>
 
                 <p class="text-xl text-gray-300 max-w-3xl mx-auto">
-                    Gestiona usuarios, retos, categorías y supervisa el estado general de la plataforma CiberSec
-                    UNASAM
+                    Gestiona usuarios, retos, categorías y estadísticas de tu plataforma CTF de manera
+                    eficiente y segura
                 </p>
             </div>
 
@@ -39,8 +40,7 @@
                             <i class="fas fa-users text-cyan-400 text-2xl"></i>
                         </div>
                         <span class="text-xs font-medium text-cyan-400 bg-cyan-400/20 px-2 py-1 rounded-full">
-                            +12% vs mes anterior
-                        </span>
+                            Total
                     </div>
                     <div class="text-3xl font-black text-cyan-400 mb-2">{{ \App\Models\User::count() }}</div>
                     <div class="text-gray-300 text-sm font-medium">Usuarios Registrados</div>
@@ -60,7 +60,8 @@
                             Activos
                         </span>
                     </div>
-                    <div class="text-3xl font-black text-purple-400 mb-2">45</div>
+                    <div class="text-3xl font-black text-purple-400 mb-2">
+                        {{ \App\Models\Reto::where('fk_estado_reto', '1')->count() }}</div>
                     <div class="text-gray-300 text-sm font-medium">Retos Disponibles</div>
                     <div class="flex justify-center mt-3 space-x-1">
                         @for ($i = 0; $i < 6; $i++)
@@ -81,37 +82,37 @@
                             Hoy
                         </span>
                     </div>
-                    <div class="text-3xl font-black text-green-400 mb-2">127</div>
+                    <div class="text-3xl font-black text-green-400 mb-2">
+                        {{ \App\Models\SubmissionPersona::whereDate('fecha', today())->count() }}</div>
                     <div class="text-gray-300 text-sm font-medium">Envíos Recibidos</div>
                     <div class="text-xs text-green-400 mt-2 font-medium">
                         <i class="fas fa-trending-up mr-1"></i>
-                        +15% vs ayer
                     </div>
                 </div>
-
-                <!-- Sistema Status -->
+                <!-- Categorías Totales -->
                 <div
                     class="group bg-slate-800/60 backdrop-blur-md rounded-2xl p-6 border border-blue-500/30 hover:border-blue-400/60 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/20">
                     <div class="flex items-center justify-between mb-4">
                         <div class="p-3 bg-blue-500/20 rounded-xl group-hover:bg-blue-500/30 transition-colors">
-                            <i class="fas fa-server text-blue-400 text-2xl"></i>
+                            <i class="fas fa-layer-group text-blue-400 text-2xl"></i>
                         </div>
-                        <div class="flex items-center">
-                            <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse mr-2"></div>
-                            <span class="text-xs font-medium text-green-400">Online</span>
-                        </div>
+                        <span class="text-xs font-medium text-blue-400 bg-green-400/20 px-2 py-1 rounded-full">
+                            Total
+                        </span>
                     </div>
-                    <div class="text-3xl font-black text-blue-400 mb-2">99.9%</div>
-                    <div class="text-gray-300 text-sm font-medium">Uptime del Sistema</div>
+                    <div class="text-3xl font-black text-blue-400 mb-2">
+                        {{ \App\Models\Categoria::count() }}</div>
+                    <div class="text-gray-300 text-sm font-medium">Total de Categorías</div>
                     <div class="text-xs text-blue-400 mt-2 font-medium">
-                        <i class="fas fa-shield-alt mr-1"></i>
-                        Todos los servicios operativos
+                        <i class="fas fa-trending-up mr-1"></i>
                     </div>
                 </div>
+
             </div>
 
             <!-- Acceso Rápido a Funciones -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+
                 <!-- Gestión de Usuarios -->
                 <div
                     class="group bg-gradient-to-br from-purple-900/40 to-pink-900/40 backdrop-blur-md rounded-2xl p-8 border border-purple-500/30 hover:border-purple-400/60 transition-all duration-300 hover:scale-105 cursor-pointer">
@@ -143,28 +144,32 @@
                 <!-- Gestión de Retos -->
                 <div
                     class="group bg-gradient-to-br from-blue-900/40 to-cyan-900/40 backdrop-blur-md rounded-2xl p-8 border border-blue-500/30 hover:border-blue-400/60 transition-all duration-300 hover:scale-105 cursor-pointer">
-                    <div class="flex items-center mb-6">
-                        <div class="p-4 bg-blue-500/20 rounded-xl mr-4 group-hover:bg-blue-500/30 transition-colors">
-                            <i
-                                class="fas fa-flag text-blue-400 text-3xl group-hover:scale-110 transition-transform"></i>
+                    <a href="{{ route('admin.challenges') }}">
+                        <div class="flex items-center mb-6">
+                            <div
+                                class="p-4 bg-blue-500/20 rounded-xl mr-4 group-hover:bg-blue-500/30 transition-colors">
+                                <i
+                                    class="fas fa-flag text-blue-400 text-3xl group-hover:scale-110 transition-transform"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-blue-400 group-hover:text-blue-300 transition-colors">
+                                Gestión de Retos</h3>
                         </div>
-                        <h3 class="text-2xl font-bold text-blue-400 group-hover:text-blue-300 transition-colors">
-                            Gestión de Retos</h3>
-                    </div>
-                    <p class="text-gray-300 leading-relaxed mb-6 group-hover:text-gray-200 transition-colors">
-                        Crea, edita y organiza retos CTF. Gestiona categorías, dificultades y supervisa las
-                        estadísticas de resolución.
-                    </p>
-                    <div class="flex space-x-3">
-                        <span class="bg-blue-400/20 text-blue-400 px-3 py-1 rounded-full text-xs font-medium">
-                            <i class="fas fa-plus mr-1"></i>
-                            Crear
-                        </span>
-                        <span class="bg-blue-400/20 text-blue-400 px-3 py-1 rounded-full text-xs font-medium">
-                            <i class="fas fa-layer-group mr-1"></i>
-                            Categorías
-                        </span>
-                    </div>
+                        <p class="text-gray-300 leading-relaxed mb-6 group-hover:text-gray-200 transition-colors">
+                            Crea, edita y organiza retos CTF. Gestiona categorías, dificultades y supervisa las
+                            estadísticas de resolución.
+                        </p>
+                        <div class="flex space-x-3">
+                            <span class="bg-blue-400/20 text-blue-400 px-3 py-1 rounded-full text-xs font-medium">
+                                <i class="fas fa-plus mr-1"></i>
+                                Crear
+                            </span>
+                            <span class="bg-blue-400/20 text-blue-400 px-3 py-1 rounded-full text-xs font-medium">
+                                <i class="fas fa-tasks"></i>
+                                Retos
+                            </span>
+                        </div>
+                    </a>
+
                 </div>
 
                 <!-- Sistema de Notificaciones -->

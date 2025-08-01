@@ -20,9 +20,9 @@ class Notification extends Model
 
     public $timestamps = true;
 
-    // (Opcional) Relación con Usuario si existe
+    // Relación con el modelo User
     public function usuario()
     {
-        return $this->belongsTo(User::class, 'fk_idusuario');
+        return $this->belongsTo(User::class, 'fk_idusuario', 'idusuario');
     }
 }
