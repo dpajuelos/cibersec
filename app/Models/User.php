@@ -37,7 +37,10 @@ class User extends Authenticatable
 
     public function isActive()
     {
-        return true;
+        if ($this->fk_idestados == 1) {
+            return true;
+        }
+        return false;
     }
 
     public function getAuthIdentifierName()

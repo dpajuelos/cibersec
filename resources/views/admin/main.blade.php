@@ -142,9 +142,9 @@
                 </div>
 
                 <!-- Gestión de Retos -->
-                <div
-                    class="group bg-gradient-to-br from-blue-900/40 to-cyan-900/40 backdrop-blur-md rounded-2xl p-8 border border-blue-500/30 hover:border-blue-400/60 transition-all duration-300 hover:scale-105 cursor-pointer">
-                    <a href="{{ route('admin.challenges') }}">
+                <a href="{{ route('admin.challenges') }}">
+                    <div
+                        class="group bg-gradient-to-br from-blue-900/40 to-cyan-900/40 backdrop-blur-md rounded-2xl p-8 border border-blue-500/30 hover:border-blue-400/60 transition-all duration-300 hover:scale-105 cursor-pointer">
                         <div class="flex items-center mb-6">
                             <div
                                 class="p-4 bg-blue-500/20 rounded-xl mr-4 group-hover:bg-blue-500/30 transition-colors">
@@ -168,126 +168,38 @@
                                 Retos
                             </span>
                         </div>
-                    </a>
-
-                </div>
+                    </div>
+                </a>
 
                 <!-- Sistema de Notificaciones -->
-                <div
-                    class="group bg-gradient-to-br from-green-900/40 to-teal-900/40 backdrop-blur-md rounded-2xl p-8 border border-green-500/30 hover:border-green-400/60 transition-all duration-300 hover:scale-105 cursor-pointer">
-                    <div class="flex items-center mb-6">
-                        <div class="p-4 bg-green-500/20 rounded-xl mr-4 group-hover:bg-green-500/30 transition-colors">
-                            <i
-                                class="fas fa-bell text-green-400 text-3xl group-hover:scale-110 transition-transform"></i>
-                        </div>
-                        <h3 class="text-2xl font-bold text-green-400 group-hover:text-green-300 transition-colors">
-                            Notificaciones</h3>
-                    </div>
-                    <p class="text-gray-300 leading-relaxed mb-6 group-hover:text-gray-200 transition-colors">
-                        Envía anuncios importantes, notifica cambios del sistema y mantén informada a toda la
-                        comunidad.
-                    </p>
-                    <div class="flex space-x-3">
-                        <span class="bg-green-400/20 text-green-400 px-3 py-1 rounded-full text-xs font-medium">
-                            <i class="fas fa-broadcast-tower mr-1"></i>
-                            Broadcast
-                        </span>
-                        <span class="bg-green-400/20 text-green-400 px-3 py-1 rounded-full text-xs font-medium">
-                            <i class="fas fa-clock mr-1"></i>
-                            Programar
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Alertas y Estado del Sistema -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- Actividad Reciente -->
-                <div class="bg-slate-800/60 backdrop-blur-md rounded-2xl p-6 border border-slate-600/50">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-xl font-bold text-white flex items-center">
-                            <i class="fas fa-history mr-3 text-cyan-400"></i>
-                            Actividad Reciente
-                        </h3>
-                        <a href="#" class="text-cyan-400 hover:text-cyan-300 text-sm font-medium">Ver
-                            todo</a>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div
-                            class="flex items-center space-x-4 p-3 bg-green-900/20 border border-green-500/20 rounded-lg">
-                            <div class="w-2 h-2 bg-green-400 rounded-full"></div>
-                            <div class="flex-1">
-                                <div class="text-sm font-medium text-white">Nuevo usuario registrado</div>
-                                <div class="text-xs text-gray-400">carlos.mendez@unasam.edu.pe - hace 5 min</div>
+                <a href="{{ route('admin.notifications') }}">
+                    <div
+                        class="group bg-gradient-to-br from-green-900/40 to-teal-900/40 backdrop-blur-md rounded-2xl p-8 border border-green-500/30 hover:border-green-400/60 transition-all duration-300 hover:scale-105 cursor-pointer">
+                        <div class="flex items-center mb-6">
+                            <div
+                                class="p-4 bg-green-500/20 rounded-xl mr-4 group-hover:bg-green-500/30 transition-colors">
+                                <i
+                                    class="fas fa-bell text-green-400 text-3xl group-hover:scale-110 transition-transform"></i>
                             </div>
+                            <h3 class="text-2xl font-bold text-green-400 group-hover:text-green-300 transition-colors">
+                                Notificaciones</h3>
                         </div>
-
-                        <div
-                            class="flex items-center space-x-4 p-3 bg-blue-900/20 border border-blue-500/20 rounded-lg">
-                            <div class="w-2 h-2 bg-blue-400 rounded-full"></div>
-                            <div class="flex-1">
-                                <div class="text-sm font-medium text-white">Reto resuelto</div>
-                                <div class="text-xs text-gray-400">Hash Cracker - Cryptography - hace 12 min</div>
-                            </div>
-                        </div>
-
-                        <div
-                            class="flex items-center space-x-4 p-3 bg-purple-900/20 border border-purple-500/20 rounded-lg">
-                            <div class="w-2 h-2 bg-purple-400 rounded-full"></div>
-                            <div class="flex-1">
-                                <div class="text-sm font-medium text-white">Nuevo reto añadido</div>
-                                <div class="text-xs text-gray-400">SQL Injection Advanced - Web - hace 1h</div>
-                            </div>
+                        <p class="text-gray-300 leading-relaxed mb-6 group-hover:text-gray-200 transition-colors">
+                            Envía anuncios importantes, notifica cambios del sistema y mantén informada a toda la
+                            comunidad.
+                        </p>
+                        <div class="flex space-x-3">
+                            <span class="bg-green-400/20 text-green-400 px-3 py-1 rounded-full text-xs font-medium">
+                                <i class="fas fa-broadcast-tower mr-1"></i>
+                                Broadcast
+                            </span>
+                            <span class="bg-green-400/20 text-green-400 px-3 py-1 rounded-full text-xs font-medium">
+                                <i class="fas fa-clock mr-1"></i>
+                                Programar
+                            </span>
                         </div>
                     </div>
-                </div>
-
-                <!-- Estado del Sistema -->
-                <div class="bg-slate-800/60 backdrop-blur-md rounded-2xl p-6 border border-slate-600/50">
-                    <h3 class="text-xl font-bold text-white mb-6 flex items-center">
-                        <i class="fas fa-server mr-3 text-green-400"></i>
-                        Estado del Sistema
-                    </h3>
-
-                    <div class="space-y-4">
-                        <div
-                            class="flex items-center justify-between p-3 bg-green-900/20 border border-green-500/20 rounded-lg">
-                            <div class="flex items-center">
-                                <div class="w-3 h-3 bg-green-400 rounded-full mr-3 animate-pulse"></div>
-                                <span class="text-white font-medium">Base de Datos</span>
-                            </div>
-                            <span class="text-green-400 text-sm font-medium">Operativo</span>
-                        </div>
-
-                        <div
-                            class="flex items-center justify-between p-3 bg-green-900/20 border border-green-500/20 rounded-lg">
-                            <div class="flex items-center">
-                                <div class="w-3 h-3 bg-green-400 rounded-full mr-3 animate-pulse"></div>
-                                <span class="text-white font-medium">Servidor Web</span>
-                            </div>
-                            <span class="text-green-400 text-sm font-medium">Operativo</span>
-                        </div>
-
-                        <div
-                            class="flex items-center justify-between p-3 bg-yellow-900/20 border border-yellow-500/20 rounded-lg">
-                            <div class="flex items-center">
-                                <div class="w-3 h-3 bg-yellow-400 rounded-full mr-3 animate-pulse"></div>
-                                <span class="text-white font-medium">CDN</span>
-                            </div>
-                            <span class="text-yellow-400 text-sm font-medium">Degradado</span>
-                        </div>
-
-                        <div
-                            class="flex items-center justify-between p-3 bg-green-900/20 border border-green-500/20 rounded-lg">
-                            <div class="flex items-center">
-                                <div class="w-3 h-3 bg-green-400 rounded-full mr-3 animate-pulse"></div>
-                                <span class="text-white font-medium">API</span>
-                            </div>
-                            <span class="text-green-400 text-sm font-medium">Operativo</span>
-                        </div>
-                    </div>
-                </div>
+                </a>
             </div>
         </div>
     </div>

@@ -20,15 +20,15 @@
                     <span>Sistema de Notificaciones</span>
                 </div>
 
-                <div class="flex justify-between items-center">
-                    <h1 class="text-4xl md:text-5xl font-black text-white">
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-white text-center sm:text-left">
                         <span
                             class="bg-gradient-to-r from-purple-400 via-green-400 to-teal-400 text-transparent bg-clip-text">
                             Notificaciones
                         </span>
                     </h1>
                     <button id="crear-notificacion-btn"
-                        class="group bg-gradient-to-r from-purple-600 to-green-600 hover:from-purple-500 hover:to-green-500 text-white px-8 py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-2xl shadow-purple-500/25 border border-purple-400/30">
+                        class="group bg-gradient-to-r from-purple-600 to-green-600 hover:from-purple-500 hover:to-green-500 text-white px-6 py-3 sm:px-8 sm:py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-2xl shadow-purple-500/25 border border-purple-400/30 w-full sm:w-auto">
                         <i class="fas fa-plus mr-3 group-hover:rotate-180 transition-transform duration-300"></i>
                         Nueva Notificación
                     </button>
@@ -209,7 +209,7 @@
                                                     <span class="text-sm font-medium text-blue-400">
                                                         {{ $notificacion->usuario->usuario ?? 'Usuario específico' }}
                                                     </span>
-                                                    <span class="text-xs text-gray-500">Específica</span>
+
                                                 </div>
                                             </div>
                                         @else

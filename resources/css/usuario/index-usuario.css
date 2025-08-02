@@ -122,3 +122,29 @@
     transform: scale(0.95) translateY(-10px);
     transition: all 0.3s ease;
 }
+
+
+/* Tabla de usuarios más amplia */
+.usuarios-table-container {
+    max-width: none !important;
+    width: 100%;
+}
+
+/* Asegurar que la tabla use todo el ancho disponible */
+table {
+    min-width: 100%;
+    table-layout: fixed;
+}
+
+/* Responsive adjustments para pantallas muy grandes */
+@media (min-width: 1536px) {
+    .max-w-7xl {
+        max-width: 90rem;
+    }
+}
+
+@media (min-width: 1920px) {
+    .max-w-7xl {
+        max-width: 100rem;
+    }
+}

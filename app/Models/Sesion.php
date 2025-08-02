@@ -9,20 +9,15 @@ class Sesion extends Model
 {
     use HasFactory;
 
-    protected $table = 'sesiones';
-    protected $primaryKey = 'idsesiones';
+    protected $table = 'sessions';
+    protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
 
-    protected $fillable = [
-        'ip_address',
-        'created_at',
-        'expires_at',
-        'fk_idusuario'
+    protected $casts = [
+        'id' => 'string',
+        'user_id' => 'string',
+        'ip_address' => 'string',
+        'last_activity' => 'datetime',
     ];
-
-    public function usuario()
-    {
-        return $this->belongsTo(User::class, 'fk_idusuario');
-    }
 }

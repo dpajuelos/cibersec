@@ -58,6 +58,10 @@
                                     <i class="fas fa-calendar text-green-400 w-5 mr-3"></i>
                                     <span id="modalUserRegistration" class="text-gray-300"></span>
                                 </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-circle w-5 mr-3" id="modalUserStatusIcon"></i>
+                                    <span id="modalUserStatusText" class="text-gray-300"></span>
+                                </div>
                             </div>
                         </div>
 
@@ -73,24 +77,6 @@
 
                     <!-- Right Column -->
                     <div class="space-y-6">
-                        <!-- Skills -->
-                        <div class="bg-slate-900/50 rounded-2xl p-6 border border-slate-700/50">
-                            <h4 class="text-lg font-bold text-cyan-400 mb-4 flex items-center">
-                                <i class="fas fa-code mr-3"></i>
-                                Habilidades
-                            </h4>
-                            <div id="modalUserSkills" class="flex flex-wrap gap-2"></div>
-                        </div>
-
-                        <!-- Experience -->
-                        <div class="bg-slate-900/50 rounded-2xl p-6 border border-slate-700/50">
-                            <h4 class="text-lg font-bold text-cyan-400 mb-4 flex items-center">
-                                <i class="fas fa-briefcase mr-3"></i>
-                                Experiencia
-                            </h4>
-                            <p id="modalUserExperience" class="text-gray-300 leading-relaxed"></p>
-                        </div>
-
                         <!-- Competencias -->
                         <div class="bg-slate-900/50 rounded-2xl p-6 border border-slate-700/50">
                             <h4 class="text-lg font-bold text-cyan-400 mb-4 flex items-center">
@@ -122,7 +108,6 @@
                 <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-cyan-500"></div>
                 <span class="ml-3 text-cyan-400">Buscando usuario en la Matrix...</span>
             </div>
-
         `;
 
         // Hacer la petición AJAX para obtener los datos del usuario
@@ -163,6 +148,10 @@
                                     <div class="flex items-center">
                                         <i class="fas fa-calendar text-green-400 w-5 mr-3"></i>
                                         <span id="modalUserRegistration" class="text-gray-300"></span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-circle w-5 mr-3" id="modalUserStatusIcon"></i>
+                                        <span id="modalUserStatusText" class="text-gray-300"></span>
                                     </div>
                                 </div>
                             </div>
@@ -274,7 +263,8 @@
         const githubElement = document.getElementById('modalUserGithub');
         const registrationElement = document.getElementById('modalUserRegistration');
         const descriptionElement = document.getElementById('modalUserDescription');
-        const experienceElement = document.getElementById('modalUserExperience');
+        const statusIconElement = document.getElementById('modalUserStatusIcon');
+        const statusTextElement = document.getElementById('modalUserStatusText');
 
         if (emailElement) emailElement.textContent = user.email || 'No disponible';
         if (universityElement) universityElement.textContent = user.nomuniversidad || 'No registrada';
@@ -290,15 +280,28 @@
             }
         }
 
-        // Status indicator
+        // Status indicator en el header (punto junto a la imagen)
         const statusIndicator = document.getElementById('modalUserStatus');
         if (statusIndicator) {
-            if (user.fk_idestados == 1) {
+            if (user.is_online) {
                 statusIndicator.className =
                     'absolute -bottom-1 -right-1 w-5 h-5 bg-green-400 rounded-full border-2 border-slate-800 animate-pulse';
             } else {
                 statusIndicator.className =
                     'absolute -bottom-1 -right-1 w-5 h-5 bg-red-400 rounded-full border-2 border-slate-800';
+            }
+        }
+
+        // Status text en la información personal
+        if (statusIconElement && statusTextElement) {
+            if (user.is_online) {
+                statusIconElement.className = 'fas fa-wifi text-green-400 w-5 mr-3 animate-pulse';
+                statusTextElement.textContent = 'En línea';
+                statusTextElement.className = 'text-green-400 font-semibold';
+            } else {
+                statusIconElement.className = 'fas fa-times-circle text-red-400 w-5 mr-3';
+                statusTextElement.textContent = 'Inactivo';
+                statusTextElement.className = 'text-red-400';
             }
         }
 
@@ -316,35 +319,6 @@
                 'Este usuario prefiere mantener un aire de misterio...';
         }
 
-        // Experiencia
-        if (experienceElement) {
-            experienceElement.textContent = user.experiencia ||
-                'Este usuario está comenzando su camino en ciberseguridad';
-        }
-
-        // Habilidades
-        const skillsContainer = document.getElementById('modalUserSkills');
-        if (skillsContainer) {
-            skillsContainer.innerHTML = '';
-            if (user.habilidades) {
-                const skills = user.habilidades.split(',');
-                skills.forEach(skill => {
-                    const skillElement = document.createElement('span');
-                    skillElement.className =
-                        'px-3 py-1 bg-gradient-to-r from-blue-600/20 to-cyan-600/20 text-cyan-400 text-xs font-medium rounded-full border border-cyan-500/30';
-                    skillElement.textContent = skill.trim();
-                    skillsContainer.appendChild(skillElement);
-                });
-            } else {
-                skillsContainer.innerHTML = `
-                    <div class="w-full text-center py-3">
-                        <i class="fas fa-user-secret text-2xl text-gray-500 mb-2"></i>
-                        <p class="text-gray-400">Este hacker mantiene sus habilidades en secreto</p>
-                    </div>
-                `;
-            }
-        }
-
         // Competencias
         const competenciasContainer = document.getElementById('modalUserCompetencias');
         if (competenciasContainer) {
@@ -357,11 +331,11 @@
                     compElement.innerHTML = `
                         <i class="fas fa-medal text-purple-400 mr-3"></i>
                         <div class="flex-1">
-                            <div class="font-medium text-purple-400">${competencia.nomcompetencia}</div>
+                            <div class="font-medium text-purple-400">${competencia.nomcompe}</div>
                             <div class="text-xs text-gray-400">${competencia.descripcion || 'Sin descripción'}</div>
                             <div class="text-xs text-green-400 mt-1">
                                 <i class="fas fa-calendar-alt mr-1"></i>
-                                Registrado: ${new Date(competencia.fecha_registro).toLocaleDateString('es-ES')}
+                                Registrado: ${competencia.fec_registro}
                             </div>
                         </div>
                     `;

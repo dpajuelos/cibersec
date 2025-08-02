@@ -1,0 +1,249 @@
+@keyframes gradient-x {
+
+    0%,
+    100% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+.animate-gradient-x {
+    animation: gradient-x 3s ease infinite;
+    background-size: 200% 200%;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.6s ease-out;
+}
+
+.animation-delay-200 {
+    animation-delay: 200ms;
+}
+
+.animation-delay-300 {
+    animation-delay: 300ms;
+}
+
+.animation-delay-500 {
+    animation-delay: 500ms;
+}
+
+.animation-delay-600 {
+    animation-delay: 600ms;
+}
+
+.animation-delay-800 {
+    animation-delay: 800ms;
+}
+
+.animation-delay-900 {
+    animation-delay: 900ms;
+}
+
+.animation-delay-1200 {
+    animation-delay: 1200ms;
+}
+
+/* Estilos personalizados para retos */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(71, 85, 105, 0.1);
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.3);
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(139, 92, 246, 0.5);
+}
+
+/* Ensure dropdowns appear above everything */
+#categoryMenu,
+#difficultyMenu,
+#statusMenu {
+    z-index: 9999 !important;
+}
+
+/* Smooth transitions for filtered elements */
+.category-container,
+.challenge-card {
+    transition: all 0.3s ease;
+}
+
+/* Enhanced hover effects */
+.challenge-card:hover {
+    transform: translateY(-8px) scale(1.02);
+}
+
+/* Custom scrollbar for modal */
+#modal .container::-webkit-scrollbar {
+    width: 6px;
+}
+
+#modal .container::-webkit-scrollbar-track {
+    background: rgb(51 65 85 / 0.3);
+    border-radius: 10px;
+}
+
+#modal .container::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #8b5cf6, #6366f1);
+    border-radius: 10px;
+}
+
+/* Enhanced search input effects */
+.search-input:focus {
+    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+}
+
+/* Modal backdrop blur */
+.modal-backdrop {
+    backdrop-filter: blur(8px);
+}
+
+/* Smooth card transitions */
+.category-container {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.category-container.hidden {
+    opacity: 0;
+    transform: translateY(-10px);
+    display: none;
+}
+
+/* Filter dropdown animations */
+.filter-dropdown {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.filter-dropdown.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.filter-dropdown.hide {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+}
+
+/* Loading states */
+.loading-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Button hover effects */
+.btn-primary {
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+}
+
+/* Card status indicators */
+.status-solved {
+    background: linear-gradient(135deg, #10b981, #059669);
+    animation: pulse 2s infinite;
+}
+
+.status-pending {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .challenge-card:hover {
+        transform: translateY(-4px) scale(1.01);
+    }
+
+    .filter-dropdown {
+        position: fixed !important;
+        left: 1rem !important;
+        right: 1rem !important;
+        top: auto !important;
+        width: auto !important;
+    }
+
+    .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-3.xl\:grid-cols-4 {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+        gap: 1rem;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-3.xl\:grid-cols-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(59, 130, 246, 0.6) rgba(30, 41, 59, 0.3);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(30, 41, 59, 0.3);
+    border-radius: 3px;
+    margin: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, rgba(59, 130, 246, 0.7), rgba(99, 102, 241, 0.7));
+    border-radius: 3px;
+    border: 1px solid rgba(30, 41, 59, 0.2);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, rgba(59, 130, 246, 0.9), rgba(99, 102, 241, 0.9));
+}
+
+.custom-scrollbar::-webkit-scrollbar-corner {
+    background: rgba(30, 41, 59, 0.3);
+}
+
+/* Animaciones suaves para la tabla */
+.custom-scrollbar tbody tr {
+    transition: all 0.2s ease-in-out;
+}
+
+.custom-scrollbar tbody tr:hover {
+    transform: translateX(2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}

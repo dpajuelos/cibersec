@@ -1,0 +1,1244 @@
+class RetosManager {
+    constructor() {
+        this.retoResuelto = false;
+        this.activeFilters = {
+            category: 'all',
+            difficulty: 'all',
+            status: 'all',
+            search: ''
+        };
+        this.init();
+    }
+
+    init() {
+        this.setupEventListeners();
+        this.setupSearchFunctionality();
+        this.initializeCounters();
+        this.setupKeyboardNavigation();
+        this.exposeGlobalFunctions();
+
+        // Debug: verificar variables globales
+        console.log('RetosManager initialized with:', {
+            isLoggedIn: window.isLoggedIn,
+            userRegisteredInCompetition: window.userRegisteredInCompetition,
+            competitionId: window.competitionId
+        });
+    }
+
+    // Exponer funciones globalmente
+    exposeGlobalFunctions() {
+        // Funciones de filtros y navegación existentes
+        window.toggleCategoryMenu = () => this.toggleCategoryMenu();
+        window.toggleDifficultyMenu = () => this.toggleDifficultyMenu();
+        window.toggleStatusMenu = () => this.toggleStatusMenu();
+        window.filterByCategory = (category) => this.filterByCategory(category);
+        window.filterByDifficulty = (difficulty) => this.filterByDifficulty(difficulty);
+        window.filterByStatus = (status) => this.filterByStatus(status);
+        window.clearAllFilters = () => this.clearAllFilters();
+        window.openModal = (element) => this.openModal(element);
+        window.closeModal = () => this.closeModal();
+        window.showResueltos = () => this.showResueltos();
+        window.volverAVistaReto = () => this.volverAVistaReto();
+        window.enviarFlag = () => this.enviarFlag();
+
+        // Funciones de competencia
+        window.registrarseEnCompetencia = () => this.registrarseEnCompetencia();
+        window.mostrarModalCompetencia = () => this.mostrarModalCompetencia();
+        window.cerrarModalCompetencia = () => this.cerrarModalCompetencia();
+        window.confirmarRegistro = () => this.confirmarRegistro();
+        window.mostrarModalExito = () => this.mostrarModalExito();
+        window.cerrarModalExito = () => this.cerrarModalExito();
+    }
+
+    // Setup event listeners
+    setupEventListeners() {
+        // Close menus when clicking outside
+        document.addEventListener('click', (event) => {
+            this.handleClickOutside(event);
+        });
+
+        // Cerrar menús y reposicionar al hacer scroll
+        window.addEventListener('scroll', () => {
+            this.closeAllMenus(); // Cerrar menús al hacer scroll
+        });
+
+        // Cerrar menús al redimensionar ventana
+        window.addEventListener('resize', () => {
+            this.closeAllMenus();
+        });
+
+        // Search input
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                this.activeFilters.search = e.target.value;
+                this.applyFilters();
+                this.updateActiveFiltersDisplay();
+            });
+        }
+
+        // Escape key to close modals and menus
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                this.closeAllMenus();
+                this.closeModal();
+            }
+        });
+    }
+
+    // Setup search functionality
+    setupSearchFunctionality() {
+        const searchForm = document.querySelector('form[action="#"]');
+        if (searchForm) {
+            searchForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.applyFilters();
+            });
+        }
+    }
+
+    // Initialize counters
+    initializeCounters() {
+        const totalChallenges = document.querySelectorAll('.challenge-card').length;
+        const visibleCountElement = document.getElementById('visibleCount');
+        const totalCountElement = document.getElementById('totalCount');
+
+        if (visibleCountElement) visibleCountElement.textContent = totalChallenges;
+        if (totalCountElement) totalCountElement.textContent = totalChallenges;
+    }
+
+    // Setup keyboard navigation
+    setupKeyboardNavigation() {
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                this.closeAllMenus();
+            }
+        });
+    }
+
+    // Menu toggle functions 
+    toggleCategoryMenu() {
+        const menu = document.getElementById('categoryMenu');
+        const button = document.getElementById('categoryButton');
+        const isHidden = menu.classList.contains('hidden');
+
+        this.closeDifficultyMenu();
+        this.closeStatusMenu();
+
+        if (isHidden) {
+            this.showMenu(menu, button);
+        } else {
+            this.closeCategoryMenu();
+        }
+    }
+
+    toggleDifficultyMenu() {
+        const menu = document.getElementById('difficultyMenu');
+        const button = document.getElementById('difficultyButton');
+        const isHidden = menu.classList.contains('hidden');
+
+        this.closeCategoryMenu();
+        this.closeStatusMenu();
+
+        if (isHidden) {
+            this.showMenu(menu, button);
+        } else {
+            this.closeDifficultyMenu();
+        }
+    }
+
+    toggleStatusMenu() {
+        const menu = document.getElementById('statusMenu');
+        const button = document.getElementById('statusButton');
+        const isHidden = menu.classList.contains('hidden');
+
+        this.closeCategoryMenu();
+        this.closeDifficultyMenu();
+
+        if (isHidden) {
+            this.showMenu(menu, button);
+        } else {
+            this.closeStatusMenu();
+        }
+    }
+
+    // Mostrar menú 
+    showMenu(menu, button) {
+        if (!menu || !button) return;
+
+        // Usar posicionamiento fijo como en usuarios
+        const buttonRect = button.getBoundingClientRect();
+
+        menu.style.position = 'fixed';
+        menu.style.top = (buttonRect.bottom + 8) + 'px';
+        menu.style.left = buttonRect.left + 'px';
+        menu.style.right = 'auto';
+        menu.style.zIndex = '99999';
+
+        // Mover al body para asegurar que esté por encima
+        document.body.appendChild(menu);
+        menu.classList.remove('hidden');
+
+        setTimeout(() => {
+            menu.classList.remove('scale-95', 'opacity-0');
+            menu.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+
+    // Cerrar menú de categorías
+    closeCategoryMenu() {
+        const menu = document.getElementById('categoryMenu');
+        this.hideMenu(menu, '#categoryButton');
+    }
+
+    // Cerrar menú de dificultad
+    closeDifficultyMenu() {
+        const menu = document.getElementById('difficultyMenu');
+        this.hideMenu(menu, '#difficultyButton');
+    }
+
+    // Cerrar menú de estado
+    closeStatusMenu() {
+        const menu = document.getElementById('statusMenu');
+        this.hideMenu(menu, '#statusButton');
+    }
+
+    // Ocultar menú - actualizado
+    hideMenu(menu, buttonSelector) {
+        if (!menu || menu.classList.contains('hidden')) return;
+
+        menu.classList.remove('scale-100', 'opacity-100');
+        menu.classList.add('scale-95', 'opacity-0');
+
+        setTimeout(() => {
+            menu.classList.add('hidden');
+            // Mover de vuelta al contenedor original
+            const originalContainer = document.querySelector(buttonSelector)?.parentNode;
+            if (originalContainer && !originalContainer.contains(menu)) {
+                originalContainer.appendChild(menu);
+            }
+        }, 300);
+    }
+
+    // Actualizar handleClickOutside 
+    handleClickOutside(event) {
+        const categoryMenu = document.getElementById('categoryMenu');
+        const difficultyMenu = document.getElementById('difficultyMenu');
+        const statusMenu = document.getElementById('statusMenu');
+        const categoryButton = document.getElementById('categoryButton');
+        const difficultyButton = document.getElementById('difficultyButton');
+        const statusButton = document.getElementById('statusButton');
+
+        if (!categoryButton?.contains(event.target) && !categoryMenu?.contains(event.target)) {
+            this.closeCategoryMenu();
+        }
+
+        if (!difficultyButton?.contains(event.target) && !difficultyMenu?.contains(event.target)) {
+            this.closeDifficultyMenu();
+        }
+
+        if (!statusButton?.contains(event.target) && !statusMenu?.contains(event.target)) {
+            this.closeStatusMenu();
+        }
+    }
+
+    // Filter functions
+    filterByCategory(category) {
+        this.activeFilters.category = category;
+        this.closeCategoryMenu();
+        this.applyFilters();
+        this.updateActiveFiltersDisplay();
+    }
+
+    filterByDifficulty(difficulty) {
+        this.activeFilters.difficulty = difficulty;
+        this.closeDifficultyMenu();
+        this.applyFilters();
+        this.updateActiveFiltersDisplay();
+    }
+
+    filterByStatus(status) {
+        this.activeFilters.status = status;
+        this.closeStatusMenu();
+        this.applyFilters();
+        this.updateActiveFiltersDisplay();
+    }
+
+    applyFilters() {
+        const containers = document.querySelectorAll('.category-container');
+        const challenges = document.querySelectorAll('.challenge-card');
+        let visibleCount = 0;
+        let totalCount = challenges.length;
+
+        containers.forEach(container => {
+            const category = container.dataset.category;
+            let hasVisibleChallenges = false;
+
+            // Filter by category
+            if (this.activeFilters.category !== 'all' && category !== this.activeFilters.category) {
+                container.style.display = 'none';
+                return;
+            }
+
+            const categoryCards = container.querySelectorAll('.challenge-card');
+            categoryCards.forEach(card => {
+                let isVisible = true;
+
+                // Filter by search
+                if (this.activeFilters.search) {
+                    const challengeName = card.dataset.challengeName?.toLowerCase() || '';
+                    if (!challengeName.includes(this.activeFilters.search.toLowerCase())) {
+                        isVisible = false;
+                    }
+                }
+
+                // Filter by difficulty
+                if (this.activeFilters.difficulty !== 'all') {
+                    const points = parseInt(card.dataset.points);
+                    if (this.activeFilters.difficulty === 'easy' && points > 50) isVisible = false;
+                    if (this.activeFilters.difficulty === 'medium' && (points <= 50 || points > 100)) isVisible = false;
+                    if (this.activeFilters.difficulty === 'hard' && points <= 100) isVisible = false;
+                }
+
+                // Filter by status
+                if (this.activeFilters.status !== 'all') {
+                    const isSolved = card.dataset.solved === 'true';
+                    if (this.activeFilters.status === 'solved' && !isSolved) isVisible = false;
+                    if (this.activeFilters.status === 'unsolved' && isSolved) isVisible = false;
+                }
+
+                if (isVisible) {
+                    card.style.display = 'block';
+                    hasVisibleChallenges = true;
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            container.style.display = hasVisibleChallenges ? 'block' : 'none';
+        });
+
+        // Update counters
+        const visibleCountElement = document.getElementById('visibleCount');
+        const totalCountElement = document.getElementById('totalCount');
+
+        if (visibleCountElement) visibleCountElement.textContent = visibleCount;
+        if (totalCountElement) totalCountElement.textContent = totalCount;
+    }
+
+    updateActiveFiltersDisplay() {
+        const activeFiltersDiv = document.getElementById('activeFilters');
+        const filterTags = document.getElementById('filterTags');
+        const clearBtn = document.getElementById('clearFiltersBtn');
+
+        if (!activeFiltersDiv || !filterTags || !clearBtn) return;
+
+        let hasActiveFilters = false;
+        filterTags.innerHTML = '';
+
+        // Check if any filters are active
+        Object.keys(this.activeFilters).forEach(key => {
+            if (this.activeFilters[key] !== 'all' && this.activeFilters[key] !== '') {
+                hasActiveFilters = true;
+
+                const tag = document.createElement('span');
+                tag.className = 'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-600/20 text-purple-400 border border-purple-500/30';
+
+                let displayText = '';
+                switch (key) {
+                    case 'category':
+                        displayText = `Categoría: ${this.activeFilters[key]}`;
+                        break;
+                    case 'difficulty':
+                        displayText = `Dificultad: ${this.activeFilters[key]}`;
+                        break;
+                    case 'status':
+                        displayText = `Estado: ${this.activeFilters[key]}`;
+                        break;
+                    case 'search':
+                        displayText = `Búsqueda: "${this.activeFilters[key]}"`;
+                        break;
+                }
+
+                tag.innerHTML = `
+                    ${displayText}
+                    <button onclick="window.retosManager.removeFilter('${key}')" class="ml-2 text-purple-300 hover:text-purple-200">
+                        <i class="fas fa-times text-xs"></i>
+                    </button>
+                `;
+                filterTags.appendChild(tag);
+            }
+        });
+
+        if (hasActiveFilters) {
+            activeFiltersDiv.classList.remove('hidden');
+            clearBtn.classList.remove('hidden');
+        } else {
+            activeFiltersDiv.classList.add('hidden');
+            clearBtn.classList.add('hidden');
+        }
+    }
+
+    removeFilter(filterType) {
+        if (filterType === 'search') {
+            this.activeFilters[filterType] = '';
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) searchInput.value = '';
+        } else {
+            this.activeFilters[filterType] = 'all';
+        }
+        this.applyFilters();
+        this.updateActiveFiltersDisplay();
+    }
+
+    clearAllFilters() {
+        this.activeFilters = {
+            category: 'all',
+            difficulty: 'all',
+            status: 'all',
+            search: ''
+        };
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) searchInput.value = '';
+        this.applyFilters();
+        this.updateActiveFiltersDisplay();
+    }
+
+    // Modal functions
+    openModal(element) {
+        console.log('openModal called with:', {
+            isLoggedIn: window.isLoggedIn,
+            userRegisteredInCompetition: window.userRegisteredInCompetition
+        });
+
+        // Verificar si está logueado
+        if (!window.isLoggedIn) {
+            console.log('User not logged in, showing overlay panel');
+            this.showOverlayPanel();
+            return;
+        }
+
+        // Verificar si está registrado en la competencia
+        if (!window.userRegisteredInCompetition) {
+            console.log('User not registered in competition, showing modal');
+            this.mostrarModalCompetencia();
+            return;
+        }
+
+        console.log('User is logged in and registered, showing reto');
+        this.showReto(element);
+        this.cargarPistas();
+        const modal = document.getElementById('modal');
+        if (modal) modal.style.display = 'flex';
+    }
+
+    // FUNCIONES DE COMPETENCIA - TODAS EN JS
+    mostrarModalCompetencia() {
+        const modal = document.getElementById('competitionModal');
+        const content = document.getElementById('competitionModalContent');
+
+        if (!modal || !content) return;
+
+        modal.classList.remove('hidden');
+
+        setTimeout(() => {
+            content.classList.remove('scale-95', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+
+    cerrarModalCompetencia() {
+        const modal = document.getElementById('competitionModal');
+        const content = document.getElementById('competitionModalContent');
+
+        if (!modal || !content) return;
+
+        content.classList.remove('scale-100', 'opacity-100');
+        content.classList.add('scale-95', 'opacity-0');
+
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+
+    registrarseEnCompetencia() {
+        if (!window.isLoggedIn) {
+            this.mostrarModalLogin();
+            return;
+        }
+
+        if (!window.competitionId) {
+            this.mostrarAlerta('No hay competencia activa disponible', 'error');
+            return;
+        }
+
+        // Encontrar el botón que disparó el evento
+        const boton = event.target;
+        const textoOriginal = boton.innerHTML;
+        boton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Registrando...';
+        boton.disabled = true;
+
+        fetch(`/competencia/${window.competitionId}/registrar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                boton.innerHTML = textoOriginal;
+                boton.disabled = false;
+
+                if (data.success) {
+                    this.mostrarModalExito();
+                } else {
+                    this.mostrarAlerta(data.message || 'Error al registrarse en la competencia', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                boton.innerHTML = textoOriginal;
+                boton.disabled = false;
+                this.mostrarAlerta('Error al procesar la solicitud', 'error');
+            });
+    }
+
+    confirmarRegistro() {
+        this.registrarseEnCompetencia();
+    }
+
+    mostrarModalExito() {
+        this.cerrarModalCompetencia();
+        const modal = document.getElementById('registrationSuccessModal');
+        if (modal) modal.classList.remove('hidden');
+    }
+
+    cerrarModalExito() {
+        const modal = document.getElementById('registrationSuccessModal');
+        if (modal) modal.classList.add('hidden');
+        location.reload();
+    }
+
+    mostrarAlerta(mensaje, tipo = 'info') {
+        const alerta = document.createElement('div');
+        const colores = {
+            'success': 'from-green-600 to-emerald-600 border-green-500',
+            'error': 'from-red-600 to-rose-600 border-red-500',
+            'info': 'from-blue-600 to-indigo-600 border-blue-500'
+        };
+
+        alerta.className = `fixed top-4 right-4 z-[10003] bg-gradient-to-r ${colores[tipo]} text-white p-4 rounded-xl shadow-lg border transform transition-all duration-300 translate-x-full opacity-0`;
+        alerta.innerHTML = `
+            <div class="flex items-center">
+                <i class="fas fa-${tipo === 'success' ? 'check' : tipo === 'error' ? 'exclamation-triangle' : 'info-circle'} mr-2"></i>
+                <span>${mensaje}</span>
+                <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white/80 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+
+        document.body.appendChild(alerta);
+
+        setTimeout(() => {
+            alerta.classList.remove('translate-x-full', 'opacity-0');
+        }, 100);
+
+        setTimeout(() => {
+            if (alerta.parentElement) {
+                alerta.classList.add('translate-x-full', 'opacity-0');
+                setTimeout(() => alerta.remove(), 300);
+            }
+        }, 5000);
+    }
+
+    mostrarModalLogin() {
+        const modal = document.createElement('div');
+        modal.className = 'fixed top-0 left-0 w-full h-full flex items-center justify-center z-[10003] bg-black/80 backdrop-blur-sm';
+        modal.innerHTML = `
+            <div class="bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-md rounded-3xl shadow-2xl border border-slate-700/50 p-8 max-w-md w-full mx-4">
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-sign-in-alt text-3xl text-blue-400"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">Iniciar Sesión Requerido</h3>
+                    <p class="text-gray-300 mb-6 leading-relaxed">
+                        Para participar en la competencia necesitas iniciar sesión primero.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="/login" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 text-center">
+                            <i class="fas fa-sign-in-alt mr-2"></i>
+                            Iniciar Sesión
+                        </a>
+                        <button onclick="this.closest('.fixed').remove()" class="flex-1 bg-gradient-to-r from-gray-600 to-slate-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-gray-700 hover:to-slate-700 transition-all duration-300">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+    // Modal functions
+    closeModal() {
+        const modal = document.getElementById('modal');
+        if (modal) modal.style.display = 'none';
+
+        // Clear modal fields
+        const elements = {
+            'message': '',
+            'modal-title': '',
+            'modal-description': '',
+            'pistas-container': '',
+            'resuelto-count': '',
+            'modal-points': ''
+        };
+
+        Object.keys(elements).forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                if (id === 'pistas-container') {
+                    element.innerHTML = '';
+                } else {
+                    element.innerText = elements[id];
+                }
+            }
+        });
+
+        // NUEVO: Limpiar y ocultar la vista de resueltos
+        const resueltosView = document.getElementById('resueltos-view');
+        const containerElement = document.querySelector('.container');
+        const resueltosContainer = document.getElementById('resueltos-tabla-container');
+
+        if (resueltosView) resueltosView.classList.add('hidden');
+        if (containerElement) containerElement.classList.remove('hidden');
+        if (resueltosContainer) resueltosContainer.innerHTML = '';
+    }
+
+    showReto(element) {
+        // NUEVO: Asegurar que la vista de resueltos esté oculta al mostrar nuevo reto
+        const resueltosView = document.getElementById('resueltos-view');
+        const containerElement = document.querySelector('.container');
+        const resueltosContainer = document.getElementById('resueltos-tabla-container');
+
+        if (resueltosView) resueltosView.classList.add('hidden');
+        if (containerElement) containerElement.classList.remove('hidden');
+        if (resueltosContainer) resueltosContainer.innerHTML = '';
+
+        const idreto = element.dataset.id;
+        const title = element.dataset.challengeName;
+        const points = element.dataset.points;
+        const description = element.dataset.description;
+        const url = element.dataset.url;
+        const nombreArchivo = element.dataset.nombreArchivo;
+        const solved = element.dataset.solved === 'true';
+        const inputFlag = document.getElementById('flag-input');
+        const botonEnviar = document.querySelector('button[onclick="enviarFlag()"]');
+        this.retoResuelto = solved;
+
+        // Insert data into modal
+        const elements = {
+            'idreto': idreto,
+            'modal-title': title,
+            'modal-points': `Puntos: ${points}`,
+            'modal-description': description
+        };
+
+        Object.keys(elements).forEach(id => {
+            const element = document.getElementById(id);
+            if (element) element.innerText = elements[id];
+        });
+
+        // Show download link if exists
+        const enlaceContainer = document.getElementById('enlace-container');
+        if (enlaceContainer) {
+            if (url && nombreArchivo) {
+                enlaceContainer.classList.remove('hidden');
+                enlaceContainer.innerHTML = `
+                    <h3 class="text-xl font-semibold text-yellow-400 mb-2">Enlace de descarga</h3>
+                    <a href="${url}" download="${nombreArchivo}" class="text-blue-400 underline hover:text-blue-300 transition-all">
+                        Descargar
+                    </a>
+                `;
+            } else {
+                enlaceContainer.classList.add('hidden');
+                enlaceContainer.innerHTML = '';
+            }
+        }
+
+        if (inputFlag && botonEnviar) {
+            if (solved) {
+                inputFlag.disabled = true;
+                inputFlag.placeholder = "Ya resolviste este reto...";
+                botonEnviar.disabled = true;
+                botonEnviar.textContent = "Resuelto";
+                botonEnviar.classList.remove('bg-green-600', 'hover:bg-green-700');
+                botonEnviar.classList.add('bg-gray-600', 'cursor-not-allowed');
+            } else {
+                inputFlag.disabled = false;
+                inputFlag.placeholder = "CSU{flag}";
+                botonEnviar.disabled = false;
+                botonEnviar.textContent = "Enviar";
+                botonEnviar.classList.remove('bg-gray-600', 'cursor-not-allowed');
+                botonEnviar.classList.add('bg-green-600', 'hover:bg-green-700');
+            }
+        }
+
+        this.fetchResueltosCount(idreto);
+        this.clearModalFields();
+    }
+
+    fetchResueltosCount(idreto) {
+        fetch(`/resueltos/${idreto}`)
+            .then(response => {
+                if (!response.ok) throw new Error("Error al obtener cantidad de resueltos");
+                return response.json();
+            })
+            .then(data => {
+                const resueltosElement = document.getElementById('resuelto-count');
+                if (resueltosElement) resueltosElement.innerText = data.count ?? 0;
+            })
+            .catch(error => {
+                console.error(error);
+                const resueltosElement = document.getElementById('resuelto-count');
+                if (resueltosElement) resueltosElement.innerText = '0';
+            });
+    }
+
+    clearModalFields() {
+        const flagInput = document.getElementById('flag-input');
+        const messageElement = document.getElementById('message');
+        const resultElement = document.getElementById('result');
+
+        if (flagInput) flagInput.value = '';
+        if (messageElement) messageElement.innerText = '';
+        if (resultElement) resultElement.innerText = '';
+    }
+
+    showResueltos() {
+        const idreto = document.getElementById('idreto')?.innerText;
+        if (!idreto) return;
+
+        const containerElement = document.querySelector('.container');
+        const resueltosView = document.getElementById('resueltos-view');
+
+        if (containerElement) containerElement.classList.add('hidden');
+        if (resueltosView) resueltosView.classList.remove('hidden');
+
+        const container = document.getElementById('resueltos-tabla-container');
+        if (container) {
+            container.innerHTML = `
+                <div class="flex items-center justify-center py-8">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-400"></div>
+                    <span class="ml-3 text-gray-300">Cargando usuarios...</span>
+                </div>
+            `;
+        }
+
+        fetch(`/resueltos/${idreto}`)
+            .then(res => {
+                if (!res.ok) throw new Error("Error al obtener usuarios.");
+                return res.json();
+            })
+            .then(data => {
+                if (!container) return;
+
+                if (!data.data || data.data.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-12">
+                            <div class="w-16 h-16 bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                                </svg>
+                            </div>
+                            <p class="text-gray-300 text-lg">Ningún usuario ha resuelto este reto aún</p>
+                            <p class="text-gray-500 text-sm mt-2">¡Sé el primero en resolverlo!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Tabla de usuarios resueltos
+                let tabla = `
+                    <div class="max-h-96 overflow-y-auto custom-scrollbar">
+                        <table class="w-full table-auto">
+                            <thead class="sticky top-0 z-10 bg-gradient-to-r from-slate-800/95 to-slate-900/95 backdrop-blur-md border-b border-slate-600/50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-bold text-gray-300 uppercase tracking-wider border-r border-slate-600/30">
+                                        <div class="flex items-center space-x-2">
+                                            <i class="fas fa-user text-green-400"></i>
+                                            <span>Usuario</span>
+                                        </div>
+                                    </th>
+                                    <th class="px-4 py-3 text-center text-xs font-bold text-gray-300 uppercase tracking-wider border-r border-slate-600/30">
+                                        <div class="flex items-center justify-center space-x-2">
+                                            <i class="fas fa-star text-yellow-400"></i>
+                                            <span>Puntos</span>
+                                        </div>
+                                    </th>
+                                    <th class="px-4 py-3 text-center text-xs font-bold text-gray-300 uppercase tracking-wider border-r border-slate-600/30">
+                                        <div class="flex items-center justify-center space-x-2">
+                                            <i class="fas fa-calendar text-blue-400"></i>
+                                            <span>Fecha</span>
+                                        </div>
+                                    </th>
+                                    <th class="px-4 py-3 text-center text-xs font-bold text-gray-300 uppercase tracking-wider border-r border-slate-600/30">
+                                        <div class="flex items-center justify-center space-x-2">
+                                            <i class="fas fa-clock text-purple-400"></i>
+                                            <span>Hora</span>
+                                        </div>
+                                    </th>
+                                    <th class="px-4 py-3 text-center text-xs font-bold text-gray-300 uppercase tracking-wider">
+                                        <div class="flex items-center justify-center space-x-2">
+                                            <i class="fas fa-trophy text-orange-400"></i>
+                                            <span>Posición</span>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-700/50">
+                `;
+
+                data.data.forEach((item, index) => {
+                    const fecha = new Date(item.time);
+                    const fechaFormateada = fecha.toLocaleDateString('es-ES', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                    });
+                    const horaFormateada = fecha.toLocaleTimeString('es-ES', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+
+                    // Alternar colores de fila con hover elegante
+                    const bgClass = index % 2 === 0 ? 'bg-slate-800/40' : 'bg-slate-900/40';
+
+                    // Estilos de posición con medallas
+                    let positionBadge = '';
+                    let positionClass = 'bg-slate-600/30 text-gray-200 border border-slate-500/50';
+
+                    if (index === 0) {
+                        positionBadge = '🥇';
+                        positionClass = 'bg-gradient-to-r from-yellow-600/30 to-yellow-500/30 text-gray-100 border border-yellow-400/50 shadow-lg shadow-yellow-500/20';
+                    } else if (index === 1) {
+                        positionBadge = '🥈';
+                        positionClass = 'bg-gradient-to-r from-gray-500/30 to-gray-400/30 text-gray-200 border border-gray-400/50 shadow-lg shadow-gray-400/20';
+                    } else if (index === 2) {
+                        positionBadge = '🥉';
+                        positionClass = 'bg-gradient-to-r from-orange-600/30 to-orange-500/30 text-orange-200 border border-orange-400/50 shadow-lg shadow-orange-500/20';
+                    }
+
+                    tabla += `
+                        <tr class="${bgClass} hover:bg-slate-700/60 transition-all duration-200 group border-b border-slate-700/30">
+                            <td class="px-4 py-3 border-r border-slate-600/20">
+                                <div class="flex items-center space-x-3">
+                                    
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-gray-100 font-medium group-hover:text-white transition-colors truncate">${item.usuario}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-center border-r border-slate-600/20">
+                                <div class="inline-flex items-center justify-center space-x-1 px-2 py-1 rounded-lg bg-green-600/20 text-green-300 border border-green-500/40 min-w-[60px]">
+                                    <i class="fas fa-star text-xs"></i>
+                                    <span class="font-semibold text-sm">${item.puntos}</span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-center border-r border-slate-600/20">
+                                <div class="text-gray-200 font-medium text-sm bg-slate-700/40 px-2 py-1 rounded inline-block min-w-[80px]">
+                                    ${fechaFormateada}
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-center border-r border-slate-600/20">
+                                <div class="text-gray-300 font-mono text-xs bg-slate-700/50 px-2 py-1 rounded border border-slate-600/40 inline-block min-w-[70px]">
+                                    ${horaFormateada}
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                <div class="inline-flex items-center justify-center space-x-1 px-2 py-1 rounded-full text-xs font-bold ${positionClass} min-w-[50px]">
+                                    <span>${positionBadge}</span>
+                                    <span>#${index + 1}</span>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                tabla += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                container.innerHTML = tabla;
+            })
+            .catch(err => {
+                console.error("Error al obtener datos:", err);
+                if (container) {
+                    container.innerHTML = `
+                        <div class="text-center py-12">
+                            <div class="w-16 h-16 bg-red-600/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/30">
+                                <i class="fas fa-exclamation-triangle text-2xl text-red-400"></i>
+                            </div>
+                            <p class="text-red-400 text-lg font-semibold">Error al cargar la información</p>
+                            <p class="text-gray-500 text-sm mt-2">Intenta recargar la página o contacta al administrador</p>
+                            <button onclick="window.retosManager.showResueltos()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                                <i class="fas fa-redo mr-2"></i>Reintentar
+                            </button>
+                        </div>
+                    `;
+                }
+            });
+    }
+
+    volverAVistaReto() {
+        const resueltosView = document.getElementById('resueltos-view');
+        const containerElement = document.querySelector('.container');
+
+        if (resueltosView) resueltosView.classList.add('hidden');
+        if (containerElement) containerElement.classList.remove('hidden');
+
+        // Limpiar completamente el container de resueltos
+        const container = document.getElementById('resueltos-tabla-container');
+        if (container) {
+            container.innerHTML = '';
+        }
+    }
+
+    showOverlayPanel() {
+        const overlay = document.createElement('div');
+        overlay.id = 'overlay';
+        overlay.className = 'fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50';
+
+        const messageBox = document.createElement('div');
+        messageBox.className = 'w-full max-w-md bg-white p-6 rounded-lg shadow-lg relative';
+
+        const title = document.createElement('h2');
+        title.innerText = 'Iniciar Sesión Requerido';
+        title.className = 'text-lg font-bold mb-4 text-gray-800 text-center';
+
+        const message = document.createElement('p');
+        message.innerText = 'Para acceder a los retos necesita iniciar sesión.';
+        message.className = 'mb-4 text-gray-700 text-center';
+
+        const closeButton = document.createElement('button');
+        closeButton.innerText = '✖';
+        closeButton.className = 'absolute top-2 right-2 text-gray-600 hover:text-gray-800';
+        closeButton.onclick = () => {
+            document.body.removeChild(overlay);
+        };
+
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'flex justify-center space-x-2 mt-4';
+
+        const loginButton = document.createElement('button');
+        loginButton.innerText = 'Iniciar sesión';
+        loginButton.className = 'bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600';
+        loginButton.onclick = () => {
+            window.location.href = '/login';
+        };
+
+        const registerButton = document.createElement('button');
+        registerButton.innerText = 'Registrarse';
+        registerButton.className = 'bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600';
+        registerButton.onclick = () => {
+            window.location.href = '/register';
+        };
+
+        buttonContainer.appendChild(loginButton);
+        buttonContainer.appendChild(registerButton);
+
+        messageBox.appendChild(closeButton);
+        messageBox.appendChild(title);
+        messageBox.appendChild(message);
+        messageBox.appendChild(buttonContainer);
+        overlay.appendChild(messageBox);
+        document.body.appendChild(overlay);
+    }
+
+    cargarPistas() {
+        const idretoElement = document.getElementById('idreto');
+        if (!idretoElement) return;
+
+        const idreto = idretoElement.innerText;
+        const pistasContainer = document.getElementById('pistas-container');
+
+        if (!pistasContainer) return;
+
+        pistasContainer.classList.remove('hidden');
+        pistasContainer.innerHTML = `<p class="text-gray-400 italic">Cargando pistas...</p>`;
+
+        fetch(`/pistas/${idreto}`)
+            .then(res => {
+                if (!res.ok) throw new Error("Error al obtener pistas.");
+                return res.json();
+            })
+            .then(data => {
+                if (!data || data.length === 0) {
+                    pistasContainer.classList.add('hidden');
+                    pistasContainer.innerHTML = '';
+                    return;
+                }
+
+                pistasContainer.innerHTML = `<h3 class="text-xl font-semibold text-yellow-400 mb-2">Pistas</h3>`;
+
+                let totalDescontado = 0;
+
+                data.forEach(pista => {
+                    if (pista.usada) {
+                        totalDescontado += pista.valor;
+                        pistasContainer.innerHTML += `
+                            <div class="bg-slate-700/60 p-3 rounded text-gray-100 mb-2">
+                                <p>${pista.contenido}</p>
+                                <p class="text-sm text-red-300 italic mt-1">-${pista.valor} puntos</p>
+                            </div>
+                        `;
+                    } else {
+                        const botonHTML = this.retoResuelto ?
+                            `<button disabled class="bg-gray-500 text-white font-semibold px-4 py-2 rounded cursor-not-allowed">Reto Resuelto</button>` :
+                            `<button onclick="window.retosManager.desbloquearPista(${pista.id}, this)" 
+                                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded">
+                                Desbloquear
+                            </button>`;
+
+                        pistasContainer.innerHTML += `
+                            <div class="bg-slate-700/60 p-3 rounded text-gray-100 flex justify-between items-center mb-2">
+                                <span>Pista oculta (Valor: ${pista.valor} pts)</span>
+                                ${botonHTML}
+                            </div>
+                        `;
+                    }
+                });
+
+                // Update points in modal
+                const puntosElement = document.getElementById('modal-points');
+                if (puntosElement) {
+                    const puntosText = puntosElement.innerText;
+                    const match = puntosText.match(/\d+/);
+                    if (match) {
+                        const puntosOriginales = parseInt(match[0]);
+                        const puntosActualizados = Math.max(0, puntosOriginales - totalDescontado);
+                        puntosElement.innerText = `Puntos: ${puntosActualizados}`;
+                    }
+                }
+            })
+            .catch(err => {
+                console.error("Error al obtener pistas:", err);
+                pistasContainer.classList.add('hidden');
+                pistasContainer.innerHTML = '';
+            });
+    }
+
+    desbloquearPista(idPista, boton) {
+        if (!boton) {
+            console.error("El botón no fue pasado correctamente.");
+            return;
+        }
+
+        const contenedor = boton.closest('div');
+        if (!contenedor) {
+            console.error("No se encontró el contenedor del botón.");
+            return;
+        }
+
+        boton.disabled = true;
+        boton.textContent = "Desbloqueando...";
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]');
+        if (!csrfToken) {
+            console.error("CSRF token no encontrado");
+            return;
+        }
+
+        fetch('/pistas/desbloquear', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken.getAttribute('content')
+            },
+            body: JSON.stringify({
+                idpista: idPista
+            })
+        })
+            .then(async res => {
+                const contentType = res.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    const html = await res.text();
+                    console.error("Respuesta inesperada:", html);
+                    throw new Error("Respuesta no válida");
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (data.success && data.contenido) {
+                    contenedor.innerHTML = '';
+
+                    const pistaElemento = document.createElement('div');
+                    pistaElemento.className = "bg-slate-700/60 p-3 rounded text-gray-100";
+                    pistaElemento.innerHTML = `
+                        <p>${data.contenido}</p>
+                        <p class="text-sm text-red-300 italic mt-1">-${data.valor} puntos</p>
+                    `;
+                    contenedor.appendChild(pistaElemento);
+
+                    // Update points in modal
+                    const puntosElement = document.getElementById('modal-points');
+                    if (puntosElement) {
+                        const puntosText = puntosElement.innerText;
+                        const match = puntosText.match(/\d+/);
+                        if (match) {
+                            const puntosActuales = parseInt(match[0]);
+                            const nuevosPuntos = Math.max(0, puntosActuales - data.valor);
+                            puntosElement.innerText = `Puntos: ${nuevosPuntos}`;
+                        }
+                    }
+                } else {
+                    alert("No se pudo desbloquear la pista.");
+                    boton.disabled = false;
+                    boton.textContent = "Desbloquear";
+                }
+            })
+            .catch(err => {
+                console.error("Error al desbloquear pista:", err);
+                alert("Hubo un problema al desbloquear la pista.");
+                boton.disabled = false;
+                boton.textContent = "Desbloquear";
+            });
+    }
+
+    // Implementación de token firmado para comunicaciones
+    generarTokenSeguro(datos) {
+        // Crear un hash de los datos + salt secreto (esto debería estar en el servidor)
+        const mensaje = JSON.stringify(datos) + "_" + new Date().getTime();
+        return btoa(mensaje); // Simple encoding - el real debe ser más robusto
+    }
+
+    enviarFlag() {
+        const flagInput = document.getElementById('flag-input');
+        const idretoElement = document.getElementById('idreto');
+
+        if (!flagInput || !idretoElement) {
+            console.error("Elementos del modal no encontrados");
+            return;
+        }
+
+        const flag = flagInput.value.trim();
+        const idreto = idretoElement.innerText;
+
+        const messageElement = document.getElementById('message');
+        const resultElement = document.getElementById('result');
+
+        if (messageElement) messageElement.innerText = '';
+        if (resultElement) resultElement.innerText = '';
+
+        if (!flag) {
+            if (messageElement) messageElement.innerText = "Por favor, ingresa una flag.";
+            return;
+        }
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]');
+        if (!csrfToken) {
+            console.error("CSRF token no encontrado");
+            return;
+        }
+
+        const token = this.generarTokenSeguro({
+            idreto: idreto,
+            timestamp: new Date().getTime()
+        });
+
+        fetch('/retos/validar-flag', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
+                'X-Security-Token': token
+            },
+            body: JSON.stringify({
+                idreto: idreto,
+                flag: flag,
+                token: token
+            })
+        })
+            .then(async res => {
+                if (!res.ok) {
+                    const errText = await res.text();
+                    throw new Error(errText);
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    if (resultElement) resultElement.innerText = data.mensaje || "¡Flag correcta!";
+                    this.actualizarEstado(idreto);
+                } else {
+                    if (messageElement) messageElement.innerText = data.mensaje || "Flag incorrecta.";
+                }
+            })
+            .catch(err => {
+                console.error("Error al enviar flag:", err);
+                if (messageElement) messageElement.innerText = "Hubo un error al enviar la flag.";
+            });
+        this.actualizarIntentos(idreto);
+    }
+
+    actualizarIntentos(idreto) {
+        fetch(`/intentos/${idreto}`)
+            .then(res => res.json())
+            .then(json => {
+                const c = json.count;
+                const resueltosElement = document.getElementById('resuelto-count');
+                if (resueltosElement) resueltosElement.innerText = c;
+
+                const card = document.querySelector(`.challenge-card[data-id="${idreto}"]`);
+                if (card) {
+                    const span = card.querySelector('.intentos-count');
+                    if (span) span.innerText = c;
+                }
+            })
+            .catch(console.error);
+    }
+
+    actualizarEstado(idreto) {
+        const card = document.querySelector(`.challenge-card[data-id="${idreto}"]`);
+        if (!card) return;
+
+        card.dataset.solved = 'true';
+
+        const badgeWrapper = card.querySelector('.absolute.top-4.right-4');
+        if (badgeWrapper) {
+            badgeWrapper.innerHTML = `
+                <div class="flex items-center space-x-1 bg-green-600/90 border border-green-500/50 rounded-full px-3 py-1 backdrop-blur-sm">
+                    <div class="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
+                    <span class="text-green-200 text-xs font-bold">RESUELTO</span>
+                </div>
+            `;
+        }
+    }
+
+    // Cerrar todos los menús
+    closeAllMenus() {
+        this.closeCategoryMenu();
+        this.closeDifficultyMenu();
+        this.closeStatusMenu();
+    }
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function () {
+    window.retosManager = new RetosManager();
+});
+
+// Verificar que las funciones están disponibles
+window.addEventListener('load', function () {
+    console.log('Retos Manager loaded');
+    console.log('Variables available:', {
+        isLoggedIn: window.isLoggedIn,
+        userRegisteredInCompetition: window.userRegisteredInCompetition,
+        competitionId: window.competitionId
+    });
+});

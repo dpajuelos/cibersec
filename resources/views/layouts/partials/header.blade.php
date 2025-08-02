@@ -20,16 +20,28 @@
                     <div class="hidden sm:flex items-center space-x-8">
                         <x-nav-link href="/usuario" :active="request()->routeIs('usuarios')"
                             class="text-white hover:text-cyan-400 hover:bg-blue-800/30 px-3 py-2 rounded-lg transition-all duration-200 font-semibold">
+                            <i class="fas fa-user mr-2"></i>
                             {{ __('Usuarios') }}
                         </x-nav-link>
                         <x-nav-link href="/ranking" :active="request()->routeIs('ranking')"
                             class="text-white hover:text-purple-400 hover:bg-blue-800/30 px-3 py-2 rounded-lg transition-all duration-200 font-semibold">
+                            <i class="fas fa-trophy mr-2"></i>
                             {{ __('Ranking') }}
                         </x-nav-link>
                         <x-nav-link href="{{ route('retos') }}" :active="request()->routeIs('retos')"
                             class="text-white hover:text-cyan-400 hover:bg-purple-800/30 px-3 py-2 rounded-lg transition-all duration-200 font-semibold">
+                            <i class="fas fa-gamepad mr-2"></i>
                             {{ __('Retos') }}
                         </x-nav-link>
+
+                        <!-- Administración  -->
+                        @if (Auth::check() && Auth::user()->roles->contains('namerol', 'Administrador'))
+                            <x-nav-link href="/admin" :active="request()->routeIs('admin*')"
+                                class="text-white hover:text-yellow-400 hover:bg-orange-800/30 px-3 py-2 rounded-lg transition-all duration-200 font-semibold">
+                                <i class="fas fa-shield-alt mr-2"></i>
+                                {{ __('Administración') }}
+                            </x-nav-link>
+                        @endif
                     </div>
 
                     <!-- User Section -->
@@ -70,6 +82,7 @@
                                         class="text-gray-200 hover:bg-blue-800/50 hover:text-cyan-400">
                                         <i class="mr-2 fas fa-cog text-blue-400"></i> {{ __('Configuración') }}
                                     </x-dropdown-link>
+
                                     <div class="border-t border-gray-600"></div>
                                     <!-- Authentication -->
                                     <form method="POST" action="{{ route('logout') }}" x-data>
@@ -84,7 +97,6 @@
                             </x-dropdown>
 
                             <!-- Notifications -->
-
                             <div class="relative" x-data="{ notificationsOpen: false }">
                                 <button @click="notificationsOpen = !notificationsOpen"
                                     class="relative p-2 text-gray-300 hover:text-cyan-400 hover:bg-blue-800/30 rounded-lg transition-all duration-200 focus:outline-none focus:text-cyan-400">
@@ -227,6 +239,15 @@
                             class="text-gray-200 hover:text-purple-400 hover:bg-purple-800/30">
                             {{ __('Retos') }}
                         </x-responsive-nav-link>
+
+                        <!-- Administración Mobile -->
+                        @if (Auth::user()->roles->contains('namerol', 'Administrador'))
+                            <x-responsive-nav-link href="/admin" :active="request()->routeIs('admin')"
+                                class="text-gray-200 hover:text-yellow-400 hover:bg-orange-800/30">
+                                {{ __('Administración') }}
+                            </x-responsive-nav-link>
+                        @endif
+
                         <!-- Logout -->
                         <form method="POST" action="{{ route('logout') }}" x-data>
                             @csrf

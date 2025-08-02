@@ -20,15 +20,15 @@
                     <span>Gestión de Competencias CTF</span>
                 </div>
 
-                <div class="flex justify-between items-center">
-                    <h1 class="text-4xl md:text-5xl font-black text-white">
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-white text-center sm:text-left">
                         <span
                             class="bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 text-transparent bg-clip-text">
                             Competencias
                         </span>
                     </h1>
                     <button id="crear-competencia-btn"
-                        class="group bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white px-8 py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-2xl shadow-orange-500/25 border border-orange-400/30">
+                        class="group bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white px-6 py-3 sm:px-8 sm:py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-2xl shadow-orange-500/25 border border-orange-400/30 w-full sm:w-auto">
                         <i class="fas fa-plus mr-3 group-hover:rotate-180 transition-transform duration-300"></i>
                         Nueva Competencia
                     </button>

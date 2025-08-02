@@ -17,7 +17,7 @@
 
     <!-- Main Content -->
     <div class="bg-gradient-to-b from-slate-800 to-slate-900 min-h-screen py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-[95vw] xl:max-w-[90vw] 2xl:max-w-[85vw] mx-auto px-4 sm:px-6 lg:px-8">
 
             <!-- Search and Filter Section -->
             <div
@@ -28,11 +28,11 @@
                     <div class="flex flex-col lg:flex-row gap-8 items-center justify-between">
 
                         <!-- Search Bar -->
-                        <div class="w-full lg:w-96">
+                        <div class="w-full lg:w-1/2">
                             <div class="relative group">
                                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
                                     <i
-                                        class="fas fa-search text-gray-400 group-focus-within:text-cyan-400 transition-all duration-300 group-focus-within:scale-110"></i>
+                                        class="fas fa-search text-gray-200 group-focus-within:text-cyan-400 transition-all duration-300 group-focus-within:scale-110"></i>
                                 </div>
                                 <input type="search" name="buscar"
                                     class="search-input block w-full pl-12 pr-16 py-4 border border-slate-600/50 rounded-2xl bg-slate-900/50 placeholder-gray-400 text-gray-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all duration-300 backdrop-blur-sm hover:bg-slate-900/70 shadow-inner"
@@ -42,53 +42,6 @@
 
                         <!-- Filter Controls -->
                         <div class="flex items-center space-x-4">
-                            <!-- Filter Dropdown -->
-                            <div class="relative z-50">
-                                <button id="filterButton" onclick="window.usuariosManager.toggleFilterMenu()"
-                                    class="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border border-blue-500/30 rounded-2xl font-medium text-blue-400 hover:from-blue-600/40 hover:to-cyan-600/40 hover:border-blue-400/60 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50 shadow-lg hover:shadow-blue-500/25 backdrop-blur-sm relative overflow-hidden">
-                                    <div
-                                        class="absolute inset-0 bg-gradient-to-r from-blue-400/5 to-cyan-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    </div>
-                                    <i
-                                        class="fas fa-filter mr-3 group-hover:scale-110 transition-transform relative z-10"></i>
-                                    <span class="relative z-10">Filtrar</span>
-                                    <i
-                                        class="fas fa-chevron-down ml-3 group-hover:rotate-180 transition-transform duration-300 relative z-10"></i>
-                                </button>
-
-                                <div id="filterMenu"
-                                    class="hidden w-56 bg-slate-800/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/50 overflow-hidden transform transition-all duration-300 scale-95 opacity-0">
-                                    <div class="p-4">
-                                        <h3 class="text-white font-semibold mb-4">Filtros</h3>
-                                        <div class="space-y-3">
-                                            <div>
-                                                <label class="text-gray-300 text-sm">Estado</label>
-                                                <select data-filter="estado"
-                                                    class="w-full mt-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:border-blue-500">
-                                                    <option value="todos">Todos</option>
-                                                    <option value="1">Activos</option>
-                                                    <option value="0">Inactivos</option>
-                                                </select>
-                                            </div>
-                                            <div>
-                                                <label class="text-gray-300 text-sm">Universidad</label>
-                                                <select data-filter="universidad"
-                                                    class="w-full mt-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:border-blue-500">
-                                                    <option value="todas">Todas</option>
-                                                    <option value="unasam">UNASAM</option>
-                                                    <option value="otras">Otras</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="mt-4 flex space-x-2">
-                                            <button onclick="closeFilterMenu()"
-                                                class="px-4 py-2 bg-slate-600 text-white rounded-lg text-sm hover:bg-slate-700">
-                                                Cerrar
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
 
                             <!-- Sort Dropdown -->
                             <div class="relative z-50">
@@ -124,14 +77,9 @@
                                                 <i class="fas fa-university mr-2 text-blue-400"></i>
                                                 Universidad
                                             </button>
-                                            <button data-sort="estado"
-                                                class="w-full text-left px-3 py-2 text-gray-300 hover:bg-slate-700 rounded-lg transition-colors">
-                                                <i class="fas fa-circle mr-2 text-green-400"></i>
-                                                Estado (Activos primero)
-                                            </button>
                                         </div>
                                         <div class="mt-4">
-                                            <button onclick="closeSortMenu()"
+                                            <button onclick="window.usuariosManager.closeSortMenu()"
                                                 class="w-full px-4 py-2 bg-slate-600 text-white rounded-lg text-sm hover:bg-slate-700">
                                                 Cerrar
                                             </button>
