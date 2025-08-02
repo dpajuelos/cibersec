@@ -8,12 +8,14 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\JuegoController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RankingController;
-use App\Http\Controllers\RetoController;
+use App\Http\Controllers\Admin\RetoController;
 use App\Http\Controllers\RetosController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UsuariosController;
 use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\Admin\UsuarioController;
 use Illuminate\Support\Facades\Route;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -97,6 +99,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/perfil1', [PerfilController::class, 'index'])->name('profile.perfil1');
 });
 
+
 // Rutas de administración
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     // Dashboard principal
@@ -144,9 +147,19 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('/competencias/{competencia}/finalize', [CompetenciaController::class, 'finalize'])->name('competitions.finalize');
     Route::get('/competencias-filter', [CompetenciaController::class, 'filter'])->name('competitions.filter');
 
-    // Rutas para usuarios
-    Route::get('/users', [\App\Http\Controllers\Admin\UsuarioController::class, 'index'])->name('users');
+    // Rutas para la gestion de usuarios
+    Route::get('/users', [UsuarioController::class, 'index'])->name('users');
+    Route::get('/usuarios/{id}', [UsuarioController::class, 'show'])->name('usuarios.show');
+    Route::put('/api/usuarios/{id}', [UsuarioController::class, 'update']);
+    Route::delete('/api/usuarios/{id}', [UsuarioController::class, 'destroy']);
+    Route::patch('/api/usuarios/{id}/estado', [UsuarioController::class, 'cambiarEstado']);
+    Route::get('/api/universidades', [UsuarioController::class, 'universidades']);
+    Route::get('/api/roles', function () {
+        return \App\Models\Rol::select('idroles', 'namerol')->get();
+    });
+    Route::post('/api/register', [UsuarioController::class, 'register']);
 
+        
     // Configuración del sistema
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
     Route::put('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');
