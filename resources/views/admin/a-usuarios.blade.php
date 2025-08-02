@@ -301,17 +301,19 @@
                                                 title="Editar usuario">
                                                 <i class="fas fa-edit group-hover:rotate-12 transition-transform"></i>
                                             </button>
-                                            <button data-action="toggle-estado" data-id="{{ $usuario->idusuario }}"
-                                                class="group p-3 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 hover:from-amber-500/30 hover:to-yellow-500/30 text-amber-300 border border-amber-400/30 rounded-xl transition-all duration-300 transform hover:scale-105"
-                                                title="{{ $usuario->fk_idestados == 1 ? 'Desactivar' : 'Activar' }} usuario">
-                                                <i
-                                                    class="fas {{ $usuario->fk_idestados == 1 ? 'fa-toggle-on' : 'fa-toggle-off' }} group-hover:scale-110 transition-transform"></i>
-                                            </button>
                                             <button data-action="eliminar" data-id="{{ $usuario->idusuario }}"
                                                 class="group p-3 bg-gradient-to-r from-red-500/20 to-pink-500/20 hover:from-red-500/30 hover:to-pink-500/30 text-red-300 border border-red-400/30 rounded-xl transition-all duration-300 transform hover:scale-105"
                                                 title="Eliminar usuario">
                                                 <i class="fas fa-trash group-hover:rotate-12 transition-transform"></i>
                                             </button>
+                                            <label class="relative inline-block w-12 h-6 align-middle select-none transition duration-200 ease-in">
+                                                <input type="checkbox"
+                                                    class="toggle-estado sr-only peer"
+                                                    data-id="{{ $usuario->idusuario }}"
+                                                    {{ $usuario->fk_idestados == 1 ? 'checked' : '' }} />
+                                                <span class="block w-full h-full bg-gray-300 rounded-full shadow-inner transition-colors duration-300 peer-checked:bg-green-400"></span>
+                                                <span class="dot absolute left-0 top-0 bg-white w-6 h-6 rounded-full shadow transform transition-transform duration-300 peer-checked:translate-x-6"></span>
+                                            </label>
                                         </div>
                                     </td>
                                 </tr>

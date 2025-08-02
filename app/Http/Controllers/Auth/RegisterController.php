@@ -63,6 +63,12 @@ class RegisterController extends Controller
                 'fk_idestados' => 1,
                 'profile_photo_path' => $profilePhotoPath,
             ]);
+            
+            // Asignar rol por defecto (por ejemplo, id = 2)
+            $usuario->roles()->attach([
+                2 => ['fecha' => now()]
+            ]);
+
 
             // Crear perfil relacionando persona y usuario
             Perfil::create([
