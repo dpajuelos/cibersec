@@ -37,7 +37,10 @@ class User extends Authenticatable
 
     public function isActive()
     {
-        return true;
+        if ($this->fk_idestados == 1) {
+            return true;
+        }
+        return false;
     }
 
     public function getAuthIdentifierName()
@@ -81,4 +84,3 @@ class User extends Authenticatable
         return $this->hasMany(Notification::class, 'fk_idusuario', 'idusuario');
     }
 }
-

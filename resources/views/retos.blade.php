@@ -194,22 +194,28 @@
                     <div
                         class="bg-gradient-to-br from-yellow-600/20 to-orange-600/20 backdrop-blur-sm rounded-xl p-4 border border-yellow-500/30">
                         <div class="text-2xl font-bold text-yellow-400">
-                            @auth
-                                {{ $usuarioRegistrado ? $retosPorCategoria->flatten()->where('resuelto', 1)->count() : 0 }}
-                            @else
-                                0
-                            @endauth
+                            @php
+                                $retosResueltos = 0;
+
+                                if (Auth::check() && $usuarioRegistrado) {
+                                    $retosResueltos = $retosPorCategoria->flatten()->where('resuelto', 1)->count();
+                                }
+                            @endphp
+                            {{ $retosResueltos }}
                         </div>
                         <div class="text-sm text-gray-300">Resueltos</div>
                     </div>
                     <div
                         class="bg-gradient-to-br from-red-600/20 to-pink-600/20 backdrop-blur-sm rounded-xl p-4 border border-red-500/30">
                         <div class="text-2xl font-bold text-red-400">
-                            @auth
-                                {{ $usuarioRegistrado ? $retosPorCategoria->flatten()->where('resuelto', 0)->count() : $retosPorCategoria->flatten()->count() }}
-                            @else
-                                {{ $retosPorCategoria->flatten()->count() }}
-                            @endauth
+                            @php
+                                $retosPendientes = $retosPorCategoria->flatten()->count();
+                                if (Auth::check() && $usuarioRegistrado) {
+                                    $retosPendientes = $retosPorCategoria->flatten()->where('resuelto', 0)->count();
+                                }
+
+                            @endphp
+                            {{ $retosPendientes }}
                         </div>
                         <div class="text-sm text-gray-300">Pendientes</div>
                     </div>
@@ -222,19 +228,16 @@
     <div class="bg-gradient-to-b from-slate-800 to-slate-900 min-h-screen py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-            <!-- Enhanced Search and Filter Section with Fixed Z-Index -->
+            <!-- Search and Filter Section -->
             <div
                 class="bg-slate-800/60 backdrop-blur-md rounded-3xl border border-slate-700/50 shadow-2xl shadow-slate-900/50 mb-8 relative">
-                <!-- Gradient overlay -->
-                <div
-                    class="absolute inset-0 bg-gradient-to-r from-purple-600/5 via-transparent to-indigo-600/5 rounded-3xl">
-                </div>
+                <div class="absolute inset-0 bg-gradient-to-r from-purple-600/5 via-transparent to-indigo-600/5"></div>
 
-                <div class="relative p-8 z-[100]">
-                    <div class="flex flex-col space-y-6">
+                <div class="relative p-8 overflow-visible">
+                    <div class="flex flex-col lg:flex-row gap-8 items-center justify-between overflow-visible">
                         <!-- Search Bar -->
-                        <div class="w-full">
-                            <form action="#" method="GET" class="relative group">
+                        <div class="w-full lg:w-96">
+                            <div class="relative group">
                                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
                                     <i
                                         class="fas fa-search text-gray-400 group-focus-within:text-purple-400 transition-all duration-300 group-focus-within:scale-110"></i>
@@ -253,35 +256,35 @@
                                 <div
                                     class="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-400/10 to-indigo-400/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none">
                                 </div>
-                            </form>
+                            </div>
                         </div>
 
-                        <!-- Enhanced Filter Controls -->
-                        <div class="flex flex-wrap gap-4 justify-center">
+                        <!-- Filter Controls -->
+                        <div class="flex items-center space-x-4 overflow-visible">
                             <!-- Category Filter Dropdown -->
-                            <div class="relative">
+                            <div class="relative overflow-visible">
                                 <button id="categoryButton" onclick="toggleCategoryMenu()"
-                                    class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600/20 to-purple-600/20 border border-indigo-500/30 rounded-xl font-medium text-indigo-400 hover:from-indigo-600/40 hover:to-purple-600/40 hover:border-indigo-400/60 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-lg hover:shadow-indigo-500/25 backdrop-blur-sm relative overflow-hidden">
+                                    class="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-indigo-600/20 to-purple-600/20 border border-indigo-500/30 rounded-2xl font-medium text-indigo-400 hover:from-indigo-600/40 hover:to-purple-600/40 hover:border-indigo-400/60 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-lg hover:shadow-indigo-500/25 backdrop-blur-sm relative overflow-hidden">
                                     <div
                                         class="absolute inset-0 bg-gradient-to-r from-indigo-400/5 to-purple-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                     </div>
                                     <i
-                                        class="fas fa-tags mr-2 group-hover:scale-110 transition-transform relative z-10"></i>
-                                    <span class="relative z-10 text-sm">Categoría</span>
+                                        class="fas fa-tags mr-3 group-hover:scale-110 transition-transform relative z-10"></i>
+                                    <span class="relative z-10">Categoría</span>
                                     <i
-                                        class="fas fa-chevron-down ml-2 group-hover:rotate-180 transition-transform duration-300 relative z-10"></i>
+                                        class="fas fa-chevron-down ml-3 group-hover:rotate-180 transition-transform duration-300 relative z-10"></i>
                                 </button>
 
                                 <div id="categoryMenu"
-                                    class="hidden absolute top-full left-0 z-[9999] mt-2 w-64 bg-slate-900/95 backdrop-blur-md rounded-xl shadow-2xl border border-slate-700/50 overflow-hidden transform transition-all duration-300 scale-95 opacity-0">
+                                    class="hidden absolute top-full left-0 mt-2 w-64 bg-slate-800/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/50 overflow-hidden transform transition-all duration-300 scale-95 opacity-0 z-[99999]">
                                     <div class="py-2">
                                         <div
-                                            class="px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider border-b border-slate-700/50 bg-slate-800/50">
+                                            class="px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider border-b border-slate-700/50 bg-slate-900/50">
                                             <i class="fas fa-filter mr-2 text-indigo-400"></i>
                                             Filtrar por Categoría
                                         </div>
                                         <button onclick="filterByCategory('all')"
-                                            class="flex items-center w-full px-4 py-3 text-sm text-gray-300 hover:bg-gray-600/20 hover:text-gray-200 transition-all duration-300 group/item">
+                                            class="flex items-center w-full px-4 py-3 text-sm text-gray-300 hover:bg-slate-700/50 hover:text-gray-200 transition-all duration-300 group/item">
                                             <i
                                                 class="fas fa-list mr-3 text-gray-400 group-hover/item:scale-110 transition-transform"></i>
                                             <span class="flex-1 text-left">Todas las categorías</span>
@@ -290,7 +293,7 @@
                                         </button>
                                         @foreach ($coloresPorCategoria as $categoria => $colores)
                                             <button onclick="filterByCategory('{{ $categoria }}')"
-                                                class="flex items-center w-full px-4 py-3 text-sm text-gray-300 hover:{{ str_replace('bg-', 'bg-', $colores['bg']) }} hover:{{ $colores['text'] }} transition-all duration-300 group/item">
+                                                class="flex items-center w-full px-4 py-3 text-sm text-gray-300 hover:bg-slate-700/50 hover:{{ $colores['text'] }} transition-all duration-300 group/item">
                                                 <i
                                                     class="{{ $colores['icon'] }} mr-3 {{ $colores['text'] }} group-hover/item:scale-110 transition-transform"></i>
                                                 <span class="flex-1 text-left">{{ $categoria }}</span>
@@ -303,29 +306,29 @@
                             </div>
 
                             <!-- Difficulty Filter Dropdown -->
-                            <div class="relative">
+                            <div class="relative overflow-visible">
                                 <button id="difficultyButton" onclick="toggleDifficultyMenu()"
-                                    class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-orange-600/20 to-red-600/20 border border-orange-500/30 rounded-xl font-medium text-orange-400 hover:from-orange-600/40 hover:to-red-600/40 hover:border-orange-400/60 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500/50 shadow-lg hover:shadow-orange-500/25 backdrop-blur-sm relative overflow-hidden">
+                                    class="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-orange-600/20 to-red-600/20 border border-orange-500/30 rounded-2xl font-medium text-orange-400 hover:from-orange-600/40 hover:to-red-600/40 hover:border-orange-400/60 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500/50 shadow-lg hover:shadow-orange-500/25 backdrop-blur-sm relative overflow-hidden">
                                     <div
                                         class="absolute inset-0 bg-gradient-to-r from-orange-400/5 to-red-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                     </div>
                                     <i
-                                        class="fas fa-chart-line mr-2 group-hover:scale-110 transition-transform relative z-10"></i>
-                                    <span class="relative z-10 text-sm">Dificultad</span>
+                                        class="fas fa-chart-line mr-3 group-hover:scale-110 transition-transform relative z-10"></i>
+                                    <span class="relative z-10">Dificultad</span>
                                     <i
-                                        class="fas fa-chevron-down ml-2 group-hover:rotate-180 transition-transform duration-300 relative z-10"></i>
+                                        class="fas fa-chevron-down ml-3 group-hover:rotate-180 transition-transform duration-300 relative z-10"></i>
                                 </button>
 
                                 <div id="difficultyMenu"
-                                    class="hidden absolute top-full left-0 z-[9999] mt-2 w-56 bg-slate-900/95 backdrop-blur-md rounded-xl shadow-2xl border border-slate-700/50 overflow-hidden transform transition-all duration-300 scale-95 opacity-0">
+                                    class="hidden absolute top-full left-0 mt-2 w-56 bg-slate-800/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/50 overflow-hidden transform transition-all duration-300 scale-95 opacity-0 z-[99999]">
                                     <div class="py-2">
                                         <div
-                                            class="px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider border-b border-slate-700/50 bg-slate-800/50">
+                                            class="px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider border-b border-slate-700/50 bg-slate-900/50">
                                             <i class="fas fa-signal mr-2 text-orange-400"></i>
                                             Nivel de Dificultad
                                         </div>
                                         <button onclick="filterByDifficulty('all')"
-                                            class="flex items-center w-full px-4 py-3 text-sm text-gray-300 hover:bg-gray-600/20 hover:text-gray-200 transition-all duration-300 group/item">
+                                            class="flex items-center w-full px-4 py-3 text-sm text-gray-300 hover:bg-slate-700/50 hover:text-gray-200 transition-all duration-300 group/item">
                                             <i
                                                 class="fas fa-list mr-3 text-gray-400 group-hover/item:scale-110 transition-transform"></i>
                                             <span class="flex-1 text-left">Todas las dificultades</span>
@@ -333,7 +336,7 @@
                                                 class="fas fa-arrow-right opacity-0 group-hover/item:opacity-100 transition-opacity"></i>
                                         </button>
                                         <button onclick="filterByDifficulty('easy')"
-                                            class="flex items-center w-full px-4 py-3 text-sm text-gray-300 hover:bg-green-600/20 hover:text-green-400 transition-all duration-300 group/item">
+                                            class="flex items-center w-full px-4 py-3 text-sm text-gray-300 hover:bg-slate-700/50 hover:text-green-400 transition-all duration-300 group/item">
                                             <div class="flex items-center mr-3">
                                                 <i class="fas fa-star text-green-400 text-xs"></i>
                                                 <i class="fas fa-star text-gray-500 ml-1 text-xs"></i>
@@ -341,10 +344,10 @@
                                             </div>
                                             <span class="flex-1 text-left">Fácil (1-50 pts)</span>
                                             <i
-                                                class="fas fa-arrow-right opacity-0 group-hover/item:opacity-100 transition-opacity"></i>
+                                                class="fas fa-arrow-right opacity-0 group-hover:item:opacity-100 transition-opacity"></i>
                                         </button>
                                         <button onclick="filterByDifficulty('medium')"
-                                            class="flex items-center w-full px-4 py-3 text-sm text-gray-300 hover:bg-yellow-600/20 hover:text-yellow-400 transition-all duration-300 group/item">
+                                            class="flex items-center w-full px-4 py-3 text-sm text-gray-300 hover:bg-slate-700/50 hover:text-yellow-400 transition-all duration-300 group/item">
                                             <div class="flex items-center mr-3">
                                                 <i class="fas fa-star text-yellow-400 text-xs"></i>
                                                 <i class="fas fa-star text-yellow-400 ml-1 text-xs"></i>
@@ -352,10 +355,10 @@
                                             </div>
                                             <span class="flex-1 text-left">Medio (51-100 pts)</span>
                                             <i
-                                                class="fas fa-arrow-right opacity-0 group-hover/item:opacity-100 transition-opacity"></i>
+                                                class="fas fa-arrow-right opacity-0 group-hover:item:opacity-100 transition-opacity"></i>
                                         </button>
                                         <button onclick="filterByDifficulty('hard')"
-                                            class="flex items-center w-full px-4 py-3 text-sm text-gray-300 hover:bg-red-600/20 hover:text-red-400 transition-all duration-300 group/item">
+                                            class="flex items-center w-full px-4 py-3 text-sm text-gray-300 hover:bg-slate-700/50 hover:text-red-400 transition-all duration-300 group/item">
                                             <div class="flex items-center mr-3">
                                                 <i class="fas fa-star text-red-400 text-xs"></i>
                                                 <i class="fas fa-star text-red-400 ml-1 text-xs"></i>
@@ -363,36 +366,36 @@
                                             </div>
                                             <span class="flex-1 text-left">Difícil (100+ pts)</span>
                                             <i
-                                                class="fas fa-arrow-right opacity-0 group-hover/item:opacity-100 transition-opacity"></i>
+                                                class="fas fa-arrow-right opacity-0 group-hover:item:opacity-100 transition-opacity"></i>
                                         </button>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Status Filter -->
-                            <div class="relative">
+                            <div class="relative overflow-visible">
                                 <button id="statusButton" onclick="toggleStatusMenu()"
-                                    class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-600/20 to-emerald-600/20 border border-green-500/30 rounded-xl font-medium text-green-400 hover:from-green-600/40 hover:to-emerald-600/40 hover:border-green-400/60 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500/50 shadow-lg hover:shadow-green-500/25 backdrop-blur-sm relative overflow-hidden">
+                                    class="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-green-600/20 to-emerald-600/20 border border-green-500/30 rounded-2xl font-medium text-green-400 hover:from-green-600/40 hover:to-emerald-600/40 hover:border-green-400/60 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500/50 shadow-lg hover:shadow-green-500/25 backdrop-blur-sm relative overflow-hidden">
                                     <div
                                         class="absolute inset-0 bg-gradient-to-r from-green-400/5 to-emerald-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                     </div>
                                     <i
-                                        class="fas fa-check-circle mr-2 group-hover:scale-110 transition-transform relative z-10"></i>
-                                    <span class="relative z-10 text-sm">Estado</span>
+                                        class="fas fa-check-circle mr-3 group-hover:scale-110 transition-transform relative z-10"></i>
+                                    <span class="relative z-10">Estado</span>
                                     <i
-                                        class="fas fa-chevron-down ml-2 group-hover:rotate-180 transition-transform duration-300 relative z-10"></i>
+                                        class="fas fa-chevron-down ml-3 group-hover:rotate-180 transition-transform duration-300 relative z-10"></i>
                                 </button>
 
                                 <div id="statusMenu"
-                                    class="hidden absolute top-full left-0 z-[9999] mt-2 w-48 bg-slate-900/95 backdrop-blur-md rounded-xl shadow-2xl border border-slate-700/50 overflow-hidden transform transition-all duration-300 scale-95 opacity-0">
+                                    class="hidden absolute top-full left-0 mt-2 w-48 bg-slate-800/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/50 overflow-hidden transform transition-all duration-300 scale-95 opacity-0 z-[99999]">
                                     <div class="py-2">
                                         <div
-                                            class="px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider border-b border-slate-700/50 bg-slate-800/50">
+                                            class="px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider border-b border-slate-700/50 bg-slate-900/50">
                                             <i class="fas fa-flag mr-2 text-green-400"></i>
                                             Estado del Reto
                                         </div>
                                         <button onclick="filterByStatus('all')"
-                                            class="flex items-center w-full px-4 py-3 text-sm text-gray-300 hover:bg-gray-600/20 hover:text-gray-200 transition-all duration-300 group/item">
+                                            class="flex items-center w-full px-4 py-3 text-sm text-gray-300 hover:bg-slate-700/50 hover:text-gray-200 transition-all duration-300 group/item">
                                             <i
                                                 class="fas fa-list mr-3 text-gray-400 group-hover/item:scale-110 transition-transform"></i>
                                             <span class="flex-1 text-left">Todos los retos</span>
@@ -400,7 +403,7 @@
                                                 class="fas fa-arrow-right opacity-0 group-hover/item:opacity-100 transition-opacity"></i>
                                         </button>
                                         <button onclick="filterByStatus('solved')"
-                                            class="flex items-center w-full px-4 py-3 text-sm text-gray-300 hover:bg-green-600/20 hover:text-green-400 transition-all duration-300 group/item">
+                                            class="flex items-center w-full px-4 py-3 text-sm text-gray-300 hover:bg-slate-700/50 hover:text-green-400 transition-all duration-300 group/item">
                                             <div
                                                 class="w-2 h-2 bg-green-400 rounded-full mr-3 group-hover/item:scale-110 transition-transform animate-pulse">
                                             </div>
@@ -409,7 +412,7 @@
                                                 class="fas fa-arrow-right opacity-0 group-hover/item:opacity-100 transition-opacity"></i>
                                         </button>
                                         <button onclick="filterByStatus('unsolved')"
-                                            class="flex items-center w-full px-4 py-3 text-sm text-gray-300 hover:bg-orange-600/20 hover:text-orange-400 transition-all duration-300 group/item">
+                                            class="flex items-center w-full px-4 py-3 text-sm text-gray-300 hover:bg-slate-700/50 hover:text-orange-400 transition-all duration-300 group/item">
                                             <div
                                                 class="w-2 h-2 bg-orange-400 rounded-full mr-3 group-hover/item:scale-110 transition-transform">
                                             </div>
@@ -423,22 +426,22 @@
 
                             <!-- Clear Filters Button -->
                             <button onclick="clearAllFilters()" id="clearFiltersBtn"
-                                class="hidden group items-center px-6 py-3 bg-gradient-to-r from-gray-600/20 to-slate-600/20 border border-gray-500/30 rounded-xl font-medium text-gray-400 hover:from-gray-600/40 hover:to-slate-600/40 hover:border-gray-400/60 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gray-500/50 shadow-lg hover:shadow-gray-500/25 backdrop-blur-sm relative overflow-hidden">
+                                class="hidden group items-center px-8 py-4 bg-gradient-to-r from-gray-600/20 to-slate-600/20 border border-gray-500/30 rounded-2xl font-medium text-gray-400 hover:from-gray-600/40 hover:to-slate-600/40 hover:border-gray-400/60 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gray-500/50 shadow-lg hover:shadow-gray-500/25 backdrop-blur-sm relative overflow-hidden">
                                 <div
-                                    class="absolute inset-0 bg-gradient-to-r from-gray-400/5 to-slate-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    class="absolute inset-0 bg-gradient-to-r from-gray-400/5 to-slate-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl">
                                 </div>
                                 <i
-                                    class="fas fa-times mr-2 group-hover:scale-110 transition-transform relative z-10"></i>
-                                <span class="relative z-10 text-sm">Limpiar</span>
+                                    class="fas fa-times mr-3 group-hover:scale-110 transition-transform relative z-10"></i>
+                                <span class="relative z-10">Limpiar</span>
                             </button>
                         </div>
+                    </div>
 
-                        <!-- Active Filters Display -->
-                        <div id="activeFilters" class="hidden border-t border-slate-700/50 pt-4">
-                            <div class="flex items-center space-x-2 text-sm text-gray-400">
-                                <span class="font-medium">Filtros activos:</span>
-                                <div id="filterTags" class="flex flex-wrap gap-2"></div>
-                            </div>
+                    <!-- Active Filters Display -->
+                    <div id="activeFilters" class="hidden border-t border-slate-700/50 pt-4 mt-6">
+                        <div class="flex items-center space-x-2 text-sm text-gray-400">
+                            <span class="font-medium">Filtros activos:</span>
+                            <div id="filterTags" class="flex flex-wrap gap-2"></div>
                         </div>
                     </div>
                 </div>
@@ -628,95 +631,98 @@
 
     <!-- Registro en Competencia -->
     <div id="competitionModal"
-        class="fixed top-0 left-0 w-full h-full flex items-center justify-center z-[10001] bg-black/80 backdrop-blur-sm hidden">
-        <div class="bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-md rounded-3xl shadow-2xl border border-slate-700/50 p-8 max-w-lg w-full mx-4 transform transition-all duration-300 scale-95 opacity-0"
-            id="competitionModalContent">
+        class="fixed inset-0 w-full h-full bg-black/80 backdrop-blur-sm hidden transition-all duration-300"
+        style="z-index: 10001;">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-md rounded-3xl shadow-2xl border border-slate-700/50 p-8 max-w-lg w-full mx-4 transform transition-all duration-300 scale-95 opacity-0"
+                id="competitionModalContent">
 
-            <!-- Floating particles background -->
-            <div class="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
-                <div class="absolute top-4 left-4 w-2 h-2 bg-yellow-400/30 rounded-full animate-pulse"></div>
-                <div class="absolute top-8 right-8 w-1 h-1 bg-orange-400/40 rounded-full animate-bounce"></div>
-                <div class="absolute bottom-6 left-8 w-1.5 h-1.5 bg-yellow-300/20 rounded-full animate-ping"></div>
-                <div
-                    class="absolute bottom-4 right-4 w-2 h-2 bg-orange-300/30 rounded-full animate-pulse animation-delay-500">
-                </div>
-            </div>
-
-            <div class="text-center relative z-10">
-                <!-- Enhanced trophy icon -->
-                <div class="relative w-24 h-24 mx-auto mb-6">
+                <!-- Floating particles background -->
+                <div class="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
+                    <div class="absolute top-4 left-4 w-2 h-2 bg-yellow-400/30 rounded-full animate-pulse"></div>
+                    <div class="absolute top-8 right-8 w-1 h-1 bg-orange-400/40 rounded-full animate-bounce"></div>
+                    <div class="absolute bottom-6 left-8 w-1.5 h-1.5 bg-yellow-300/20 rounded-full animate-ping"></div>
                     <div
-                        class="absolute inset-0 bg-gradient-to-br from-yellow-500/30 to-orange-500/30 rounded-full animate-pulse">
-                    </div>
-                    <div
-                        class="relative w-24 h-24 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-full flex items-center justify-center border border-yellow-400/30 shadow-lg shadow-yellow-500/20">
-                        <i class="fas fa-trophy text-4xl text-yellow-400 animate-bounce"></i>
-                    </div>
-                    <!-- Glow effect -->
-                    <div
-                        class="absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-orange-400/20 rounded-full blur-xl opacity-70 animate-pulse">
+                        class="absolute bottom-4 right-4 w-2 h-2 bg-orange-300/30 rounded-full animate-pulse animation-delay-500">
                     </div>
                 </div>
 
-                <!-- Enhanced title -->
-                <h3
-                    class="text-3xl font-black text-transparent bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text mb-4 drop-shadow-lg">
-                    ¡Únete al Desafío!
-                </h3>
-
-                <!-- Enhanced description -->
-                <div class="mb-8">
-                    <p class="text-gray-300 mb-4 leading-relaxed text-lg">
-                        Para acceder a los retos y participar en la competencia
-                    </p>
-                    <div
-                        class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-cyan-600/20 to-blue-600/20 border border-cyan-400/30 rounded-xl backdrop-blur-sm">
-                        <i class="fas fa-flag mr-2 text-cyan-400"></i>
-                        <span
-                            class="text-cyan-400 font-bold text-xl">{{ $competenciaActiva ? $competenciaActiva->nomcompe : '' }}</span>
-                    </div>
-                    <p class="text-gray-400 mt-4 text-sm">
-                        necesitas registrarte primero. ¡Es gratis y solo toma un segundo!
-                    </p>
-                </div>
-
-                <!-- Enhanced buttons -->
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <button onclick="confirmarRegistro()"
-                        class="flex-1 group relative overflow-hidden bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-4 px-6 rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-green-500/25">
-                        <!-- Button glow effect -->
+                <div class="text-center relative z-10">
+                    <!-- Enhanced trophy icon -->
+                    <div class="relative w-24 h-24 mx-auto mb-6">
                         <div
-                            class="absolute inset-0 bg-gradient-to-r from-green-400/20 to-emerald-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl">
+                            class="absolute inset-0 bg-gradient-to-br from-yellow-500/30 to-orange-500/30 rounded-full animate-pulse">
                         </div>
-                        <div class="relative flex items-center justify-center">
-                            <i class="fas fa-user-plus mr-2 group-hover:scale-110 transition-transform"></i>
-                            <span>¡Registrarme Ahora!</span>
-                        </div>
-                    </button>
-
-                    <button onclick="cerrarModalCompetencia()"
-                        class="flex-1 group relative overflow-hidden bg-gradient-to-r from-gray-600 to-slate-600 text-white font-semibold py-4 px-6 rounded-xl hover:from-gray-700 hover:to-slate-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-gray-500/25">
-                        <!-- Button glow effect -->
                         <div
-                            class="absolute inset-0 bg-gradient-to-r from-gray-400/20 to-slate-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl">
+                            class="relative w-24 h-24 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-full flex items-center justify-center border border-yellow-400/30 shadow-lg shadow-yellow-500/20">
+                            <i class="fas fa-trophy text-4xl text-yellow-400 animate-bounce"></i>
                         </div>
-                        <div class="relative flex items-center justify-center">
-                            <i class="fas fa-times mr-2 group-hover:scale-110 transition-transform"></i>
-                            <span>Tal vez después</span>
+                        <!-- Glow effect -->
+                        <div
+                            class="absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-orange-400/20 rounded-full blur-xl opacity-70 animate-pulse">
                         </div>
-                    </button>
-                </div>
+                    </div>
 
-                <!-- Additional info -->
-                <div class="mt-6 pt-6 border-t border-slate-700/50">
-                    <div class="flex items-center justify-center space-x-6 text-sm text-gray-400">
-                        <div class="flex items-center">
-                            <i class="fas fa-clock mr-2 text-green-400"></i>
-                            <span>Registro instantáneo</span>
+                    <!-- Enhanced title -->
+                    <h3
+                        class="text-3xl font-black text-transparent bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text mb-4 drop-shadow-lg">
+                        ¡Únete al Desafío!
+                    </h3>
+
+                    <!-- Enhanced description -->
+                    <div class="mb-8">
+                        <p class="text-gray-300 mb-4 leading-relaxed text-lg">
+                            Para acceder a los retos y participar en la competencia
+                        </p>
+                        <div
+                            class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-cyan-600/20 to-blue-600/20 border border-cyan-400/30 rounded-xl backdrop-blur-sm">
+                            <i class="fas fa-flag mr-2 text-cyan-400"></i>
+                            <span
+                                class="text-cyan-400 font-bold text-xl">{{ $competenciaActiva ? $competenciaActiva->nomcompe : '' }}</span>
                         </div>
-                        <div class="flex items-center">
-                            <i class="fas fa-shield-alt mr-2 text-blue-400"></i>
-                            <span>100% Gratuito</span>
+                        <p class="text-gray-400 mt-4 text-sm">
+                            necesitas registrarte primero. ¡Es gratis y solo toma un segundo!
+                        </p>
+                    </div>
+
+                    <!-- Enhanced buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button onclick="confirmarRegistro()"
+                            class="flex-1 group relative overflow-hidden bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-4 px-6 rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-green-500/25">
+                            <!-- Button glow effect -->
+                            <div
+                                class="absolute inset-0 bg-gradient-to-r from-green-400/20 to-emerald-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl">
+                            </div>
+                            <div class="relative flex items-center justify-center">
+                                <i class="fas fa-user-plus mr-2 group-hover:scale-110 transition-transform"></i>
+                                <span>¡Registrarme Ahora!</span>
+                            </div>
+                        </button>
+
+                        <button onclick="cerrarModalCompetencia()"
+                            class="flex-1 group relative overflow-hidden bg-gradient-to-r from-gray-600 to-slate-600 text-white font-semibold py-4 px-6 rounded-xl hover:from-gray-700 hover:to-slate-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-gray-500/25">
+                            <!-- Button glow effect -->
+                            <div
+                                class="absolute inset-0 bg-gradient-to-r from-gray-400/20 to-slate-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl">
+                            </div>
+                            <div class="relative flex items-center justify-center">
+                                <i class="fas fa-times mr-2 group-hover:scale-110 transition-transform"></i>
+                                <span>Tal vez después</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- Additional info -->
+                    <div class="mt-6 pt-6 border-t border-slate-700/50">
+                        <div class="flex items-center justify-center space-x-6 text-sm text-gray-400">
+                            <div class="flex items-center">
+                                <i class="fas fa-clock mr-2 text-green-400"></i>
+                                <span>Registro instantáneo</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-shield-alt mr-2 text-blue-400"></i>
+                                <span>100% Gratuito</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -726,33 +732,35 @@
 
     <!-- Modal de Confirmación de Registro -->
     <div id="registrationSuccessModal"
-        class="fixed top-0 left-0 w-full h-full flex items-center justify-center z-[10002] bg-black/80 backdrop-blur-sm hidden">
-        <div
-            class="bg-gradient-to-br from-green-900/95 to-emerald-800/95 backdrop-blur-md rounded-3xl shadow-2xl border border-green-700/50 p-8 max-w-md w-full mx-4 transform transition-all duration-300">
-            <div class="text-center">
-                <!-- Success icon with animation -->
-                <div class="relative w-20 h-20 mx-auto mb-6">
-                    <div class="absolute inset-0 bg-green-500/30 rounded-full animate-ping"></div>
-                    <div
-                        class="relative w-20 h-20 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-full flex items-center justify-center border border-green-400/30 shadow-lg shadow-green-500/20">
-                        <i class="fas fa-check text-3xl text-green-400 animate-bounce"></i>
+        class="fixed inset-0 w-full h-full bg-black/80 backdrop-blur-sm hidden transition-all duration-300"
+        style="z-index: 10002;">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div
+                class="bg-gradient-to-br from-green-900/95 to-emerald-800/95 backdrop-blur-md rounded-3xl shadow-2xl border border-green-700/50 p-8 max-w-md w-full mx-4 transform transition-all duration-300">
+                <div class="text-center">
+                    <!-- Success icon with animation -->
+                    <div class="relative w-20 h-20 mx-auto mb-6">
+                        <div class="absolute inset-0 bg-green-500/30 rounded-full animate-ping"></div>
+                        <div
+                            class="relative w-20 h-20 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-full flex items-center justify-center border border-green-400/30 shadow-lg shadow-green-500/20">
+                            <i class="fas fa-check text-3xl text-green-400 animate-bounce"></i>
+                        </div>
                     </div>
+
+                    <h3 class="text-2xl font-bold text-green-400 mb-4">¡Registro Exitoso!</h3>
+                    <p class="text-gray-300 mb-6 leading-relaxed">
+                        Te has registrado exitosamente en la competencia.
+                        <span class="text-green-400 font-semibold">¡Ahora puedes acceder a todos los retos!</span>
+                    </p>
+
+                    <button onclick="cerrarModalExito()"
+                        class="bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold py-3 px-8 rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-green-500/25">
+                        <i class="fas fa-play mr-2"></i>
+                        ¡Comenzar a Resolver!
+                    </button>
                 </div>
-
-                <h3 class="text-2xl font-bold text-green-400 mb-4">¡Registro Exitoso!</h3>
-                <p class="text-gray-300 mb-6 leading-relaxed">
-                    Te has registrado exitosamente en la competencia.
-                    <span class="text-green-400 font-semibold">¡Ahora puedes acceder a todos los retos!</span>
-                </p>
-
-                <button onclick="cerrarModalExito()"
-                    class="bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold py-3 px-8 rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-green-500/25">
-                    <i class="fas fa-play mr-2"></i>
-                    ¡Comenzar a Resolver!
-                </button>
             </div>
         </div>
     </div>
-
     @include('layouts.reto-modal')
 </x-app-layout>

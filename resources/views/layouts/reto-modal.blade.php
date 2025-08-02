@@ -15,10 +15,21 @@
         </div>
         <!-- Contenedor de Resueltos separado -->
         <div id="resueltos-view" class="hidden">
-            <h3 class="text-2xl font-bold text-green-400 text-center mb-4">Resuelto por</h3>
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-2xl font-bold text-green-400">Usuarios que resolvieron este reto</h3>
+            </div>
 
-            <div id="resueltos-tabla-container" class="bg-slate-800/60 p-4 rounded-lg text-gray-100 mb-6 space-y-2">
-                <!-- Aquí va la tabla dinámica -->
+            <div id="resueltos-tabla-container"
+                class="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-sm rounded-2xl border border-slate-700/50 overflow-hidden shadow-2xl mb-6 min-h-[200px]">
+                <!-- El contenido se genera dinámicamente en JavaScript -->
+            </div>
+
+            <!-- Botón cerrar -->
+            <div class="flex justify-center mt-8">
+                <button onclick="closeModal()"
+                    class="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-gray-50 font-bold py-3 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-emerald-500/25">
+                    Cerrar
+                </button>
             </div>
         </div>
 

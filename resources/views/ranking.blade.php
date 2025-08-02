@@ -80,28 +80,37 @@
                         <!-- 2nd Place -->
                         @if (isset($top3[1]))
                             <div
-                                class="group bg-gradient-to-t from-gray-600/30 to-gray-400/30 backdrop-blur-md rounded-t-3xl p-4 border border-gray-400/40 hover:border-gray-300/60 transition-all duration-500 hover:scale-105 relative w-32 h-40 flex flex-col justify-between">
-                                <div class="text-center flex-1 flex flex-col justify-center">
-                                    <!-- Profile Photo -->
-                                    <div class="relative mb-3">
-                                        <img src="{{ $top3[1]->profile_photo_url }}" alt="{{ $top3[1]->usuario }}"
-                                            class="w-12 h-12 rounded-full mx-auto border-3 border-gray-400/50 shadow-lg group-hover:scale-110 transition-transform object-cover">
-                                        <div
-                                            class="absolute -top-1 -right-1 w-6 h-6 bg-gray-400/80 rounded-full flex items-center justify-center">
-                                            <i class="fas fa-medal text-white text-xs"></i>
-                                        </div>
+                                class="group bg-gradient-to-t from-gray-600/30 to-gray-400/30 backdrop-blur-md rounded-t-3xl p-4 border border-gray-400/40 hover:border-gray-300/60 transition-all duration-500 hover:scale-105 relative w-32 h-40 flex flex-col justify-center items-center">
+                                <!-- Profile Photo -->
+                                <div class="relative mb-4">
+                                    <img src="{{ $top3[1]->profile_photo_url }}" alt="{{ $top3[1]->usuario }}"
+                                        class="w-16 h-16 rounded-full mx-auto border-3 border-gray-400/50 shadow-lg group-hover:scale-110 transition-transform object-cover">
+                                    <div
+                                        class="absolute -top-1 -right-1 w-6 h-6 bg-gray-400/80 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-medal text-white text-xs"></i>
                                     </div>
-                                    <!-- User Info -->
-                                    <div class="text-sm font-bold text-gray-300 mb-1 truncate px-1"
-                                        title="{{ $top3[1]->usuario }}">
-                                        {{ Str::limit($top3[1]->usuario, 10) }}
+                                </div>
+
+                                <!-- Position -->
+                                <div class="text-center mb-2">
+                                    <div class="text-2xl font-bold text-gray-300">2°</div>
+                                </div>
+
+                                <!-- Points (Always visible) -->
+                                <div class="text-center group-hover:opacity-0 transition-opacity duration-300">
+                                    <div class="text-sm text-gray-400 font-semibold">{{ $top3[1]->total_puntos }} pts
                                     </div>
-                                    <div class="text-xs text-gray-400 mb-2">{{ $top3[1]->total_puntos }} pts</div>
                                 </div>
-                                <div class="text-center">
-                                    <div class="text-lg font-bold text-gray-300">2°</div>
-                                    <div class="text-xs text-gray-400">Plata</div>
+
+                                <!-- Nickname - Only visible on hover -->
+                                <div
+                                    class="absolute inset-x-0 bottom-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <div class="text-sm font-bold text-gray-300 text-center truncate px-2"
+                                        title="{{ $top3[1]->nickname ?? $top3[1]->usuario }}">
+                                        {{ Str::limit($top3[1]->nickname ?? $top3[1]->usuario, 12) }}
+                                    </div>
                                 </div>
+
                                 <div class="absolute -top-2 -right-2 w-3 h-3 bg-gray-400/20 rounded-full animate-pulse">
                                 </div>
                             </div>
@@ -110,29 +119,37 @@
                         <!-- 1st Place - Higher than others -->
                         @if (isset($top3[0]))
                             <div
-                                class="group bg-gradient-to-t from-yellow-600/40 to-yellow-400/40 backdrop-blur-md rounded-t-3xl p-6 border border-yellow-400/50 hover:border-yellow-300/70 transition-all duration-500 hover:scale-110 relative w-36 h-56 flex flex-col justify-between">
-                                <div class="text-center flex-1 flex flex-col justify-center">
-                                    <!-- Profile Photo -->
-                                    <div class="relative mb-3">
-                                        <img src="{{ $top3[0]->profile_photo_url }}" alt="{{ $top3[0]->usuario }}"
-                                            class="w-16 h-16 rounded-full mx-auto border-4 border-yellow-400/70 shadow-xl group-hover:scale-110 transition-transform object-cover animate-pulse">
-                                        <div
-                                            class="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400/90 rounded-full flex items-center justify-center animate-bounce">
-                                            <i class="fas fa-crown text-yellow-900 text-sm"></i>
-                                        </div>
+                                class="group bg-gradient-to-t from-yellow-600/40 to-yellow-400/40 backdrop-blur-md rounded-t-3xl p-6 border border-yellow-400/50 hover:border-yellow-300/70 transition-all duration-500 hover:scale-110 relative w-36 h-56 flex flex-col justify-center items-center">
+                                <!-- Profile Photo -->
+                                <div class="relative mb-6">
+                                    <img src="{{ $top3[0]->profile_photo_url }}" alt="{{ $top3[0]->usuario }}"
+                                        class="w-20 h-20 rounded-full mx-auto border-4 border-yellow-400/70 shadow-xl group-hover:scale-110 transition-transform object-cover animate-pulse">
+                                    <div
+                                        class="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400/90 rounded-full flex items-center justify-center animate-bounce">
+                                        <i class="fas fa-crown text-yellow-900 text-sm"></i>
                                     </div>
-                                    <!-- User Info -->
-                                    <div class="text-base font-black text-yellow-300 mb-2 truncate px-1"
-                                        title="{{ $top3[0]->usuario }}">
-                                        {{ Str::limit($top3[0]->usuario, 12) }}
+                                </div>
+
+                                <!-- Position -->
+                                <div class="text-center mb-3">
+                                    <div class="text-3xl font-black text-yellow-300">1°</div>
+                                </div>
+
+                                <!-- Points (Always visible) -->
+                                <div class="text-center group-hover:opacity-0 transition-opacity duration-300">
+                                    <div class="text-base text-yellow-400 font-bold">{{ $top3[0]->total_puntos }} pts
                                     </div>
-                                    <div class="text-sm text-yellow-400 font-bold mb-3">{{ $top3[0]->total_puntos }}
-                                        pts</div>
                                 </div>
-                                <div class="text-center">
-                                    <div class="text-xl font-black text-yellow-300">1°</div>
-                                    <div class="text-sm text-yellow-400 font-bold">Oro</div>
+
+                                <!-- Nickname - Only visible on hover -->
+                                <div
+                                    class="absolute inset-x-0 bottom-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <div class="text-base font-black text-yellow-300 text-center truncate px-2"
+                                        title="{{ $top3[0]->nickname ?? $top3[0]->usuario }}">
+                                        {{ Str::limit($top3[0]->nickname ?? $top3[0]->usuario, 12) }}
+                                    </div>
                                 </div>
+
                                 <div
                                     class="absolute -top-2 -right-2 w-4 h-4 bg-yellow-400/30 rounded-full animate-ping">
                                 </div>
@@ -142,28 +159,37 @@
                         <!-- 3rd Place -->
                         @if (isset($top3[2]))
                             <div
-                                class="group bg-gradient-to-t from-orange-600/30 to-orange-400/30 backdrop-blur-md rounded-t-3xl p-4 border border-orange-400/40 hover:border-orange-300/60 transition-all duration-500 hover:scale-105 relative w-32 h-36 flex flex-col justify-between">
-                                <div class="text-center flex-1 flex flex-col justify-center">
-                                    <!-- Profile Photo -->
-                                    <div class="relative mb-3">
-                                        <img src="{{ $top3[2]->profile_photo_url }}" alt="{{ $top3[2]->usuario }}"
-                                            class="w-12 h-12 rounded-full mx-auto border-3 border-orange-400/50 shadow-lg group-hover:scale-110 transition-transform object-cover">
-                                        <div
-                                            class="absolute -top-1 -right-1 w-6 h-6 bg-orange-400/80 rounded-full flex items-center justify-center">
-                                            <i class="fas fa-medal text-white text-xs"></i>
-                                        </div>
+                                class="group bg-gradient-to-t from-orange-600/30 to-orange-400/30 backdrop-blur-md rounded-t-3xl p-4 border border-orange-400/40 hover:border-orange-300/60 transition-all duration-500 hover:scale-105 relative w-32 h-36 flex flex-col justify-center items-center">
+                                <!-- Profile Photo -->
+                                <div class="relative mb-4">
+                                    <img src="{{ $top3[2]->profile_photo_url }}" alt="{{ $top3[2]->usuario }}"
+                                        class="w-16 h-16 rounded-full mx-auto border-3 border-orange-400/50 shadow-lg group-hover:scale-110 transition-transform object-cover">
+                                    <div
+                                        class="absolute -top-1 -right-1 w-6 h-6 bg-orange-400/80 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-medal text-white text-xs"></i>
                                     </div>
-                                    <!-- User Info -->
-                                    <div class="text-sm font-bold text-orange-300 mb-1 truncate px-1"
-                                        title="{{ $top3[2]->usuario }}">
-                                        {{ Str::limit($top3[2]->usuario, 10) }}
+                                </div>
+
+                                <!-- Position -->
+                                <div class="text-center mb-2">
+                                    <div class="text-2xl font-bold text-orange-300">3°</div>
+                                </div>
+
+                                <!-- Points (Always visible) -->
+                                <div class="text-center group-hover:opacity-0 transition-opacity duration-300">
+                                    <div class="text-sm text-orange-400 font-semibold">{{ $top3[2]->total_puntos }} pts
                                     </div>
-                                    <div class="text-xs text-orange-400 mb-2">{{ $top3[2]->total_puntos }} pts</div>
                                 </div>
-                                <div class="text-center">
-                                    <div class="text-lg font-bold text-orange-300">3°</div>
-                                    <div class="text-xs text-orange-400">Bronce</div>
+
+                                <!-- Nickname - Only visible on hover -->
+                                <div
+                                    class="absolute inset-x-0 bottom-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <div class="text-sm font-bold text-orange-300 text-center truncate px-2"
+                                        title="{{ $top3[2]->nickname ?? $top3[2]->usuario }}">
+                                        {{ Str::limit($top3[2]->nickname ?? $top3[2]->usuario, 12) }}
+                                    </div>
                                 </div>
+
                                 <div
                                     class="absolute -top-2 -left-2 w-3 h-3 bg-orange-400/20 rounded-full animate-pulse">
                                 </div>

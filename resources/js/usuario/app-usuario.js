@@ -2,7 +2,6 @@ class UsuariosManager {
     constructor() {
         this.searchTimeout = null;
         this.currentFilters = {
-            estado: '',
             universidad: '',
             orden: ''
         };
@@ -34,13 +33,17 @@ class UsuariosManager {
             this.showLoadingState();
 
             const url = new URL(window.location.origin + '/usuarios/buscar');
-            const params = new URLSearchParams({
-                buscar: query,
-                estado: this.currentFilters.estado,
-                universidad: this.currentFilters.universidad,
-                orden: this.currentFilters.orden,
-                ajax: '1'
-            });
+            const params = new URLSearchParams();
+
+            // Agregar parámetros solo si tienen valor
+            if (query) params.append('buscar', query);
+            if (this.currentFilters.universidad && this.currentFilters.universidad !== 'todas') {
+                params.append('universidad', this.currentFilters.universidad);
+            }
+            if (this.currentFilters.orden) {
+                params.append('orden', this.currentFilters.orden);
+            }
+            params.append('ajax', '1');
 
             url.search = params.toString();
 
@@ -93,7 +96,6 @@ class UsuariosManager {
 
     // Mostrar estado de error
     showErrorState() {
-        // Implementar notificación de error
         console.log('Error en la búsqueda');
     }
 
@@ -116,7 +118,6 @@ class UsuariosManager {
     // Actualizar estadísticas
     updateStats(stats) {
         if (stats) {
-            // Actualizar contadores en el hero section
             const totalElement = document.querySelector('.text-3xl.font-black.text-cyan-400');
             if (totalElement) {
                 totalElement.textContent = stats.total;
@@ -126,9 +127,7 @@ class UsuariosManager {
 
     // Configurar event listeners
     setupEventListeners() {
-        // Delegar eventos de clic para botones de filtro y ordenamiento
         document.addEventListener('click', (event) => {
-            // Delegación para botones con data-action
             if (event.target.closest('[data-action]')) {
                 const button = event.target.closest('[data-action]');
                 const action = button.dataset.action;
@@ -141,35 +140,25 @@ class UsuariosManager {
             this.handleClickOutside(event);
         });
 
-        // Navegación por teclado
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
                 this.closeAllMenus();
             }
         });
 
-        // Reposicionar menús en resize y scroll
         window.addEventListener('resize', () => this.closeAllMenus());
-        window.addEventListener('scroll', () => this.repositionMenus());
+        window.addEventListener('scroll', () => this.closeAllMenus());
     }
 
     // Configurar funcionalidad de filtros
     setupFilterFunctionality() {
-        // Configurar filtros de estado
-        const estadoSelect = document.querySelector('#filterMenu select[data-filter="estado"]');
-        if (estadoSelect) {
-            estadoSelect.addEventListener('change', (e) => {
-                this.currentFilters.estado = e.target.value;
-                this.applyFilters();
-            });
-        }
-
         // Configurar filtros de universidad
         const universidadSelect = document.querySelector('#filterMenu select[data-filter="universidad"]');
         if (universidadSelect) {
             universidadSelect.addEventListener('change', (e) => {
                 this.currentFilters.universidad = e.target.value;
                 this.applyFilters();
+                this.updateFilterButtonText();
             });
         }
 
@@ -177,11 +166,42 @@ class UsuariosManager {
         const sortButtons = document.querySelectorAll('#sortMenu button[data-sort]');
         sortButtons.forEach(button => {
             button.addEventListener('click', (e) => {
-                this.currentFilters.orden = e.target.dataset.sort;
+                e.preventDefault();
+                this.currentFilters.orden = e.target.dataset.sort || e.target.closest('[data-sort]').dataset.sort;
                 this.applyFilters();
                 this.closeSortMenu();
+
+                this.updateSortSelection(e.target.closest('[data-sort]'));
             });
         });
+    }
+
+    // Actualizar texto del botón de filtro
+    updateFilterButtonText() {
+        const button = document.getElementById('filterButton');
+        const span = button?.querySelector('span');
+
+        if (span) {
+            const activeFilters = Object.values(this.currentFilters).filter(v => v && v !== 'todas').length;
+
+            if (activeFilters > 0) {
+                span.textContent = `Filtrar (${activeFilters})`;
+                button.classList.add('bg-blue-600/40', 'border-blue-400/60');
+            } else {
+                span.textContent = 'Filtrar';
+                button.classList.remove('bg-blue-600/40', 'border-blue-400/60');
+            }
+        }
+    }
+
+    // Marcar opción de ordenamiento seleccionada
+    updateSortSelection(selectedButton) {
+        const sortButtons = document.querySelectorAll('#sortMenu button[data-sort]');
+        sortButtons.forEach(btn => {
+            btn.classList.remove('bg-slate-700', 'text-cyan-400');
+        });
+
+        selectedButton.classList.add('bg-slate-700', 'text-cyan-400');
     }
 
     // Aplicar filtros
@@ -288,26 +308,6 @@ class UsuariosManager {
     closeAllMenus() {
         this.closeFilterMenu();
         this.closeSortMenu();
-    }
-
-    // Reposicionar menús al hacer scroll
-    repositionMenus() {
-        const filterMenu = document.getElementById('filterMenu');
-        const sortMenu = document.getElementById('sortMenu');
-
-        if (!filterMenu.classList.contains('hidden')) {
-            const button = document.getElementById('filterButton');
-            const buttonRect = button.getBoundingClientRect();
-            filterMenu.style.top = (buttonRect.bottom + 8) + 'px';
-            filterMenu.style.left = buttonRect.left + 'px';
-        }
-
-        if (!sortMenu.classList.contains('hidden')) {
-            const button = document.getElementById('sortButton');
-            const buttonRect = button.getBoundingClientRect();
-            sortMenu.style.top = (buttonRect.bottom + 8) + 'px';
-            sortMenu.style.left = buttonRect.left + 'px';
-        }
     }
 }
 

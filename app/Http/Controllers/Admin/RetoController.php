@@ -18,10 +18,16 @@ class RetoController extends Controller
 {
     public function index()
     {
-        $retos = Reto::with(['categoria', 'nivel', 'estadoReto', 'competencia', 'archivo', 'pistas'])->get();
+        $retos = Reto::with(['categoria', 'nivel', 'estadoReto', 'competencia', 'archivo', 'pistas'])
+            ->join('competencias', 'retos.fk_competencia', '=', 'competencias.idcompetencia')
+            ->select('retos.*')
+            ->where('competencias.fk_estado_compe', 3)
+            ->orderBy('retos.fk_estado_reto', 'asc')
+            ->orderBy('retos.idretos', 'desc')
+            ->get();
         $categorias = Categoria::all();
         $niveles = NivelReto::all();
-        $competencias = Competencia::all();
+        $competencias = Competencia::where('fk_estado_compe', 3)->get();
         $estados = EstadoReto::all();
 
         return view('admin.a-retos', compact('retos', 'categorias', 'niveles', 'competencias', 'estados'));

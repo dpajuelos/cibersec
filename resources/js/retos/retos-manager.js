@@ -57,6 +57,16 @@ class RetosManager {
             this.handleClickOutside(event);
         });
 
+        // Cerrar menús y reposicionar al hacer scroll
+        window.addEventListener('scroll', () => {
+            this.closeAllMenus(); // Cerrar menús al hacer scroll
+        });
+
+        // Cerrar menús al redimensionar ventana
+        window.addEventListener('resize', () => {
+            this.closeAllMenus();
+        });
+
         // Search input
         const searchInput = document.getElementById('searchInput');
         if (searchInput) {
@@ -106,7 +116,111 @@ class RetosManager {
         });
     }
 
-    // Handle clicks outside menus
+    // Menu toggle functions 
+    toggleCategoryMenu() {
+        const menu = document.getElementById('categoryMenu');
+        const button = document.getElementById('categoryButton');
+        const isHidden = menu.classList.contains('hidden');
+
+        this.closeDifficultyMenu();
+        this.closeStatusMenu();
+
+        if (isHidden) {
+            this.showMenu(menu, button);
+        } else {
+            this.closeCategoryMenu();
+        }
+    }
+
+    toggleDifficultyMenu() {
+        const menu = document.getElementById('difficultyMenu');
+        const button = document.getElementById('difficultyButton');
+        const isHidden = menu.classList.contains('hidden');
+
+        this.closeCategoryMenu();
+        this.closeStatusMenu();
+
+        if (isHidden) {
+            this.showMenu(menu, button);
+        } else {
+            this.closeDifficultyMenu();
+        }
+    }
+
+    toggleStatusMenu() {
+        const menu = document.getElementById('statusMenu');
+        const button = document.getElementById('statusButton');
+        const isHidden = menu.classList.contains('hidden');
+
+        this.closeCategoryMenu();
+        this.closeDifficultyMenu();
+
+        if (isHidden) {
+            this.showMenu(menu, button);
+        } else {
+            this.closeStatusMenu();
+        }
+    }
+
+    // Mostrar menú 
+    showMenu(menu, button) {
+        if (!menu || !button) return;
+
+        // Usar posicionamiento fijo como en usuarios
+        const buttonRect = button.getBoundingClientRect();
+
+        menu.style.position = 'fixed';
+        menu.style.top = (buttonRect.bottom + 8) + 'px';
+        menu.style.left = buttonRect.left + 'px';
+        menu.style.right = 'auto';
+        menu.style.zIndex = '99999';
+
+        // Mover al body para asegurar que esté por encima
+        document.body.appendChild(menu);
+        menu.classList.remove('hidden');
+
+        setTimeout(() => {
+            menu.classList.remove('scale-95', 'opacity-0');
+            menu.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+
+    // Cerrar menú de categorías
+    closeCategoryMenu() {
+        const menu = document.getElementById('categoryMenu');
+        this.hideMenu(menu, '#categoryButton');
+    }
+
+    // Cerrar menú de dificultad
+    closeDifficultyMenu() {
+        const menu = document.getElementById('difficultyMenu');
+        this.hideMenu(menu, '#difficultyButton');
+    }
+
+    // Cerrar menú de estado
+    closeStatusMenu() {
+        const menu = document.getElementById('statusMenu');
+        this.hideMenu(menu, '#statusButton');
+    }
+
+    // Ocultar menú - actualizado
+    hideMenu(menu, buttonSelector) {
+        if (!menu || menu.classList.contains('hidden')) return;
+
+        menu.classList.remove('scale-100', 'opacity-100');
+        menu.classList.add('scale-95', 'opacity-0');
+
+        setTimeout(() => {
+            menu.classList.add('hidden');
+            // Mover de vuelta al contenedor original
+            const originalContainer = document.querySelector(buttonSelector)?.parentNode;
+            if (originalContainer && !originalContainer.contains(menu)) {
+                originalContainer.appendChild(menu);
+            }
+        }, 300);
+    }
+
+    // Actualizar handleClickOutside 
     handleClickOutside(event) {
         const categoryMenu = document.getElementById('categoryMenu');
         const difficultyMenu = document.getElementById('difficultyMenu');
@@ -126,103 +240,6 @@ class RetosManager {
         if (!statusButton?.contains(event.target) && !statusMenu?.contains(event.target)) {
             this.closeStatusMenu();
         }
-    }
-
-    // Menu toggle functions
-    toggleCategoryMenu() {
-        const menu = document.getElementById('categoryMenu');
-        if (!menu) return;
-
-        const isHidden = menu.classList.contains('hidden');
-
-        this.closeDifficultyMenu();
-        this.closeStatusMenu();
-
-        if (isHidden) {
-            this.showMenu(menu);
-        } else {
-            this.hideMenu(menu);
-        }
-    }
-
-    toggleDifficultyMenu() {
-        const menu = document.getElementById('difficultyMenu');
-        if (!menu) return;
-
-        const isHidden = menu.classList.contains('hidden');
-
-        this.closeCategoryMenu();
-        this.closeStatusMenu();
-
-        if (isHidden) {
-            this.showMenu(menu);
-        } else {
-            this.hideMenu(menu);
-        }
-    }
-
-    toggleStatusMenu() {
-        const menu = document.getElementById('statusMenu');
-        if (!menu) return;
-
-        const isHidden = menu.classList.contains('hidden');
-
-        this.closeCategoryMenu();
-        this.closeDifficultyMenu();
-
-        if (isHidden) {
-            this.showMenu(menu);
-        } else {
-            this.hideMenu(menu);
-        }
-    }
-
-    // Menu visibility functions
-    showMenu(menu) {
-        if (!menu) return;
-
-        menu.classList.remove('hidden');
-        setTimeout(() => {
-            menu.classList.remove('scale-95', 'opacity-0');
-            menu.classList.add('scale-100', 'opacity-100');
-        }, 10);
-    }
-
-    hideMenu(menu) {
-        if (!menu) return;
-
-        menu.classList.remove('scale-100', 'opacity-100');
-        menu.classList.add('scale-95', 'opacity-0');
-        setTimeout(() => {
-            menu.classList.add('hidden');
-        }, 300);
-    }
-
-    closeCategoryMenu() {
-        const menu = document.getElementById('categoryMenu');
-        if (menu && !menu.classList.contains('hidden')) {
-            this.hideMenu(menu);
-        }
-    }
-
-    closeDifficultyMenu() {
-        const menu = document.getElementById('difficultyMenu');
-        if (menu && !menu.classList.contains('hidden')) {
-            this.hideMenu(menu);
-        }
-    }
-
-    closeStatusMenu() {
-        const menu = document.getElementById('statusMenu');
-        if (menu && !menu.classList.contains('hidden')) {
-            this.hideMenu(menu);
-        }
-    }
-
-    closeAllMenus() {
-        this.closeCategoryMenu();
-        this.closeDifficultyMenu();
-        this.closeStatusMenu();
     }
 
     // Filter functions
@@ -590,9 +607,27 @@ class RetosManager {
                 }
             }
         });
+
+        // NUEVO: Limpiar y ocultar la vista de resueltos
+        const resueltosView = document.getElementById('resueltos-view');
+        const containerElement = document.querySelector('.container');
+        const resueltosContainer = document.getElementById('resueltos-tabla-container');
+
+        if (resueltosView) resueltosView.classList.add('hidden');
+        if (containerElement) containerElement.classList.remove('hidden');
+        if (resueltosContainer) resueltosContainer.innerHTML = '';
     }
 
     showReto(element) {
+        // NUEVO: Asegurar que la vista de resueltos esté oculta al mostrar nuevo reto
+        const resueltosView = document.getElementById('resueltos-view');
+        const containerElement = document.querySelector('.container');
+        const resueltosContainer = document.getElementById('resueltos-tabla-container');
+
+        if (resueltosView) resueltosView.classList.add('hidden');
+        if (containerElement) containerElement.classList.remove('hidden');
+        if (resueltosContainer) resueltosContainer.innerHTML = '';
+
         const idreto = element.dataset.id;
         const title = element.dataset.challengeName;
         const points = element.dataset.points;
@@ -625,7 +660,7 @@ class RetosManager {
                 enlaceContainer.innerHTML = `
                     <h3 class="text-xl font-semibold text-yellow-400 mb-2">Enlace de descarga</h3>
                     <a href="${url}" download="${nombreArchivo}" class="text-blue-400 underline hover:text-blue-300 transition-all">
-                        Descargar ${nombreArchivo}
+                        Descargar
                     </a>
                 `;
             } else {
@@ -694,7 +729,14 @@ class RetosManager {
         if (resueltosView) resueltosView.classList.remove('hidden');
 
         const container = document.getElementById('resueltos-tabla-container');
-        if (container) container.innerHTML = `<p class="text-gray-400 italic">Cargando...</p>`;
+        if (container) {
+            container.innerHTML = `
+                <div class="flex items-center justify-center py-8">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-400"></div>
+                    <span class="ml-3 text-gray-300">Cargando usuarios...</span>
+                </div>
+            `;
+        }
 
         fetch(`/resueltos/${idreto}`)
             .then(res => {
@@ -705,36 +747,151 @@ class RetosManager {
                 if (!container) return;
 
                 if (!data.data || data.data.length === 0) {
-                    container.innerHTML = `<p class="text-gray-300">Ningún usuario ha resuelto este reto aún.</p>`;
+                    container.innerHTML = `
+                        <div class="text-center py-12">
+                            <div class="w-16 h-16 bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                                </svg>
+                            </div>
+                            <p class="text-gray-300 text-lg">Ningún usuario ha resuelto este reto aún</p>
+                            <p class="text-gray-500 text-sm mt-2">¡Sé el primero en resolverlo!</p>
+                        </div>
+                    `;
                     return;
                 }
 
+                // Tabla de usuarios resueltos
                 let tabla = `
-                    <table class="w-full text-left border border-slate-600">
-                        <thead>
-                            <tr class="bg-slate-700 text-gray-100">
-                                <th class="p-2 border-b border-slate-600">Usuario</th>
-                                <th class="p-2 border-b border-slate-600">Fecha</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                    <div class="max-h-96 overflow-y-auto custom-scrollbar">
+                        <table class="w-full table-auto">
+                            <thead class="sticky top-0 z-10 bg-gradient-to-r from-slate-800/95 to-slate-900/95 backdrop-blur-md border-b border-slate-600/50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-bold text-gray-300 uppercase tracking-wider border-r border-slate-600/30">
+                                        <div class="flex items-center space-x-2">
+                                            <i class="fas fa-user text-green-400"></i>
+                                            <span>Usuario</span>
+                                        </div>
+                                    </th>
+                                    <th class="px-4 py-3 text-center text-xs font-bold text-gray-300 uppercase tracking-wider border-r border-slate-600/30">
+                                        <div class="flex items-center justify-center space-x-2">
+                                            <i class="fas fa-star text-yellow-400"></i>
+                                            <span>Puntos</span>
+                                        </div>
+                                    </th>
+                                    <th class="px-4 py-3 text-center text-xs font-bold text-gray-300 uppercase tracking-wider border-r border-slate-600/30">
+                                        <div class="flex items-center justify-center space-x-2">
+                                            <i class="fas fa-calendar text-blue-400"></i>
+                                            <span>Fecha</span>
+                                        </div>
+                                    </th>
+                                    <th class="px-4 py-3 text-center text-xs font-bold text-gray-300 uppercase tracking-wider border-r border-slate-600/30">
+                                        <div class="flex items-center justify-center space-x-2">
+                                            <i class="fas fa-clock text-purple-400"></i>
+                                            <span>Hora</span>
+                                        </div>
+                                    </th>
+                                    <th class="px-4 py-3 text-center text-xs font-bold text-gray-300 uppercase tracking-wider">
+                                        <div class="flex items-center justify-center space-x-2">
+                                            <i class="fas fa-trophy text-orange-400"></i>
+                                            <span>Posición</span>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-700/50">
                 `;
 
-                data.data.forEach(item => {
+                data.data.forEach((item, index) => {
+                    const fecha = new Date(item.time);
+                    const fechaFormateada = fecha.toLocaleDateString('es-ES', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                    });
+                    const horaFormateada = fecha.toLocaleTimeString('es-ES', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+
+                    // Alternar colores de fila con hover elegante
+                    const bgClass = index % 2 === 0 ? 'bg-slate-800/40' : 'bg-slate-900/40';
+
+                    // Estilos de posición con medallas
+                    let positionBadge = '';
+                    let positionClass = 'bg-slate-600/30 text-gray-200 border border-slate-500/50';
+
+                    if (index === 0) {
+                        positionBadge = '🥇';
+                        positionClass = 'bg-gradient-to-r from-yellow-600/30 to-yellow-500/30 text-gray-100 border border-yellow-400/50 shadow-lg shadow-yellow-500/20';
+                    } else if (index === 1) {
+                        positionBadge = '🥈';
+                        positionClass = 'bg-gradient-to-r from-gray-500/30 to-gray-400/30 text-gray-200 border border-gray-400/50 shadow-lg shadow-gray-400/20';
+                    } else if (index === 2) {
+                        positionBadge = '🥉';
+                        positionClass = 'bg-gradient-to-r from-orange-600/30 to-orange-500/30 text-orange-200 border border-orange-400/50 shadow-lg shadow-orange-500/20';
+                    }
+
                     tabla += `
-                        <tr class="hover:bg-slate-700 transition">
-                            <td class="p-2 border-b border-slate-600">${item.usuario}</td>
-                            <td class="p-2 border-b border-slate-600">${new Date(item.time).toLocaleString()}</td>
+                        <tr class="${bgClass} hover:bg-slate-700/60 transition-all duration-200 group border-b border-slate-700/30">
+                            <td class="px-4 py-3 border-r border-slate-600/20">
+                                <div class="flex items-center space-x-3">
+                                    
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-gray-100 font-medium group-hover:text-white transition-colors truncate">${item.usuario}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-center border-r border-slate-600/20">
+                                <div class="inline-flex items-center justify-center space-x-1 px-2 py-1 rounded-lg bg-green-600/20 text-green-300 border border-green-500/40 min-w-[60px]">
+                                    <i class="fas fa-star text-xs"></i>
+                                    <span class="font-semibold text-sm">${item.puntos}</span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-center border-r border-slate-600/20">
+                                <div class="text-gray-200 font-medium text-sm bg-slate-700/40 px-2 py-1 rounded inline-block min-w-[80px]">
+                                    ${fechaFormateada}
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-center border-r border-slate-600/20">
+                                <div class="text-gray-300 font-mono text-xs bg-slate-700/50 px-2 py-1 rounded border border-slate-600/40 inline-block min-w-[70px]">
+                                    ${horaFormateada}
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                <div class="inline-flex items-center justify-center space-x-1 px-2 py-1 rounded-full text-xs font-bold ${positionClass} min-w-[50px]">
+                                    <span>${positionBadge}</span>
+                                    <span>#${index + 1}</span>
+                                </div>
+                            </td>
                         </tr>
                     `;
                 });
 
-                tabla += `</tbody></table>`;
+                tabla += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
                 container.innerHTML = tabla;
             })
             .catch(err => {
                 console.error("Error al obtener datos:", err);
-                if (container) container.innerHTML = `<p class="text-red-400">Hubo un error al cargar la información.</p>`;
+                if (container) {
+                    container.innerHTML = `
+                        <div class="text-center py-12">
+                            <div class="w-16 h-16 bg-red-600/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/30">
+                                <i class="fas fa-exclamation-triangle text-2xl text-red-400"></i>
+                            </div>
+                            <p class="text-red-400 text-lg font-semibold">Error al cargar la información</p>
+                            <p class="text-gray-500 text-sm mt-2">Intenta recargar la página o contacta al administrador</p>
+                            <button onclick="window.retosManager.showResueltos()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                                <i class="fas fa-redo mr-2"></i>Reintentar
+                            </button>
+                        </div>
+                    `;
+                }
             });
     }
 
@@ -744,6 +901,12 @@ class RetosManager {
 
         if (resueltosView) resueltosView.classList.add('hidden');
         if (containerElement) containerElement.classList.remove('hidden');
+
+        // Limpiar completamente el container de resueltos
+        const container = document.getElementById('resueltos-tabla-container');
+        if (container) {
+            container.innerHTML = '';
+        }
     }
 
     showOverlayPanel() {
@@ -947,6 +1110,13 @@ class RetosManager {
             });
     }
 
+    // Implementación de token firmado para comunicaciones
+    generarTokenSeguro(datos) {
+        // Crear un hash de los datos + salt secreto (esto debería estar en el servidor)
+        const mensaje = JSON.stringify(datos) + "_" + new Date().getTime();
+        return btoa(mensaje); // Simple encoding - el real debe ser más robusto
+    }
+
     enviarFlag() {
         const flagInput = document.getElementById('flag-input');
         const idretoElement = document.getElementById('idreto');
@@ -976,15 +1146,22 @@ class RetosManager {
             return;
         }
 
+        const token = this.generarTokenSeguro({
+            idreto: idreto,
+            timestamp: new Date().getTime()
+        });
+
         fetch('/retos/validar-flag', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
+                'X-Security-Token': token
             },
             body: JSON.stringify({
                 idreto: idreto,
-                flag: flag
+                flag: flag,
+                token: token
             })
         })
             .then(async res => {
@@ -1041,6 +1218,13 @@ class RetosManager {
                 </div>
             `;
         }
+    }
+
+    // Cerrar todos los menús
+    closeAllMenus() {
+        this.closeCategoryMenu();
+        this.closeDifficultyMenu();
+        this.closeStatusMenu();
     }
 }
 

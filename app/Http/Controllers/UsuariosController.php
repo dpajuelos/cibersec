@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Sesion;
 use App\Models\Universidad;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -53,6 +55,7 @@ class UsuariosController extends Controller
             ->join('personas', 'perfiles.fk_persona', '=', 'personas.dni')
             ->join('universidades', 'perfiles.fk_universidad', '=', 'universidades.iduniversidad')
             ->select(
+                'usuarios.idusuario',
                 'usuarios.usuario as nickname',
                 'usuarios.profile_photo_path',
                 'usuarios.fk_idestados as estadousuario',
@@ -77,11 +80,6 @@ class UsuariosController extends Controller
                 });
             }
 
-            // Aplicar filtro de estado
-            if ($request->filled('estado') && $request->input('estado') !== 'todos') {
-                $query->where('usuarios.fk_idestados', $request->input('estado'));
-            }
-
             // Aplicar filtro de universidad
             if ($request->filled('universidad') && $request->input('universidad') !== 'todas') {
                 if ($request->input('universidad') === 'unasam') {
@@ -103,9 +101,6 @@ class UsuariosController extends Controller
                     case 'universidad':
                         $query->orderBy('universidades.nomuniversidad', 'asc');
                         break;
-                    case 'estado':
-                        $query->orderBy('usuarios.fk_idestados', 'desc');
-                        break;
                     default:
                         $query->orderBy('personas.nombres', 'asc');
                 }
@@ -124,10 +119,12 @@ class UsuariosController extends Controller
             ->join('universidades', 'perfiles.fk_universidad', '=', 'universidades.iduniversidad')
             ->leftJoin('niveles', 'perfiles.fk_nivel', '=', 'niveles.idnivel')
             ->select(
+                'usuarios.idusuario',
                 'usuarios.usuario',
                 'usuarios.email',
                 'usuarios.fec_registro',
                 'usuarios.profile_photo_path',
+                'usuarios.fk_idestados',
                 'personas.nombres',
                 'personas.ape_paterno',
                 'personas.ape_materno',
@@ -144,12 +141,19 @@ class UsuariosController extends Controller
             return response()->json([
                 'error' => 'Usuario no encontrado',
                 'easter_egg' => [
-                    'message' => '¡Oops! Este usuario parece haberse escondido en el ciberespacio',
-                    'code' => 404,
-                    'image' => '/images/404-hacker.png'
+                    'message' => 'Este usuario se ha desvanecido en el ciberespacio...',
+                    'code' => 404
                 ]
             ], 404);
         }
+
+        // Verificar si el usuario está en línea
+        $isOnline = Sesion::where('user_id', $usuarioInfo->idusuario)
+            ->where('last_activity', '>=', Carbon::now()->subMinutes(5))
+            ->exists();
+
+        // Agregar el estado en línea a los datos del usuario
+        $usuarioInfo->is_online = $isOnline;
 
         // Obtener competencias del usuario
         $competencias = DB::table('competencias')
@@ -157,10 +161,9 @@ class UsuariosController extends Controller
             ->join('perfiles', 'registros_personas.fk_perfil', '=', 'perfiles.idperfil')
             ->where('perfiles.fk_usuario', $usuarioInfo->idusuario)
             ->select(
-                'competencias.idcompetencia',
-                'competencias.nomcompe as nomcompetencia',
+                'competencias.nomcompe',
                 'competencias.descripcion',
-                'registros_personas.fec_registro as fecha_registro'
+                'registros_personas.fec_registro',
             )
             ->get();
 
@@ -169,8 +172,6 @@ class UsuariosController extends Controller
             'competencias' => $competencias
         ]);
     }
-
-    // ...existing code...
 
     /**
      * Obtener estadísticas de usuarios

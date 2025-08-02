@@ -51,22 +51,27 @@ class RetosController extends Controller
                     'pt.nombre',
                     'pt.url',
                     'pt.tipo',
-                    DB::raw('IF(MAX(sp.idsolve IS NOT NULL), 1, 0) AS resuelto'),
+                    DB::raw('COALESCE(MAX(sp.idsolve), 0) > 0 AS resuelto'),
                     DB::raw('(SELECT COUNT(*) FROM submissions_personas AS sub WHERE sub.fk_idretos = rt.idretos) AS intentos')
                 )
-                ->join('niveles_reto AS lvl', 'rt.fk_nivel', '=', 'lvl.idnivel_reto')
                 ->join('categorias AS ct', 'rt.fk_categoria', '=', 'ct.idcategoria')
                 ->join('estados_reto AS et', 'rt.fk_estado_reto', '=', 'et.idestado_reto')
+                ->join('competencias AS c', 'rt.fk_competencia', '=', 'c.idcompetencia')
                 ->leftJoin('archivos_reto AS pt', 'pt.fk_retos', '=', 'rt.idretos')
                 // Submissions del usuario actual
                 ->leftJoin('submissions_personas AS sb', function ($join) use ($perfilId) {
                     $join
                         ->on('sb.fk_idretos', '=', 'rt.idretos')
-                        ->where('sb.fk_idregistros', '=', $perfilId);
+                        ->where('sb.fk_idregistros', '=', function ($query) use ($perfilId) {
+                            $query
+                                ->select('idregistros')
+                                ->from('registros_personas')
+                                ->where('fk_perfil', $perfilId)
+                                ->limit(1);
+                        });
                 })
                 // Solve relacionado al intento
                 ->leftJoin('solve_personas AS sp', 'sp.fk_idsubmissions_personas', '=', 'sb.idsubmissions_personas')
-                ->leftjoin('competencias AS c', 'rt.fk_competencia', '=', 'c.idcompetencia')
                 ->where('et.estadoreto', '=', 'Activo')
                 ->where('c.fk_estado_compe', 3)
                 ->groupBy(
@@ -90,21 +95,19 @@ class RetosController extends Controller
                     'rt.puntos',
                     'rt.descripcion',
                     'ct.nomcategoria',
-                    DB::raw('0 AS resuelto')
+                    'pt.nombre',
+                    'pt.url',
+                    'pt.tipo',
+                    DB::raw('0 AS resuelto'),
+                    DB::raw('(SELECT COUNT(*) FROM submissions_personas AS sub WHERE sub.fk_idretos = rt.idretos) AS intentos')
                 )
                 ->join('categorias AS ct', 'rt.fk_categoria', '=', 'ct.idcategoria')
                 ->join('estados_reto AS et', 'rt.fk_estado_reto', '=', 'et.idestado_reto')
                 ->join('competencias AS c', 'rt.fk_competencia', '=', 'c.idcompetencia')
+                ->leftJoin('archivos_reto AS pt', 'pt.fk_retos', '=', 'rt.idretos')
                 ->where('et.estadoreto', 'Activo')
                 ->where('c.fk_estado_compe', 3)
                 ->get();
-
-            foreach ($retos as $reto) {
-                $intentos = DB::table('submissions_personas')
-                    ->where('fk_idretos', $reto->idretos)
-                    ->count();
-                $reto->intentos = $intentos;
-            }
 
             $retosPorCategoria = $retos->groupBy('nomcategoria');
         }
@@ -339,10 +342,22 @@ class RetosController extends Controller
             ->join('registros_personas as rp', 's.fk_idregistros', '=', 'rp.idregistros')
             ->join('perfiles as p', 'rp.fk_perfil', '=', 'p.idperfil')
             ->join('usuarios as us', 'p.fk_usuario', '=', 'us.idusuario')
-            ->join('retos as r', 's.fk_idretos', '=', 'r.idretos')
-            ->select('us.usuario', 'sp.time')
+            ->leftJoin('hitlog_personas as h', function ($join) use ($idreto) {
+                $join
+                    ->on('h.fk_idregistros', '=', 'rp.idregistros')
+                    ->join('retos_has_pistas as rhp', 'h.fk_idretos_has_pistas', '=', 'rhp.idretos_has_pistas')
+                    ->where('rhp.fk_idretos', $idreto);
+            })
+            ->leftJoin('pistas as pt', 'h.fk_idretos_has_pistas', '=', 'pt.idpistas')
+            ->select(
+                'us.usuario',
+                'sp.time',
+                'sp.puntos',
+                DB::raw('COALESCE(SUM(pt.valor), 0) as pistas_usadas')
+            )
             ->where('s.fk_idretos', $idreto)
-            ->orderBy('sp.time', 'desc')
+            ->groupBy('us.usuario', 'sp.time', 'sp.puntos', 'sp.idsolve')
+            ->orderBy('sp.time', 'asc')
             ->get();
 
         return response()->json([

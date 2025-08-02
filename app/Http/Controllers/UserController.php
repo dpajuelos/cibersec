@@ -37,12 +37,34 @@ class UserController extends Controller
     public function detalle(Request $request)
     {
         $nombreCompleto = $request->input('userName');
+
+        // Obtener datos básicos del usuario
         $resultados = DB::select('CALL datos_usuario(?)', [$nombreCompleto]);
 
         if (empty($resultados)) {
             return response()->json(['message' => 'No se encontraron datos para este usuario.']);
         }
-        return response()->json(['results' => $resultados]);
+
+        // Obtener información de competencias
+        $competenciasInfo = DB::table('usuarios as u')
+            ->join('perfiles as p', 'u.idusuario', '=', 'p.fk_usuario')
+            ->join('registros_personas as rp', 'p.idperfil', '=', 'rp.fk_perfil')
+            ->join('competencias as c', 'rp.fk_competencia', '=', 'c.idcompetencia')
+            ->where('u.usuario', $nombreCompleto)
+            ->select(
+                'c.nomcompe',
+                'c.descripcion',
+                'c.fec_inicio',
+                'c.fec_final',
+                'rp.fec_registro as fecha_registro'
+            )
+            ->orderBy('rp.fec_registro', 'desc')
+            ->get();
+
+        return response()->json([
+            'results' => $resultados,
+            'competencias' => $competenciasInfo
+        ]);
     }
 
     public function obtenerPorcentajeAcierto(Request $request)

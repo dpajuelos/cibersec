@@ -169,7 +169,7 @@ class RetoManager {
         // Pistas
         document.getElementById('agregar-pista')?.addEventListener('click', () => this.agregarPista());
 
-        // Delegación de eventos para botones de eliminar pistas - SIMPLIFICADO
+        // Delegación de eventos para botones de eliminar pistas 
         document.getElementById('container-pistas')?.addEventListener('click', (e) => {
             if (e.target.closest('.eliminar-pista-btn')) {
                 e.preventDefault();
@@ -385,11 +385,11 @@ class RetoManager {
         pistaDiv.innerHTML = `
             <div class="flex-1">
                 <input type="text" name="pistas[${this.pistasCounter}][contenido]" placeholder="Contenido de la pista" 
-                    class="w-full px-4 py-3 bg-slate-600/50 border border-slate-500 rounded-xl text-white focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300">
+                    class="w-full px-4 py-3 bg-slate-700/50 border border-slate-500 rounded-xl text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300">
             </div>
             <div class="w-32">
                 <input type="number" name="pistas[${this.pistasCounter}][valor]" placeholder="Valor" min="0"
-                    class="w-full px-4 py-3 bg-slate-600/50 border border-slate-500 rounded-xl text-white focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300">
+                    class="w-full px-4 py-3 bg-slate-700/50 border border-slate-500 rounded-xl text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300">
             </div>
             <button type="button" class="eliminar-pista-btn p-3 bg-gradient-to-r from-red-500/20 to-pink-500/20 hover:from-red-500/30 hover:to-pink-500/30 text-red-300 border border-red-400/30 rounded-xl transition-all duration-300 transform hover:scale-105">
                 <i class="fas fa-trash"></i>
@@ -418,7 +418,7 @@ class RetoManager {
         this.eliminarPistaDOM(pistaElement);
     }
 
-    // Eliminar pista del servidor (para pistas existentes)
+    // Eliminar pista del servidor
     async eliminarPistaServidor(retoId, pistaId, pistaElement) {
         try {
             const response = await fetch(`/admin/challenges/${retoId}/pistas/${pistaId}`, {
@@ -762,14 +762,14 @@ class RetoManager {
                         <input type="text" name="pistas[${this.pistasCounter}][contenido]" 
                             value="${pista.contenido || ''}" 
                             placeholder="Contenido de la pista" 
-                            class="w-full px-4 py-3 bg-slate-600/50 border border-slate-500 rounded-xl text-white focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300">
+                            class="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300">
                         <input type="hidden" name="pistas[${this.pistasCounter}][id]" value="${pista.idpistas || ''}">
                     </div>
                     <div class="w-32">
                         <input type="number" name="pistas[${this.pistasCounter}][valor]" 
                             value="${pista.valor || ''}" 
                             placeholder="Valor" min="0"
-                            class="w-full px-4 py-3 bg-slate-600/50 border border-slate-500 rounded-xl text-white focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300">
+                            class="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-gray-200 focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300">
                     </div>
                     <button type="button" class="eliminar-pista-btn p-3 bg-gradient-to-r from-red-500/20 to-pink-500/20 hover:from-red-500/30 hover:to-pink-500/30 text-red-300 border border-red-400/30 rounded-xl transition-all duration-300 transform hover:scale-105">
                         <i class="fas fa-trash"></i>

@@ -21,17 +21,19 @@
                     <span>Gestión de Usuarios</span>
                 </div>
 
-                <div class="flex justify-between items-center">
-                    <h1 class="text-4xl md:text-5xl font-black text-white relative">
-                        <span class="text-transparent bg-clip-text bg-white animate-pulse">
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <h1
+                        class="text-3xl sm:text-4xl md:text-5xl font-black text-white relative text-center sm:text-left">
+                        <span
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-cyan-300 animate-pulse">
                             Usuarios
                         </span>
-                        <span class="absolute inset-0 text-blue-400 opacity-50 blur-sm">
+                        <span class="absolute inset-0 text-cyan-300 opacity-70 blur-sm">
                             Usuarios
                         </span>
                     </h1>
                     <button id="crear-usuario-btn"
-                        class="group bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white px-8 py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-2xl shadow-blue-500/25 border border-blue-400/30">
+                        class="group bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white px-6 py-3 sm:px-8 sm:py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-2xl shadow-blue-500/25 border border-blue-400/30 w-full sm:w-auto">
                         <i class="fas fa-user-plus mr-3 group-hover:rotate-180 transition-transform duration-300"></i>
                         Nuevo Usuario
                     </button>
