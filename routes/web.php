@@ -12,6 +12,7 @@ use App\Http\Controllers\RetoController;
 use App\Http\Controllers\RetosController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UsuariosController;
+use App\Http\Controllers\PerfilController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -90,11 +91,11 @@ Route::get('/dashboard', function () {
     return view('welcome');
 })->name('dashboard');
 
-Route::get('/perfil1', [UserController::class, 'index'])->name('profile.perfil1');
-Route::get('/perfil/puesto_puntos', [UserController::class, 'puesto_puntos'])->name('perfil.puestopuntos');
-Route::get('/perfil/detalle', [UserController::class, 'detalle'])->name('perfil.detalle');
-Route::post('/perfil/porcentaje-acierto', [UserController::class, 'obtenerPorcentajeAcierto']);
-Route::post('/perfil/puntos-por-fecha', [UserController::class, 'obtenerPuntosPorFecha']);
+
+// Rutas para el perfil del usuario
+Route::middleware(['auth'])->group(function () {
+    Route::get('/perfil1', [PerfilController::class, 'index'])->name('profile.perfil1');
+});
 
 // Rutas de administración
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {

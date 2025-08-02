@@ -44,16 +44,16 @@
                                 </div>
                             </div>
                             <div>
-                                <h3 class="text-3xl lg:text-4xl font-black mb-2">{{ $usu ?? 'Hacker' }}</h3>
+                                <h3 class="text-3xl lg:text-4xl font-black mb-2">{{ $usuario->usuario }}</h3>
                                 <p class="text-emerald-100 text-lg font-medium flex items-center">
                                     <i class="fas fa-at mr-2"></i>
-                                    {{ Auth::user()->usuario ?? 'nickname' }}
+                                    {{ $usuario->perfil?->persona?->nombres }} {{ $usuario->perfil?->persona?->ape_paterno }} {{ $usuario->perfil?->persona?->ape_materno }}
                                 </p>
                                 <div class="flex items-center mt-2 space-x-4">
                                     <span
                                         class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold">
                                         <i class="fas fa-clock mr-1"></i>
-                                        Activo
+                                        {{ $estado?->name_state ?? 'Desconocido' }}
                                     </span>
                                 </div>
                             </div>
@@ -63,13 +63,13 @@
                         <div class="grid grid-cols-2 gap-6 lg:gap-8">
                             <div class="text-center">
                                 <div id="puntos" class="text-3xl lg:text-4xl font-black mb-1 text-white">
-                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <i class="fas fa-star">{{ $miPuntaje }}</i>
                                 </div>
                                 <p class="text-emerald-100 text-sm font-medium">Puntos Totales</p>
                             </div>
                             <div class="text-center">
                                 <div id="puesto" class="text-3xl lg:text-4xl font-black mb-1 text-white">
-                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <i class="fas fa-medal ">{{ $miPuesto }}</i>
                                 </div>
                                 <p class="text-emerald-100 text-sm font-medium">Ranking Global</p>
                             </div>
@@ -105,37 +105,62 @@
                             </div>
                         </div>
 
-                        <div class="overflow-x-auto">
-                            <table id="userTable" class="w-full">
+                        <div class="w-full border border-gray-200 rounded-md overflow-hidden">
+                            <table class="w-full">
                                 <thead class="bg-gray-50 border-b border-gray-100">
                                     <tr>
-                                        <th
-                                            class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                                             <i class="fas fa-puzzle-piece mr-2 text-emerald-600"></i>Reto
                                         </th>
-                                        <th
-                                            class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                        <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
                                             <i class="fas fa-tags mr-2 text-blue-600"></i>Categoría
                                         </th>
-                                        <th
-                                            class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                        <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
                                             <i class="fas fa-star mr-2 text-yellow-600"></i>Puntos
                                         </th>
-                                        <th
-                                            class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                        <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
                                             <i class="fas fa-clock mr-2 text-purple-600"></i>Tiempo
                                         </th>
-                                        <th
-                                            class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                        <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
                                             <i class="fas fa-check-circle mr-2 text-green-600"></i>Estado
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody id="userTableBody" class="bg-white divide-y divide-gray-100">
-                                    <!-- Dynamic content will be loaded here -->
-                                </tbody>
                             </table>
+
+                            <div class="max-h-40 overflow-y-auto">
+                                <table class="w-full">
+                                    <tbody class="bg-white divide-y divide-gray-100">
+                                        @forelse($registrosResueltos as $registro)
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                {{ $registro->nombre_reto }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
+                                                {{ $registro->nomcategoria }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
+                                                {{ $registro->puntos }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
+                                                {{ $registro->time }} s
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
+                                                {{ $registro->estado_reto }}
+                                            </td>
+                                        </tr>
+                                        @empty
+                                        <tr>
+                                            <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                                No has resuelto ningún reto aún.
+                                            </td>
+                                        </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
+
                     </div>
 
                     <!-- Performance Chart -->
@@ -240,7 +265,7 @@
                                     </div>
                                     <span class="text-gray-700 font-medium">Retos Resueltos</span>
                                 </div>
-                                <span id="retos-resueltos" class="text-2xl font-black text-green-600">0</span>
+                                <span id="retos-resueltos" class="text-2xl font-black text-green-600">{{ $cantidadRetos }}</span>
                             </div>
 
                             <div
@@ -249,9 +274,9 @@
                                     <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                                         <i class="fas fa-layer-group text-blue-600"></i>
                                     </div>
-                                    <span class="text-gray-700 font-medium">Categorías Activas</span>
+                                    <span class="text-gray-700 font-medium">Categorías Jugadas</span>
                                 </div>
-                                <span id="categorias-activas" class="text-2xl font-black text-blue-600">0</span>
+                                <span id="categorias-activas" class="text-2xl font-black text-blue-600">{{ $categoriasJugadas }}</span>
                             </div>
 
                             <div class="flex items-center justify-between py-3">
@@ -261,7 +286,7 @@
                                     </div>
                                     <span class="text-gray-700 font-medium">Mejor Puntuación</span>
                                 </div>
-                                <span id="mejor-puntuacion" class="text-2xl font-black text-purple-600">0</span>
+                                <span id="mejor-puntuacion" class="text-2xl font-black text-purple-600">{{ $mejorPuntaje }}</span>
                             </div>
                         </div>
                     </div>
@@ -272,113 +297,9 @@
 </x-app-layout>
 
 <script>
-    // Global variables
-    let allChallengesData = [];
+    
 
-    function cargarCategorias() {
-        fetch(`/categorias`)
-            .then(response => response.json())
-            .then(data => {
-                const categorySelect = document.getElementById('categoriaselect');
-                categorySelect.innerHTML = `<option value="" disabled selected>Elige una categoría...</option>`;
-
-                data.forEach(categoria => {
-                    const option = document.createElement('option');
-                    option.value = categoria.nomcategoria;
-                    option.text = categoria.nomcategoria;
-                    categorySelect.appendChild(option);
-                });
-            })
-            .catch(error => console.error('Error al cargar las categorías', error));
-    }
-
-    function puesto_puntos() {
-        const nickname = "{{ Auth::user()->usuario }}";
-        fetch(`/perfil/puesto_puntos?nickname=${encodeURIComponent(nickname)}`)
-            .then(response => response.json())
-            .then(data => {
-                const puntosElement = document.getElementById('puntos');
-                const puestoElement = document.getElementById('puesto');
-
-                if (data.message) {
-                    puntosElement.innerHTML = `<span class="text-2xl">0</span>`;
-                    puestoElement.innerHTML = `<span class="text-2xl">--</span>`;
-                } else {
-                    puntosElement.innerHTML = `<span class="text-2xl">${data.total_puntos}</span>`;
-                    puestoElement.innerHTML = `<span class="text-2xl">#${data.puesto}</span>`;
-                }
-            })
-            .catch(error => console.error('Error al cargar datos', error));
-    }
-
-    function detalle() {
-        const userName = "{{ $usu }}";
-        fetch(`/perfil/detalle?userName=${encodeURIComponent(userName)}`)
-            .then(response => response.json())
-            .then(data => {
-                const tableBody = document.getElementById('userTableBody');
-                tableBody.innerHTML = '';
-
-                if (data.message) {
-                    tableBody.innerHTML = `
-                        <tr>
-                            <td colspan="5" class="px-6 py-12 text-center text-gray-500">
-                                <div class="flex flex-col items-center space-y-3">
-                                    <i class="fas fa-search text-4xl text-gray-300"></i>
-                                    <p class="text-lg font-medium">${data.message}</p>
-                                    <p class="text-sm">¡Comienza a resolver retos para ver tu progreso aquí!</p>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                } else {
-                    allChallengesData = data.results;
-                    updateQuickStats(data.results);
-
-                    data.results.forEach(result => {
-                        let statusConfig = getStatusConfig(result.resultado);
-                        let categoryConfig = getCategoryConfig(result.nomcategoria);
-
-                        const row = document.createElement('tr');
-                        row.className = 'hover:bg-gray-50 transition-colors';
-                        row.innerHTML = `
-                            <td class="px-6 py-4">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-10 h-10 ${categoryConfig.bg} rounded-lg flex items-center justify-center">
-                                        <i class="${categoryConfig.icon} ${categoryConfig.color}"></i>
-                                    </div>
-                                    <div>
-                                        <div class="font-semibold text-gray-900">${result.nomreto}</div>
-                                        <div class="text-sm text-gray-500">Challenge</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center">
-                                <span class="px-3 py-1 ${categoryConfig.bg} ${categoryConfig.color} rounded-full text-xs font-semibold">
-                                    ${result.nomcategoria}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 text-center">
-                                <span class="text-lg font-bold text-gray-900">${result.puntos}</span>
-                                <div class="text-xs text-gray-500">pts</div>
-                            </td>
-                            <td class="px-6 py-4 text-center">
-                                <span class="font-medium text-gray-700">${result.tiempo}</span>
-                            </td>
-                            <td class="px-6 py-4 text-center">
-                                <span class="inline-flex items-center px-3 py-1 ${statusConfig.bg} ${statusConfig.color} rounded-full text-xs font-semibold">
-                                    <i class="${statusConfig.icon} mr-1"></i>
-                                    ${statusConfig.text}
-                                </span>
-                            </td>
-                        `;
-                        tableBody.appendChild(row);
-                    });
-                }
-            })
-            .catch(error => console.error('Error al cargar los detalles del usuario:', error));
-    }
-
+    
     function getStatusConfig(resultado) {
         const configs = {
             'Flag Encontrada': {
@@ -456,75 +377,20 @@
         document.getElementById('mejor-puntuacion').textContent = mejorPuntuacion > 0 ? mejorPuntuacion : 0;
     }
 
-    function actualizarProgreso() {
-        const categoria = document.getElementById('categoriaselect').value;
-        const userName = "{{ $usu }}";
-
-        fetch(`/perfil/porcentaje-acierto`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    userName,
-                    categoria
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                const barraProgreso = document.getElementById('barrita');
-                const barraText = document.getElementById('barrita-text');
-
-                if (data.porcentaje !== undefined && data.porcentaje !== null) {
-                    barraProgreso.style.width = `${data.porcentaje}%`;
-                    barraText.textContent = `${data.porcentaje}%`;
-                } else {
-                    barraProgreso.style.width = '0%';
-                    barraText.textContent = '0%';
-                }
-            })
-            .catch(error => console.error('Error:', error));
-
-        // Actualizar gráfico
-        fetch(`/perfil/puntos-por-fecha`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    userName,
-                    categoria
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.puntos && data.puntos.length > 0) {
-                    const fechas = data.puntos.map(p => p.fecha);
-                    const puntos = data.puntos.map(p => p.puntos);
-
-                    scoreChart.data.labels = fechas;
-                    scoreChart.data.datasets[0].data = puntos;
-                    scoreChart.update();
-                } else {
-                    scoreChart.data.labels = [];
-                    scoreChart.data.datasets[0].data = [];
-                    scoreChart.update();
-                }
-            })
-            .catch(error => console.error('Error al actualizar el gráfico:', error));
-    }
-
+    
+    
     // Chart.js configuration
+    const chartLabels = @json($chartData->pluck('nombre'));
+    const chartPuntos = @json($chartData->pluck('puntos'));
+    const chartTiempo = @json($chartData->pluck('tiempo'));
     const ctx = document.getElementById('scoreChart').getContext('2d');
     const scoreChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: [],
+            labels: chartTiempo,
             datasets: [{
                 label: 'Puntuación',
-                data: [],
+                data: chartPuntos,
                 fill: true,
                 borderColor: 'rgb(16, 185, 129)',
                 backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -599,11 +465,35 @@
         }
     });
 
+    const categorias = @json($categoriasData);
+    const porcentajes = @json($porcentajes);
+    document.addEventListener("DOMContentLoaded", function () {
+        const categoriaSelect = document.getElementById("categoriaselect");
+
+        categorias.forEach(categoria => {
+            const option = document.createElement("option");
+            option.value = categoria.idcategoria;
+            option.textContent = categoria.nomcategoria;
+            categoriaSelect.appendChild(option);
+        });
+    });
+
+    function actualizarProgreso() {
+        const select = document.getElementById("categoriaselect");
+        const bar = document.getElementById("barrita");
+        const barText = document.getElementById("barrita-text");
+
+        const selected = select.value;
+        const porcentaje = porcentajes[selected] ?? 0;
+
+        bar.style.width = porcentaje + "%";
+        barText.textContent = porcentaje + "%";
+    }
+
     // Initialize page
     document.addEventListener('DOMContentLoaded', function() {
-        cargarCategorias();
-        puesto_puntos();
-        detalle();
+        //cargarCategorias();
+        
     });
 </script>
 
