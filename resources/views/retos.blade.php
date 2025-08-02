@@ -1,4 +1,22 @@
 <x-app-layout>
+    @push('styles')
+        @vite('resources/css/retos/retos-styles.css')
+    @endpush
+
+    @push('scripts')
+        @vite('resources/js/retos/retos-manager.js')
+        <script>
+            window.isLoggedIn = {{ auth()->check() ? 'true' : 'false' }};
+            window.userRegisteredInCompetition = {{ isset($usuarioRegistrado) && $usuarioRegistrado ? 'true' : 'false' }};
+            window.competitionId = {{ $competenciaActiva ? $competenciaActiva->idcompetencia : 'null' }};
+            console.log('Variables globales:', {
+                isLoggedIn: window.isLoggedIn,
+                userRegisteredInCompetition: window.userRegisteredInCompetition,
+                competitionId: window.competitionId
+            });
+        </script>
+    @endpush
+
     @php
         $coloresPorCategoria = [
             'Web' => [
@@ -82,12 +100,57 @@
 
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center">
-                <!-- Challenge Badge -->
+                <!-- Enhanced Challenge Badge with Competition Info -->
                 <div
-                    class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600/30 to-indigo-600/30 border border-purple-400/40 rounded-full text-purple-400 text-sm font-bold mb-8 backdrop-blur-sm hover:from-purple-600/40 hover:to-indigo-600/40 hover:border-purple-300/60 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-purple-500/20">
-                    <i class="fas fa-flag mr-3 text-purple-400 animate-pulse text-lg"></i>
-                    <span>CTF Challenges Hub</span>
-                    <i class="fas fa-code ml-3 text-purple-400 animate-bounce"></i>
+                    class="inline-flex flex-col items-center px-8 py-4 bg-gradient-to-r from-purple-600/30 to-indigo-600/30 border border-purple-400/40 rounded-2xl text-purple-400 text-sm font-bold mb-8 backdrop-blur-sm hover:from-purple-600/40 hover:to-indigo-600/40 hover:border-purple-300/60 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-purple-500/20">
+                    <div class="flex items-center mb-2">
+                        <i class="fas fa-flag mr-3 text-purple-400 animate-pulse text-lg"></i>
+                        <span>CTF Challenges Hub</span>
+                        <i class="fas fa-code ml-3 text-purple-400 animate-bounce"></i>
+                    </div>
+
+                    @if ($competenciaActiva)
+                        <div class="text-center">
+                            <h3 class="text-lg font-bold text-cyan-400 mb-2">{{ $competenciaActiva->nomcompe }}</h3>
+                            <div class="flex items-center justify-center space-x-4 text-xs">
+                                <div class="flex items-center">
+                                    <i class="fas fa-calendar-alt mr-1 text-green-400"></i>
+                                    <span class="text-gray-300">Inicio:
+                                        {{ \Carbon\Carbon::parse($competenciaActiva->fec_inicio)->format('d/m/Y H:i') }}</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-calendar-times mr-1 text-red-400"></i>
+                                    <span class="text-gray-300">Fin:
+                                        {{ \Carbon\Carbon::parse($competenciaActiva->fec_final)->format('d/m/Y H:i') }}</span>
+                                </div>
+                            </div>
+
+                            @auth
+                                @if (!$usuarioRegistrado)
+                                    <button onclick="registrarseEnCompetencia()"
+                                        class="mt-4 inline-flex items-center px-6 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-green-500/25">
+                                        <i class="fas fa-user-plus mr-2"></i>
+                                        ¡Únete al Desafío!
+                                    </button>
+                                @else
+                                    <div
+                                        class="mt-4 inline-flex items-center px-6 py-2 bg-gradient-to-r from-green-600/20 to-emerald-600/20 border border-green-500/30 rounded-xl backdrop-blur-sm">
+                                        <i class="fas fa-check-circle mr-2 text-green-400"></i>
+                                        <span class="text-green-400 font-medium">¡Ya estás participando!</span>
+                                    </div>
+                                @endif
+                            @else
+                                <div class="mt-4 text-sm text-gray-400">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    Inicia sesión para participar
+                                </div>
+                            @endauth
+                        </div>
+                    @else
+                        <div class="text-center">
+                            <span class="text-gray-400 text-sm">No hay competencias activas</span>
+                        </div>
+                    @endif
                 </div>
 
                 <!-- Title with special effects -->
@@ -132,7 +195,7 @@
                         class="bg-gradient-to-br from-yellow-600/20 to-orange-600/20 backdrop-blur-sm rounded-xl p-4 border border-yellow-500/30">
                         <div class="text-2xl font-bold text-yellow-400">
                             @auth
-                                {{ $retosPorCategoria->flatten()->where('resuelto', 1)->count() }}
+                                {{ $usuarioRegistrado ? $retosPorCategoria->flatten()->where('resuelto', 1)->count() : 0 }}
                             @else
                                 0
                             @endauth
@@ -143,7 +206,7 @@
                         class="bg-gradient-to-br from-red-600/20 to-pink-600/20 backdrop-blur-sm rounded-xl p-4 border border-red-500/30">
                         <div class="text-2xl font-bold text-red-400">
                             @auth
-                                {{ $retosPorCategoria->flatten()->where('resuelto', 0)->count() }}
+                                {{ $usuarioRegistrado ? $retosPorCategoria->flatten()->where('resuelto', 0)->count() : $retosPorCategoria->flatten()->count() }}
                             @else
                                 {{ $retosPorCategoria->flatten()->count() }}
                             @endauth
@@ -423,13 +486,12 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                     @foreach ($retos as $reto)
                                         <div class="challenge-card group cursor-pointer bg-slate-900/60 backdrop-blur-sm rounded-2xl border {{ $colores['border'] }} transition-all duration-500 hover:scale-105 hover:{{ str_replace('shadow-', 'shadow-2xl ', $colores['shadow']) }} hover:border-opacity-80 relative overflow-hidden"
-                                            onclick="openModal(this)"
-                                            data-id="{{ $reto->idretos }}"
+                                            onclick="openModal(this)" data-id="{{ $reto->idretos }}"
                                             data-challenge-name="{{ $reto->nomreto }}"
                                             data-points="{{ $reto->puntos }}"
                                             data-description="{{ $reto->descripcion }}"
-                                            data-url="{{ $reto->url ?? ''}}"
-                                            data-nombre-archivo="{{ $reto->nombre ?? ''}}"
+                                            data-url="{{ $reto->url ?? '' }}"
+                                            data-nombre-archivo="{{ $reto->nombre ?? '' }}"
                                             data-solved="{{ Auth::check() && $reto->resuelto == 1 ? 'true' : 'false' }}">
 
                                             <!-- Status Badge Overlay -->
@@ -509,7 +571,8 @@
                                                     <div class="flex items-center space-x-2 text-gray-400 text-sm">
                                                         <i class="fas fa-users text-xs"></i>
 
-                                                        <span>Intentos: <span class="intentos-count">{{ $reto->intentos }}</span>
+                                                        <span>Intentos: <span
+                                                                class="intentos-count">{{ $reto->intentos }}</span>
 
                                                     </div>
 
@@ -562,902 +625,134 @@
             </div>
         </div>
     </div>
-    {{-- Modal existente --}}
-    <div id="modal" class="fixed top-0 left-0 w-full h-full flex items-center justify-center z-[10000] bg-black/80 backdrop-blur-sm hidden">
-        <div
-            class="bg-slate-900/95 backdrop-blur-md rounded-3xl shadow-2xl border border-slate-700/50 p-8 max-w-4xl w-full h-auto max-h-[90vh] overflow-auto mx-4">
-            <!-- Modal content mantener el existente -->
-            <div class="grid grid-cols-2 gap-6 border-b border-slate-700/50 py-6 mb-6">
-                <button
-                    class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold py-3 rounded-xl hover:from-purple-800 hover:to-indigo-800 transition-all duration-300"
-                    onclick="volverAVistaReto()">Reto</button>
-                
-                <button id="btn-resuelto" onclick="showResueltos()"
-                    class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-3 rounded-xl hover:from-indigo-800 hover:to-purple-800 transition-all duration-300">
-                    Resuelto por: <span id="resuelto-count"></span>
-                </button>
-            </div>
-            <!-- Contenedor de Resueltos separado -->
-            <div id="resueltos-view" class="hidden">
-                <h3 class="text-2xl font-bold text-green-400 text-center mb-4">Resuelto por</h3>
-                
-                <div id="resueltos-tabla-container" class="bg-slate-800/60 p-4 rounded-lg text-gray-100 mb-6 space-y-2">
-                    <!-- Aquí va la tabla dinámica -->
+
+    <!-- Registro en Competencia -->
+    <div id="competitionModal"
+        class="fixed top-0 left-0 w-full h-full flex items-center justify-center z-[10001] bg-black/80 backdrop-blur-sm hidden">
+        <div class="bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-md rounded-3xl shadow-2xl border border-slate-700/50 p-8 max-w-lg w-full mx-4 transform transition-all duration-300 scale-95 opacity-0"
+            id="competitionModalContent">
+
+            <!-- Floating particles background -->
+            <div class="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
+                <div class="absolute top-4 left-4 w-2 h-2 bg-yellow-400/30 rounded-full animate-pulse"></div>
+                <div class="absolute top-8 right-8 w-1 h-1 bg-orange-400/40 rounded-full animate-bounce"></div>
+                <div class="absolute bottom-6 left-8 w-1.5 h-1.5 bg-yellow-300/20 rounded-full animate-ping"></div>
+                <div
+                    class="absolute bottom-4 right-4 w-2 h-2 bg-orange-300/30 rounded-full animate-pulse animation-delay-500">
                 </div>
             </div>
 
-            <div class="container">
-                <p class="hidden" id="idreto"></p>
-                <h2 id="modal-title" class="text-3xl font-bold mb-4 text-gray-50 text-center"></h2>
-                <p id="modal-points" class="mb-6 text-gray-100 text-center text-lg"></p>
-                <p id="modal-description" class="mb-6 text-gray-100 leading-relaxed"></p>
-            
-
-                <div id="pistas-container" class="hidden bg-slate-800/60 p-4 rounded-lg text-gray-100 mb-6 space-y-2">
-                    <h3 class="text-xl font-semibold text-yellow-400 mb-2">Pistas</h3>
-                    <!-- Las pistas se insertan aquí -->
+            <div class="text-center relative z-10">
+                <!-- Enhanced trophy icon -->
+                <div class="relative w-24 h-24 mx-auto mb-6">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-yellow-500/30 to-orange-500/30 rounded-full animate-pulse">
+                    </div>
+                    <div
+                        class="relative w-24 h-24 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-full flex items-center justify-center border border-yellow-400/30 shadow-lg shadow-yellow-500/20">
+                        <i class="fas fa-trophy text-4xl text-yellow-400 animate-bounce"></i>
+                    </div>
+                    <!-- Glow effect -->
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-orange-400/20 rounded-full blur-xl opacity-70 animate-pulse">
+                    </div>
                 </div>
 
-                <div id="enlace-container" class="hidden bg-slate-800/60 p-4 rounded-lg text-gray-100 mb-6 space-y-2">
-                    <h3 class="text-xl font-semibold text-yellow-400 mb-2">Enlace de descarga</h3>
-                    <!-- Las enlaces de descarga se insertan aquí -->
+                <!-- Enhanced title -->
+                <h3
+                    class="text-3xl font-black text-transparent bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text mb-4 drop-shadow-lg">
+                    ¡Únete al Desafío!
+                </h3>
+
+                <!-- Enhanced description -->
+                <div class="mb-8">
+                    <p class="text-gray-300 mb-4 leading-relaxed text-lg">
+                        Para acceder a los retos y participar en la competencia
+                    </p>
+                    <div
+                        class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-cyan-600/20 to-blue-600/20 border border-cyan-400/30 rounded-xl backdrop-blur-sm">
+                        <i class="fas fa-flag mr-2 text-cyan-400"></i>
+                        <span
+                            class="text-cyan-400 font-bold text-xl">{{ $competenciaActiva ? $competenciaActiva->nomcompe : '' }}</span>
+                    </div>
+                    <p class="text-gray-400 mt-4 text-sm">
+                        necesitas registrarte primero. ¡Es gratis y solo toma un segundo!
+                    </p>
                 </div>
-                
 
-                <!-- Campo para ingresar la flag -->
-                <div class="flex flex-col sm:flex-row items-center gap-4 justify-center mb-6">
-                    <input type="text" id="flag-input" placeholder="CSU{flag}"
-                        class="w-full sm:max-w-2xl px-4 py-3 rounded-lg bg-slate-800 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-slate-400" />
+                <!-- Enhanced buttons -->
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button onclick="confirmarRegistro()"
+                        class="flex-1 group relative overflow-hidden bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-4 px-6 rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-green-500/25">
+                        <!-- Button glow effect -->
+                        <div
+                            class="absolute inset-0 bg-gradient-to-r from-green-400/20 to-emerald-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl">
+                        </div>
+                        <div class="relative flex items-center justify-center">
+                            <i class="fas fa-user-plus mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span>¡Registrarme Ahora!</span>
+                        </div>
+                    </button>
 
-                    <button onclick="enviarFlag()"
-                        class="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300 shadow-md">
-                        Enviar
+                    <button onclick="cerrarModalCompetencia()"
+                        class="flex-1 group relative overflow-hidden bg-gradient-to-r from-gray-600 to-slate-600 text-white font-semibold py-4 px-6 rounded-xl hover:from-gray-700 hover:to-slate-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-gray-500/25">
+                        <!-- Button glow effect -->
+                        <div
+                            class="absolute inset-0 bg-gradient-to-r from-gray-400/20 to-slate-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl">
+                        </div>
+                        <div class="relative flex items-center justify-center">
+                            <i class="fas fa-times mr-2 group-hover:scale-110 transition-transform"></i>
+                            <span>Tal vez después</span>
+                        </div>
                     </button>
                 </div>
-                
-                <!-- Mensajes -->
-                <div id="message-container" class="my-6">
-                    <p id="message" class="text-red-300 text-center font-medium"></p>
-                    <p id="result" class="text-green-300 text-center font-medium"></p>
-                </div>
-                <div class="flex justify-center mt-8">
-                    <button onclick="closeModal()"
-                        class="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-gray-50 font-bold py-3 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-emerald-500/25">
-                        Cerrar
-                    </button>
+
+                <!-- Additional info -->
+                <div class="mt-6 pt-6 border-t border-slate-700/50">
+                    <div class="flex items-center justify-center space-x-6 text-sm text-gray-400">
+                        <div class="flex items-center">
+                            <i class="fas fa-clock mr-2 text-green-400"></i>
+                            <span>Registro instantáneo</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-shield-alt mr-2 text-blue-400"></i>
+                            <span>100% Gratuito</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript mejorado -->
-    <script>
-        let retoResuelto = false;
-
-        let activeFilters = {
-            category: 'all',
-            difficulty: 'all',
-            status: 'all',
-            search: ''
-        };
-
-        // Toggle functions mejoradas
-        function toggleCategoryMenu() {
-            const menu = document.getElementById('categoryMenu');
-            const isHidden = menu.classList.contains('hidden');
-
-            closeDifficultyMenu();
-            closeStatusMenu();
-
-            if (isHidden) {
-                showMenu(menu);
-            } else {
-                hideMenu(menu);
-            }
-        }
-
-        function toggleDifficultyMenu() {
-            const menu = document.getElementById('difficultyMenu');
-            const isHidden = menu.classList.contains('hidden');
-
-            closeCategoryMenu();
-            closeStatusMenu();
-
-            if (isHidden) {
-                showMenu(menu);
-            } else {
-                hideMenu(menu);
-            }
-        }
-
-        function toggleStatusMenu() {
-            const menu = document.getElementById('statusMenu');
-            const isHidden = menu.classList.contains('hidden');
-
-            closeCategoryMenu();
-            closeDifficultyMenu();
-
-            if (isHidden) {
-                showMenu(menu);
-            } else {
-                hideMenu(menu);
-            }
-        }
-
-        function showMenu(menu) {
-            menu.classList.remove('hidden');
-            setTimeout(() => {
-                menu.classList.remove('scale-95', 'opacity-0');
-                menu.classList.add('scale-100', 'opacity-100');
-            }, 10);
-        }
-
-        function hideMenu(menu) {
-            menu.classList.remove('scale-100', 'opacity-100');
-            menu.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => {
-                menu.classList.add('hidden');
-            }, 300);
-        }
-
-        function closeCategoryMenu() {
-            const menu = document.getElementById('categoryMenu');
-            if (!menu.classList.contains('hidden')) {
-                hideMenu(menu);
-            }
-        }
-
-        function closeDifficultyMenu() {
-            const menu = document.getElementById('difficultyMenu');
-            if (!menu.classList.contains('hidden')) {
-                hideMenu(menu);
-            }
-        }
-
-        function closeStatusMenu() {
-            const menu = document.getElementById('statusMenu');
-            if (!menu.classList.contains('hidden')) {
-                hideMenu(menu);
-            }
-        }
-
-        // Funciones de filtro mejoradas
-        function filterByCategory(category) {
-            activeFilters.category = category;
-            closeCategoryMenu();
-            applyFilters();
-            updateActiveFiltersDisplay();
-        }
-
-        function filterByDifficulty(difficulty) {
-            activeFilters.difficulty = difficulty;
-            closeDifficultyMenu();
-            applyFilters();
-            updateActiveFiltersDisplay();
-        }
-
-        function filterByStatus(status) {
-            activeFilters.status = status;
-            closeStatusMenu();
-            applyFilters();
-            updateActiveFiltersDisplay();
-        }
-
-        function applyFilters() {
-            const containers = document.querySelectorAll('.category-container');
-            const challenges = document.querySelectorAll('.challenge-card');
-            let visibleCount = 0;
-            let totalCount = challenges.length;
-
-            containers.forEach(container => {
-                const category = container.dataset.category;
-                let hasVisibleChallenges = false;
-
-                // Filter by category
-                if (activeFilters.category !== 'all' && category !== activeFilters.category) {
-                    container.style.display = 'none';
-                    return;
-                }
-
-                const categoryCards = container.querySelectorAll('.challenge-card');
-                categoryCards.forEach(card => {
-                    let isVisible = true;
-
-                    // Filter by search
-                    if (activeFilters.search) {
-                        const challengeName = card.dataset.challengeName;
-                        if (!challengeName.includes(activeFilters.search.toLowerCase())) {
-                            isVisible = false;
-                        }
-                    }
-
-                    // Filter by difficulty
-                    if (activeFilters.difficulty !== 'all') {
-                        const points = parseInt(card.dataset.points);
-                        if (activeFilters.difficulty === 'easy' && points > 50) isVisible = false;
-                        if (activeFilters.difficulty === 'medium' && (points <= 50 || points > 100))
-                            isVisible = false;
-                        if (activeFilters.difficulty === 'hard' && points <= 100) isVisible = false;
-                    }
-
-                    // Filter by status
-                    if (activeFilters.status !== 'all') {
-                        const isSolved = card.dataset.solved === 'true';
-                        if (activeFilters.status === 'solved' && !isSolved) isVisible = false;
-                        if (activeFilters.status === 'unsolved' && isSolved) isVisible = false;
-                    }
-
-                    if (isVisible) {
-                        card.style.display = 'block';
-                        hasVisibleChallenges = true;
-                        visibleCount++;
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-
-                container.style.display = hasVisibleChallenges ? 'block' : 'none';
-            });
-
-            // Update counters
-            document.getElementById('visibleCount').textContent = visibleCount;
-            document.getElementById('totalCount').textContent = totalCount;
-        }
-
-        function updateActiveFiltersDisplay() {
-            const activeFiltersDiv = document.getElementById('activeFilters');
-            const filterTags = document.getElementById('filterTags');
-            const clearBtn = document.getElementById('clearFiltersBtn');
-
-            let hasActiveFilters = false;
-            filterTags.innerHTML = '';
-
-            // Check if any filters are active
-            Object.keys(activeFilters).forEach(key => {
-                if (activeFilters[key] !== 'all' && activeFilters[key] !== '') {
-                    hasActiveFilters = true;
-
-                    const tag = document.createElement('span');
-                    tag.className =
-                        'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-600/20 text-purple-400 border border-purple-500/30';
-
-                    let displayText = '';
-                    switch (key) {
-                        case 'category':
-                            displayText = `Categoría: ${activeFilters[key]}`;
-                            break;
-                        case 'difficulty':
-                            displayText = `Dificultad: ${activeFilters[key]}`;
-                            break;
-                        case 'status':
-                            displayText = `Estado: ${activeFilters[key]}`;
-                            break;
-                        case 'search':
-                            displayText = `Búsqueda: "${activeFilters[key]}"`;
-                            break;
-                    }
-
-                    tag.innerHTML = `
-                        ${displayText}
-                        <button onclick="removeFilter('${key}')" class="ml-2 text-purple-300 hover:text-purple-200">
-                            <i class="fas fa-times text-xs"></i>
-                        </button>
-                    `;
-                    filterTags.appendChild(tag);
-                }
-            });
-
-            if (hasActiveFilters) {
-                activeFiltersDiv.classList.remove('hidden');
-                clearBtn.classList.remove('hidden');
-            } else {
-                activeFiltersDiv.classList.add('hidden');
-                clearBtn.classList.add('hidden');
-            }
-        }
-
-        function removeFilter(filterType) {
-            if (filterType === 'search') {
-                activeFilters[filterType] = '';
-                document.getElementById('searchInput').value = '';
-            } else {
-                activeFilters[filterType] = 'all';
-            }
-            applyFilters();
-            updateActiveFiltersDisplay();
-        }
-
-        function clearAllFilters() {
-            activeFilters = {
-                category: 'all',
-                difficulty: 'all',
-                status: 'all',
-                search: ''
-            };
-            document.getElementById('searchInput').value = '';
-            applyFilters();
-            updateActiveFiltersDisplay();
-        }
-
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            activeFilters.search = e.target.value;
-            applyFilters();
-            updateActiveFiltersDisplay();
-        });
-
-        // Click outside to close menus
-        window.addEventListener('click', function(event) {
-            const categoryMenu = document.getElementById('categoryMenu');
-            const difficultyMenu = document.getElementById('difficultyMenu');
-            const statusMenu = document.getElementById('statusMenu');
-            const categoryButton = document.getElementById('categoryButton');
-            const difficultyButton = document.getElementById('difficultyButton');
-            const statusButton = document.getElementById('statusButton');
-
-            if (!categoryButton.contains(event.target) && !categoryMenu.contains(event.target)) {
-                closeCategoryMenu();
-            }
-
-            if (!difficultyButton.contains(event.target) && !difficultyMenu.contains(event.target)) {
-                closeDifficultyMenu();
-            }
-
-            if (!statusButton.contains(event.target) && !statusMenu.contains(event.target)) {
-                closeStatusMenu();
-            }
-        });
-
-        // Keyboard navigation
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closeCategoryMenu();
-                closeDifficultyMenu();
-                closeStatusMenu();
-            }
-        });
-
-        // Initialize counters
-        document.addEventListener('DOMContentLoaded', function() {
-            const totalChallenges = document.querySelectorAll('.challenge-card').length;
-            document.getElementById('visibleCount').textContent = totalChallenges;
-            document.getElementById('totalCount').textContent = totalChallenges;
-        });
-
-        // Tu código JavaScript existente para el modal...
-        var isLoggedIn = @auth true
-        @else
-            false
-        @endauth ;
-
-        var isLoggedIn = @auth true
-        @else
-            false
-        @endauth ;
-
-        function showReto(element) {
-            const idreto = element.dataset.id;
-            const title = element.dataset.challengeName;
-            const points = element.dataset.points;
-            const description = element.dataset.description;
-            const url = element.dataset.url;
-            const nombreArchivo = element.dataset.nombreArchivo;
-            const solved = element.dataset.solved === 'true';
-            const inputFlag = document.getElementById('flag-input');
-            const botonEnviar = document.querySelector('button[onclick="enviarFlag()"]');
-            retoResuelto = solved;
-
-
-            // Insertar datos en el modal
-            document.getElementById('idreto').innerText = idreto;
-            document.getElementById('modal-title').innerText = title;
-            document.getElementById('modal-points').innerText = `Puntos: ${points}`;
-            document.getElementById('modal-description').innerText = description;
-
-            // Mostrar enlace de descarga si existe
-            const enlaceContainer = document.getElementById('enlace-container');
-            if (url && nombreArchivo) {
-                enlaceContainer.classList.remove('hidden');
-                enlaceContainer.innerHTML = `
-                    <h3 class="text-xl font-semibold text-yellow-400 mb-2">Enlace de descarga</h3>
-                    <a href="${url}" download="${nombreArchivo}" class="text-blue-400 underline hover:text-blue-300 transition-all">
-                        Descargar ${nombreArchivo}
-                    </a>
-                `;
-            } else {
-                enlaceContainer.classList.add('hidden');
-                enlaceContainer.innerHTML = '';
-            }
-            if (solved) {
-                inputFlag.disabled = true;
-                inputFlag.placeholder = "Ya resolviste este reto papi...";
-
-                botonEnviar.disabled = true;
-                botonEnviar.textContent = "Resuelto";
-                botonEnviar.classList.remove('bg-green-600', 'hover:bg-green-700');
-                botonEnviar.classList.add('bg-gray-600', 'cursor-not-allowed');
-            } else {
-                inputFlag.disabled = false;
-                inputFlag.placeholder = "CSU{flag}";
-
-                botonEnviar.disabled = false;
-                botonEnviar.textContent = "Enviar";
-                botonEnviar.classList.remove('bg-gray-600', 'cursor-not-allowed');
-                botonEnviar.classList.add('bg-green-600', 'hover:bg-green-700');
-            }
-            
-            fetch(`/resueltos/${idreto}`)
-                .then(response => {
-                    if (!response.ok) throw new Error("Error al obtener cantidad de resueltos");
-                    return response.json();
-                })
-                .then(data => {
-                    document.getElementById('resuelto-count').innerText = data.count ?? 0;
-                })
-                .catch(error => {
-                    console.error(error);
-                    document.getElementById('resuelto-count').innerText = '0';
-                });
-            
-
-            // Limpiar campos previos
-            document.getElementById('flag-input').value = '';
-            document.getElementById('message').innerText = '';
-            document.getElementById('result').innerText = '';
-            
-            
-            
-        }
-
-
-
-        function showResueltos() {
-            const idreto = document.getElementById('idreto').innerText;
-
-            // Mostrar el contenedor de resueltos y ocultar el contenido del reto
-            document.querySelector('.container').classList.add('hidden');
-            document.getElementById('resueltos-view').classList.remove('hidden');
-
-            const container = document.getElementById('resueltos-tabla-container');
-            container.innerHTML = `<p class="text-gray-400 italic">Cargando...</p>`;
-
-            fetch(`/resueltos/${idreto}`)
-                .then(res => {
-                    if (!res.ok) throw new Error("Error al obtener usuarios.");
-                    return res.json();
-                })
-                .then(data => {
-                    if (!data.data || data.data.length === 0) {
-                        container.innerHTML = `<p class="text-gray-300">Ningún usuario ha resuelto este reto aún.</p>`;
-                        return;
-                    }
-
-                    // Crear tabla
-                    let tabla = `
-                        <table class="w-full text-left border border-slate-600">
-                            <thead>
-                                <tr class="bg-slate-700 text-gray-100">
-                                    <th class="p-2 border-b border-slate-600">Usuario</th>
-                                    <th class="p-2 border-b border-slate-600">Fecha</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                    `;
-
-                    data.data.forEach(item => {
-                        tabla += `
-                            <tr class="hover:bg-slate-700 transition">
-                                <td class="p-2 border-b border-slate-600">${item.usuario}</td>
-                                <td class="p-2 border-b border-slate-600">${new Date(item.time).toLocaleString()}</td>
-                            </tr>
-                        `;
-                    });
-
-                    tabla += `</tbody></table>`;
-                    container.innerHTML = tabla;
-                })
-                .catch(err => {
-                    console.error("Error al obtener datos:", err);
-                    container.innerHTML = `<p class="text-red-400">Hubo un error al cargar la información.</p>`;
-                });
-        }
-
-        function volverAVistaReto() {
-            // Oculta la vista de resueltos
-            document.getElementById('resueltos-view').classList.add('hidden');
-
-            // Muestra el contenedor principal del reto
-            document.querySelector('.container').classList.remove('hidden');
-        }
-
-
-        function closeModal() {
-            document.getElementById('modal').style.display = 'none';
-            document.getElementById('message').innerText = '';
-            document.getElementById('modal-title').innerText = '';
-            document.getElementById('modal-description').innerText = '';
-            document.getElementById('pistas-container').innerHTML = '';
-            document.getElementById('resuelto-count').innerText = '';
-            document.getElementById('modal-points').innerHTML = '';
-            //location.reload();
-            
-        }
-
-        function openModal(element) {
-             if (!isLoggedIn) {
-                showOverlayPanel(); // Mostrar login requerido
-                return;
-            }
-
-            // Guardamos el elemento para usarlo en showReto
-            showReto(element);
-            cargarPistas();
-            // Lógica extra (por si necesitas hacerlo siempre)
-        
-            // Mostrar el modal
-            document.getElementById('modal').style.display = 'flex';
-        }
-
-
-        
-        function showOverlayPanel() {
-            const overlay = document.createElement('div');
-            overlay.id = 'overlay';
-            overlay.className =
-                'fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50';
-
-            const messageBox = document.createElement('div');
-            messageBox.className = 'w-full max-w-md bg-white p-6 rounded-lg shadow-lg relative';
-
-            const title = document.createElement('h2');
-            title.innerText = 'Mensaje';
-            title.className = 'text-lg font-bold mb-4 text-gray-800 text-center';
-
-            const message = document.createElement('p');
-            message.innerText = 'Para acceder a los retos necesita iniciar sesión.';
-            message.className = 'mb-4 text-gray-700 text-center';
-
-            // Botón de cerrar
-            const closeButton = document.createElement('button');
-            closeButton.innerText = '✖';
-            closeButton.className = 'absolute top-2 right-2 text-gray-600 hover:text-gray-800';
-            closeButton.onclick = () => {
-                document.body.removeChild(overlay);
-            };
-
-            const buttonContainer = document.createElement('div');
-            buttonContainer.className = 'flex justify-center space-x-2 mt-4';
-
-            // Botón de iniciar sesión
-            const loginButton = document.createElement('button');
-            loginButton.innerText = 'Iniciar sesión';
-            loginButton.className = 'bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600';
-            loginButton.onclick = () => {
-                window.location.href = '/login';
-            };
-
-            // Botón de registrarse
-            const registerButton = document.createElement('button');
-            registerButton.innerText = 'Registrarse';
-            registerButton.className = 'bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600';
-            registerButton.onclick = () => {
-                window.location.href = '/register';
-            };
-
-            // Agregar botones al contenedor
-            buttonContainer.appendChild(loginButton);
-            buttonContainer.appendChild(registerButton);
-
-            // Agregar elementos al cuadro de mensaje
-            messageBox.appendChild(closeButton);
-            messageBox.appendChild(title);
-            messageBox.appendChild(message);
-            messageBox.appendChild(buttonContainer);
-            overlay.appendChild(messageBox);
-            document.body.appendChild(overlay);
-        }
-
-        function cargarPistas() {
-            const idreto = document.getElementById('idreto').innerText;
-            const pistasContainer = document.getElementById('pistas-container');
-
-            pistasContainer.classList.remove('hidden');
-            pistasContainer.innerHTML = `<p class="text-gray-400 italic">Cargando pistas...</p>`;
-
-            fetch(`/pistas/${idreto}`)
-                .then(res => {
-                    if (!res.ok) throw new Error("Error al obtener pistas.");
-                    return res.json();
-                })
-                .then(data => {
-                    if (!data || data.length === 0) {
-                        pistasContainer.classList.add('hidden');
-                        pistasContainer.innerHTML = '';
-                        return;
-                    }
-
-                    pistasContainer.innerHTML = `<h3 class="text-xl font-semibold text-yellow-400 mb-2">Pistas</h3>`;
-
-                    let totalDescontado = 0;
-
-                    data.forEach(pista => {
-                        if (pista.usada) {
-                            totalDescontado += pista.valor;
-                            pistasContainer.innerHTML += `
-                                <div class="bg-slate-700/60 p-3 rounded text-gray-100 mb-2">
-                                    <p>${pista.contenido}</p>
-                                    <p class="text-sm text-red-300 italic mt-1">-${pista.valor} puntos</p>
-                                </div>
-                            `;
-                        } else {
-                            const botonHTML = retoResuelto
-                                ? `<button disabled class="bg-gray-500 text-white font-semibold px-4 py-2 rounded cursor-not-allowed">Reto Resuelto</button>`
-                                : `<button onclick="desbloquearPista(${pista.id}, this)" 
-                                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded">
-                                    Desbloquear
-                                </button>`;
-
-                            pistasContainer.innerHTML += `
-                                <div class="bg-slate-700/60 p-3 rounded text-gray-100 flex justify-between items-center mb-2">
-                                    <span>Pista oculta (Valor: ${pista.valor} pts)</span>
-                                    ${botonHTML}
-                                </div>
-                            `;
-
-                        }
-                    });
-
-                    // 🔽 ACTUALIZAR el valor de puntos en el modal
-                    const puntosText = document.getElementById('modal-points').innerText; // "Puntos: 200"
-                    const puntosOriginales = parseInt(puntosText.match(/\d+/)[0]); // Extrae número
-                    const puntosActualizados = Math.max(0, puntosOriginales - totalDescontado);
-
-                    document.getElementById('modal-points').innerText = `Puntos: ${puntosActualizados}`;
-                })
-                .catch(err => {
-                    console.error("Error al obtener pistas:", err);
-                    pistasContainer.classList.add('hidden');
-                    pistasContainer.innerHTML = '';
-                });
-        }
-
-        function desbloquearPista(idPista, boton) {
-            if (!boton) {
-                console.error("El botón no fue pasado correctamente.");
-                return;
-            }
-
-            const contenedor = boton.closest('div');
-            if (!contenedor) {
-                console.error("No se encontró el contenedor del botón.");
-                return;
-            }
-
-            // Desactivar el botón mientras se hace la solicitud
-            boton.disabled = true;
-            boton.textContent = "Desbloqueando...";
-
-            fetch('/pistas/desbloquear', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({ idpista: idPista })
-            })
-            .then(async res => {
-                const contentType = res.headers.get("content-type");
-                if (!contentType || !contentType.includes("application/json")) {
-                    const html = await res.text();
-                    console.error("Respuesta inesperada:", html);
-                    throw new Error("Respuesta no válida");
-                }
-                return res.json();
-            })
-            .then(data => {
-                if (data.success && data.contenido) {
-                    // Limpiar el contenedor
-                    contenedor.innerHTML = '';
-
-                    // Crear un nuevo elemento con el contenido
-                    const pistaElemento = document.createElement('div');
-                    pistaElemento.className = "bg-slate-700/60 p-3 rounded text-gray-100";
-                    pistaElemento.innerHTML = `
-                        <p>${data.contenido}</p>
-                        <p class="text-sm text-red-300 italic mt-1">-${data.valor} puntos</p>
-                    `;
-                    contenedor.appendChild(pistaElemento);
-
-                    // 🔽 Actualizar los puntos en el modal
-                    const puntosText = document.getElementById('modal-points').innerText; // "Puntos: 200"
-                    const puntosActuales = parseInt(puntosText.match(/\d+/)[0]);
-                    const nuevosPuntos = Math.max(0, puntosActuales - data.valor);
-                    document.getElementById('modal-points').innerText = `Puntos: ${nuevosPuntos}`;
-
-                } else {
-                    alert("No se pudo desbloquear la pista.");
-                    boton.disabled = false;
-                    boton.textContent = "Desbloquear";
-                }
-            })
-            .catch(err => {
-                console.error("Error al desbloquear pista:", err);
-                alert("Hubo un problema al desbloquear la pista.");
-                boton.disabled = false;
-                boton.textContent = "Desbloquear";
-            });
-        }
-        function enviarFlag() {
-            const flag = document.getElementById('flag-input').value.trim();
-            const idreto = document.getElementById('idreto').innerText;
-
-            // Limpiar mensajes anteriores
-            document.getElementById('message').innerText = '';
-            document.getElementById('result').innerText = '';
-
-            if (!flag) {
-                document.getElementById('message').innerText = "Por favor, ingresa una flag.";
-                return;
-            }
-
-            fetch('/retos/validar-flag', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                },
-                body: JSON.stringify({ idreto: idreto, flag: flag })
-            })
-            .then(async res => {
-                if (!res.ok) {
-                    const errText = await res.text();
-                    throw new Error(errText);
-                }
-                return res.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('result').innerText = data.mensaje || "¡Flag correcta!";
-                    actualizarEstado(idreto);
-                } else {
-                    document.getElementById('message').innerText = data.mensaje || "Flag incorrecta.";
-                }
-            })
-            .catch(err => {
-                console.error("Error al enviar flag:", err);
-                document.getElementById('message').innerText = "Hubo un error al enviar la flag.";
-            });
-            actualizarIntentos(idreto);
-        }
-
-        function actualizarIntentos(idreto) {
-        fetch(`/intentos/${idreto}`)
-            .then(res => res.json())
-            .then(json => {
-            const c = json.count;
-            document.getElementById('resuelto-count').innerText = c;
-            const card = document.querySelector(`.challenge-card[data-id="${idreto}"]`);
-            if (card) {
-                const span = card.querySelector('.intentos-count');
-                if (span) span.innerText = c;
-            }
-            })
-            .catch(console.error);
-        }
-        function actualizarEstado(idreto) {
-        // Encuentra la tarjeta
-        const card = document.querySelector(`.challenge-card[data-id="${idreto}"]`);
-        if (!card) return;
-
-        // 1) Actualiza el atributo data-solved
-        card.dataset.solved = 'true';
-
-        // 2) Sustituye el badge
-        const badgeWrapper = card.querySelector('.absolute.top-4.right-4');
-        if (badgeWrapper) {
-            badgeWrapper.innerHTML = `
-            <div class="flex items-center space-x-1 bg-green-600/90 border border-green-500/50 rounded-full px-3 py-1 backdrop-blur-sm">
-                <div class="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
-                <span class="text-green-200 text-xs font-bold">RESUELTO</span>
+    <!-- Modal de Confirmación de Registro -->
+    <div id="registrationSuccessModal"
+        class="fixed top-0 left-0 w-full h-full flex items-center justify-center z-[10002] bg-black/80 backdrop-blur-sm hidden">
+        <div
+            class="bg-gradient-to-br from-green-900/95 to-emerald-800/95 backdrop-blur-md rounded-3xl shadow-2xl border border-green-700/50 p-8 max-w-md w-full mx-4 transform transition-all duration-300">
+            <div class="text-center">
+                <!-- Success icon with animation -->
+                <div class="relative w-20 h-20 mx-auto mb-6">
+                    <div class="absolute inset-0 bg-green-500/30 rounded-full animate-ping"></div>
+                    <div
+                        class="relative w-20 h-20 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-full flex items-center justify-center border border-green-400/30 shadow-lg shadow-green-500/20">
+                        <i class="fas fa-check text-3xl text-green-400 animate-bounce"></i>
+                    </div>
+                </div>
+
+                <h3 class="text-2xl font-bold text-green-400 mb-4">¡Registro Exitoso!</h3>
+                <p class="text-gray-300 mb-6 leading-relaxed">
+                    Te has registrado exitosamente en la competencia.
+                    <span class="text-green-400 font-semibold">¡Ahora puedes acceder a todos los retos!</span>
+                </p>
+
+                <button onclick="cerrarModalExito()"
+                    class="bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold py-3 px-8 rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-green-500/25">
+                    <i class="fas fa-play mr-2"></i>
+                    ¡Comenzar a Resolver!
+                </button>
             </div>
-            `;
-        }
-        }
+        </div>
+    </div>
 
-
-
-
-    </script>
-
-    <style>
-        @keyframes gradient-x {
-
-            0%,
-            100% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
-        }
-
-        .animate-gradient-x {
-            animation: gradient-x 3s ease infinite;
-            background-size: 200% 200%;
-        }
-
-        @keyframes fade-in {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .animate-fade-in {
-            animation: fade-in 0.6s ease-out;
-        }
-
-        .animation-delay-300 {
-            animation-delay: 300ms;
-        }
-
-        .animation-delay-600 {
-            animation-delay: 600ms;
-        }
-
-        .animation-delay-900 {
-            animation-delay: 900ms;
-        }
-
-        .animation-delay-1200 {
-            animation-delay: 1200ms;
-        }
-
-        /* Line clamp for text truncation */
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        /* Ensure dropdowns appear above everything */
-        #categoryMenu,
-        #difficultyMenu,
-        #statusMenu {
-            z-index: 9999 !important;
-        }
-
-        /* Smooth transitions for filtered elements */
-        .category-container,
-        .challenge-card {
-            transition: all 0.3s ease;
-        }
-
-        /* Enhanced hover effects */
-        .challenge-card:hover {
-            transform: translateY(-8px) scale(1.02);
-        }
-
-        /* Custom scrollbar for modal */
-        #modal .container::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        #modal .container::-webkit-scrollbar-track {
-            background: rgb(51 65 85 / 0.3);
-            border-radius: 10px;
-        }
-
-        #modal .container::-webkit-scrollbar-thumb {
-            background: linear-gradient(to bottom, #8b5cf6, #6366f1);
-            border-radius: 10px;
-        }
-    </style>
+    @include('layouts.reto-modal')
 </x-app-layout>

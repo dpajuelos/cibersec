@@ -48,7 +48,12 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/pistas/desbloquear', [RetosController::class, 'desbloquearPista']);
     Route::post('/retos/validar-flag', [RetosController::class, 'validarFlag']);
+    Route::post('/competencia/{competencia}/registrar', [RetosController::class, 'registrarEnCompetencia'])->name('competencia.registrar');
 });
+
+Route::get('/ranking', [RankingController::class, 'index'])->name('ranking');
+Route::get('/ranking/json', [RankingController::class, 'getRankingJson'])->name('ranking.json');
+Route::get('/ranking/top5', [RankingController::class, 'getTop5'])->name('ranking.top5');
 
 Route::post('/retos/{idreto}/{idpista}', [RetosController::class, 'registrarPista']);
 
@@ -77,10 +82,6 @@ Route::get('/usuarios/detalle', [UsuariosController::class, 'detalle'])->name('u
 Route::post('/usuarios/porcentaje-acierto', [UsuariosController::class, 'obtenerPorcentajeAcierto']);
 
 Route::post('/usuarios/puntos-por-fecha', [UsuariosController::class, 'obtenerPuntosPorFecha']);
-
-Route::get('/ranking', [RankingController::class, 'index'])->name('ranking');
-
-Route::get('/rankings/top5', [RankingController::class, 'getTop5']);
 
 Route::get('/dashboard', function () {
     if (!Auth::check()) {
