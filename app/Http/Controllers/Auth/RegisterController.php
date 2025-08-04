@@ -21,7 +21,7 @@ class RegisterController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'usuario' => 'required|string|max:16|unique:usuarios,usuario',
+            'usuario' => 'required|string|max:18|unique:usuarios,usuario',
             'paterno' => 'required|string|max:30',
             'materno' => 'required|string|max:30',
             'dni' => 'required|string|size:8|unique:personas,dni',
@@ -31,10 +31,40 @@ class RegisterController extends Controller
             'password' => 'required|string|min:8|confirmed',
             'celular' => 'required|string|size:9',
             'universidad' => 'required|integer|exists:universidades,iduniversidad',
+        ], [
+            'name.required' => 'El nombre es obligatorio.',
+            'name.max' => 'El nombre no puede tener más de 255 caracteres.',
+            'usuario.required' => 'El usuario es obligatorio.',
+            'usuario.max' => 'El usuario no puede tener más de 18 caracteres.',
+            'usuario.unique' => 'Este usuario ya está en uso.',
+            'paterno.required' => 'El apellido paterno es obligatorio.',
+            'paterno.max' => 'El apellido paterno no puede tener más de 30 caracteres.',
+            'materno.required' => 'El apellido materno es obligatorio.',
+            'materno.max' => 'El apellido materno no puede tener más de 30 caracteres.',
+            'dni.required' => 'El DNI es obligatorio.',
+            'dni.unique' => 'Este DNI ya está registrado.',
+            'dni.size' => 'El DNI debe tener exactamente 8 dígitos.',
+            'fecnac.required' => 'La fecha de nacimiento es obligatoria.',
+            'fecnac.date' => 'Ingrese una fecha válida.',
+            'fecnac.before' => 'La fecha de nacimiento debe ser anterior a hoy.',
+            'genero.required' => 'El género es obligatorio.',
+            'genero.in' => 'Seleccione un género válido.',
+            'email.required' => 'El email es obligatorio.',
+            'email.email' => 'Ingrese un email válido.',
+            'email.unique' => 'Este email ya está registrado.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+            'celular.required' => 'El celular es obligatorio.',
+            'celular.size' => 'El celular debe tener exactamente 9 dígitos.',
+            'universidad.required' => 'La universidad es obligatoria.',
+            'universidad.exists' => 'Seleccione una universidad válida.',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
         }
 
         try {
@@ -63,12 +93,10 @@ class RegisterController extends Controller
                 'fk_idestados' => 1,
                 'profile_photo_path' => $profilePhotoPath,
             ]);
-            
-            // Asignar rol por defecto (por ejemplo, id = 2)
+
             $usuario->roles()->attach([
                 2 => ['fecha' => now()]
             ]);
-
 
             // Crear perfil relacionando persona y usuario
             Perfil::create([
@@ -84,9 +112,9 @@ class RegisterController extends Controller
             return response()->json(['message' => 'Registro exitoso'], 200);
         } catch (\Exception $e) {
             DB::rollback();
-            \Log::error('Error en registro: ' . $e->getMessage());
             return response()->json([
-                'message' => 'Error al registrar usuario: ' . $e->getMessage()
+                'error' => 'Error en el registro. Inténtalo de nuevo.',
+                'details' => $e->getMessage()
             ], 500);
         }
     }

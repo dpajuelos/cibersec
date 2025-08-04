@@ -4,19 +4,19 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Estado;
-use App\Models\Rol;
-use App\Models\User;
-use Illuminate\Validation\Rule;
-use Illuminate\Http\Request;
 use App\Models\Perfil;
 use App\Models\Persona;
+use App\Models\Rol;
+use App\Models\User;
 use App\Rules\EmailEduPe;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class UsuarioController extends Controller
 {
@@ -132,13 +132,11 @@ class UsuarioController extends Controller
                 'fk_idestados' => 1,
                 'profile_photo_path' => $profilePhotoPath,
             ]);
-            
+
             // Asignar rol por defecto (por ejemplo, id = 2)
             $usuario->roles()->attach([
                 $request->rol => ['fecha' => now()]
             ]);
-
-
 
             // Crear perfil relacionando persona y usuario
             Perfil::create([
@@ -150,7 +148,6 @@ class UsuarioController extends Controller
 
             DB::commit();
 
-            Auth::login($usuario);
             return response()->json(['message' => 'Registro exitoso'], 200);
         } catch (\Exception $e) {
             DB::rollback();
@@ -235,7 +232,6 @@ class UsuarioController extends Controller
         return response()->json($universidades);
     }
 
-
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
@@ -276,15 +272,14 @@ class UsuarioController extends Controller
             ]);
 
             // Actualizar usuario
-           $usuario->update([
+            $usuario->update([
                 'usuario' => $request->usuario,
                 'email' => $request->email
-                
             ]);
             if ($request->filled('password')) {
-                    $usuario->password = Hash::make($request->password);
-                    $usuario->save();
-                }
+                $usuario->password = Hash::make($request->password);
+                $usuario->save();
+            }
 
             // Actualizar perfil
             $usuario->perfil->update([
@@ -357,10 +352,8 @@ class UsuarioController extends Controller
                 'nuevo_estado' => $usuario->fk_idestados
             ]);
         } catch (\Exception $e) {
-            \Log::error("Error al cambiar estado del usuario: " . $e->getMessage());
+            \Log::error('Error al cambiar estado del usuario: ' . $e->getMessage());
             return response()->json(['message' => 'Error al cambiar el estado'], 500);
         }
     }
-
-
 }

@@ -18,7 +18,7 @@ class RetoManager {
     // Crear el modal de confirmación personalizado 
     createConfirmModal() {
         const modalHTML = `
-            <div id="confirm-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[9998] hidden items-center justify-center p-4">
+            <div id="confirm-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[10000] hidden items-center justify-center p-4">
                 <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl shadow-2xl max-w-md w-full border border-slate-600/50 transform scale-95 transition-all duration-300">
                     <div class="px-8 py-6 border-b border-slate-600/50">
                         <div class="flex items-center">
@@ -63,74 +63,52 @@ class RetoManager {
             const message = document.getElementById('confirm-message');
             const acceptBtn = document.getElementById('confirm-accept');
 
-            // Configurar el modal según el tipo
-            const config = {
-                delete: {
-                    iconClass: 'bg-gradient-to-br from-red-500/20 to-pink-500/20 text-red-400',
-                    iconName: 'fa-exclamation-triangle',
-                    titleText: 'Eliminar Reto',
-                    acceptClass: 'bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 shadow-red-500/25',
-                    acceptIcon: 'fa-trash',
-                    acceptText: 'Eliminar'
-                },
-                deleteFile: {
-                    iconClass: 'bg-gradient-to-br from-orange-500/20 to-red-500/20 text-orange-400',
-                    iconName: 'fa-file-times',
-                    titleText: 'Eliminar Archivo',
-                    acceptClass: 'bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 shadow-orange-500/25',
-                    acceptIcon: 'fa-trash',
-                    acceptText: 'Eliminar Archivo'
-                }
-            };
-
-            const currentConfig = config[options.type] || config.delete;
-
-            // Aplicar configuración
-            icon.className = `w-12 h-12 rounded-full flex items-center justify-center mr-4 ${currentConfig.iconClass}`;
-            icon.innerHTML = `<i class="fas ${currentConfig.iconName} text-2xl"></i>`;
-            title.textContent = options.title || currentConfig.titleText;
-            message.innerHTML = options.message || '';
-
-            acceptBtn.className = `px-6 py-3 ${currentConfig.acceptClass} text-white rounded-xl transition-all duration-300 transform hover:scale-105 font-medium`;
-            acceptBtn.innerHTML = `<i class="fas ${currentConfig.acceptIcon} mr-2"></i>${options.acceptText || currentConfig.acceptText}`;
-
-            // Oscurecer aún más el modal principal
+            // Reducir z-index del modal principal temporalmente
             const mainModal = document.getElementById('modal-reto');
             if (mainModal && !mainModal.classList.contains('hidden')) {
-                mainModal.style.filter = 'brightness(0.2) blur(2px)';
-                mainModal.style.pointerEvents = 'none';
-                // Reducir el z-index del modal principal temporalmente
-                mainModal.style.zIndex = '50';
+                mainModal.style.zIndex = '40';
             }
 
-            // Mostrar modal de confirmación
+            // Configurar el modal según el tipo
+            if (options.type === 'delete' || options.type === 'deleteFile') {
+                icon.className = 'w-12 h-12 rounded-full flex items-center justify-center mr-4 bg-red-500/20';
+                icon.querySelector('i').className = 'fas fa-exclamation-triangle text-2xl text-red-400';
+                acceptBtn.innerHTML = `<i class="fas fa-trash mr-2"></i>${options.acceptText || 'Eliminar'}`;
+            }
+
+            title.textContent = options.title || 'Confirmar Acción';
+            message.innerHTML = options.message || '¿Estás seguro de que quieres continuar?';
+
+            // Mostrar modal con animación
             modal.classList.remove('hidden');
             modal.classList.add('flex');
 
-            // Animación de entrada
             setTimeout(() => {
-                modal.querySelector('.bg-gradient-to-br').classList.remove('scale-95');
-                modal.querySelector('.bg-gradient-to-br').classList.add('scale-100');
-            }, 10);
+                const content = modal.querySelector('.bg-gradient-to-br');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 50);
 
-            // Configurar botón de aceptar
-            const newAcceptBtn = acceptBtn.cloneNode(true);
-            acceptBtn.parentNode.replaceChild(newAcceptBtn, acceptBtn);
-
-            newAcceptBtn.addEventListener('click', () => {
-                this.hideConfirmModal();
+            // Configurar eventos una sola vez
+            const handleAccept = () => {
+                cleanup();
                 resolve(true);
-            });
+            };
 
-            // También actualizar el botón cancelar
-            const cancelBtn = document.getElementById('confirm-cancel');
-            const newCancelBtn = cancelBtn.cloneNode(true);
-            cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
-
-            newCancelBtn.addEventListener('click', () => {
-                this.hideConfirmModal();
+            const handleCancel = () => {
+                cleanup();
                 resolve(false);
-            });
+            };
+
+            const cleanup = () => {
+                acceptBtn.removeEventListener('click', handleAccept);
+                document.getElementById('confirm-cancel').removeEventListener('click', handleCancel);
+                this.hideConfirmModal();
+            };
+
+            // Agregar event listeners
+            acceptBtn.addEventListener('click', handleAccept);
+            document.getElementById('confirm-cancel').addEventListener('click', handleCancel);
         });
     }
 
@@ -139,13 +117,10 @@ class RetoManager {
         const modal = document.getElementById('confirm-modal');
         const content = modal.querySelector('.bg-gradient-to-br');
 
-        // Restaurar el modal principal
+        // Restaurar z-index del modal principal
         const mainModal = document.getElementById('modal-reto');
         if (mainModal && !mainModal.classList.contains('hidden')) {
-            mainModal.style.filter = 'none';
-            mainModal.style.pointerEvents = 'auto';
-            // Restaurar el z-index original del modal principal
-            mainModal.style.zIndex = '';
+            mainModal.style.zIndex = '50';
         }
 
         content.classList.remove('scale-100');
@@ -848,7 +823,7 @@ class RetoManager {
         if (!notificationContainer) {
             notificationContainer = document.createElement('div');
             notificationContainer.id = 'notification-container';
-            notificationContainer.className = 'fixed top-4 right-4 z-[9999] space-y-3';
+            notificationContainer.className = 'fixed top-4 right-4 z-[10001] space-y-4';
             document.body.appendChild(notificationContainer);
         }
 

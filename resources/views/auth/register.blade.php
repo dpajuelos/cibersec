@@ -175,7 +175,7 @@
                             </div>
                             <div class="invalid-feedback text-red-400 hidden items-center mt-2">
                                 <i class="fas fa-exclamation-triangle mr-2"></i>
-                                Este usuario ya existe
+
                             </div>
                         </div>
 
@@ -230,7 +230,7 @@
                             </div>
                             <div class="invalid-feedback text-red-400 hidden items-center mt-2">
                                 <i class="fas fa-exclamation-triangle mr-2"></i>
-                                DNI inválido o registrado
+
                             </div>
                         </div>
 
@@ -257,7 +257,7 @@
                             </div>
                             <div class="invalid-feedback text-red-400 hidden items-center mt-2">
                                 <i class="fas fa-exclamation-triangle mr-2"></i>
-                                Ingrese una fecha válida
+
                             </div>
                         </div>
 
@@ -278,7 +278,7 @@
                             </div>
                             <div class="invalid-feedback text-red-400 hidden items-center mt-2">
                                 <i class="fas fa-exclamation-triangle mr-2"></i>
-                                Ingrese un número válido
+
                             </div>
                         </div>
 
@@ -348,7 +348,7 @@
                             </div>
                             <div class="invalid-feedback text-red-400 hidden items-center mt-2">
                                 <i class="fas fa-exclamation-triangle mr-2"></i>
-                                El email ya está registrado o no es del formato @domain.edu.pe
+
                             </div>
                         </div>
 
@@ -369,7 +369,16 @@
                             </div>
                             <div class="invalid-feedback text-red-400 hidden items-center mt-2">
                                 <i class="fas fa-exclamation-triangle mr-2"></i>
-                                Formato incorrecto o contraseñas no coinciden
+
+                            </div>
+                            <div class="password-strength hidden mt-1">
+                                <div class="flex space-x-1">
+                                    <div class="strength-bar h-1 bg-gray-600 rounded flex-1 transition-colors"></div>
+                                    <div class="strength-bar h-1 bg-gray-600 rounded flex-1 transition-colors"></div>
+                                    <div class="strength-bar h-1 bg-gray-600 rounded flex-1 transition-colors"></div>
+                                    <div class="strength-bar h-1 bg-gray-600 rounded flex-1 transition-colors"></div>
+                                </div>
+                                <p class="text-xs text-gray-400 mt-0.5 strength-text">Ingrese una contraseña</p>
                             </div>
                         </div>
 
@@ -381,162 +390,403 @@
                             </x-label>
                             <div class="relative">
                                 <x-input id="password_confirmation"
-                                    class="block mt-1 w-full bg-slate-800/60 border-2 border-blue-500/30 focus:border-blue-400 focus:ring-blue-400/20 text-white placeholder-gray-400 rounded-xl backdrop-blur-sm transition-all duration-300 hover:border-blue-400/50 pl-12"
+                                    class="block mt-1 w-full bg-slate-800/60 border-2 border-blue-500/30 focus:border-blue-400 focus:ring-blue-400/20 text-white placeholder-gray-400 rounded-xl backdrop-blur-sm transition-all duration-300 hover:border-blue-400/50 pl-12 pr-12"
                                     type="password" name="password_confirmation" required autocomplete="new-password"
                                     placeholder="Confirmar contraseña" />
+
+                                <!-- Icono izquierdo -->
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-4">
                                     <i class="fas fa-lock text-purple-400 text-sm"></i>
                                 </div>
+
+                                <!-- Indicadores de coincidencia (derecha) -->
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <i class="fas fa-check text-green-400 text-xs hidden match-success"></i>
+                                    <i class="fas fa-times text-red-400 text-xs hidden match-error"></i>
+                                </div>
+                            </div>
+
+                            <!-- Mensaje de coincidencia -->
+                            <div class="password-match hidden mt-1">
+                                <p class="text-xs text-green-400 match-success-text hidden">
+                                    <i class="fas fa-check mr-1"></i>Las contraseñas coinciden
+                                </p>
+                                <p class="text-xs text-red-400 match-error-text hidden">
+                                    <i class="fas fa-times mr-1"></i>Las contraseñas no coinciden
+                                </p>
                             </div>
                         </div>
+
+
                     </div>
+            </div>
 
-                    @if (Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature())
-                        <div
-                            class="my-6 p-4 bg-gradient-to-r from-cyan-900/20 to-purple-900/20 border border-cyan-400/20 rounded-xl backdrop-blur-sm">
-                            <x-label for="terms" class="text-white">
-                                <div class="flex items-center">
-                                    <x-checkbox name="terms" id="terms" required
-                                        class="border-cyan-400 text-black focus:ring-cyan-400/20" />
+            @if (Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature())
+                <div
+                    class="my-6 p-4 bg-gradient-to-r from-cyan-900/20 to-purple-900/20 border border-cyan-400/20 rounded-xl backdrop-blur-sm">
+                    <x-label for="terms" class="text-white">
+                        <div class="flex items-center">
+                            <x-checkbox name="terms" id="terms" required
+                                class="border-cyan-400 text-black focus:ring-cyan-400/20" />
 
-                                    <div class="ms-2 text-gray-200">
-                                        {!! __('Estoy de acuerdo con los :terms_of_service y :privacy_policy', [
-                                            'terms_of_service' =>
-                                                '<a target="_blank" href="' .
-                                                route('terms.show') .
-                                                '" class="underline text-white hover:text-cyan-300 transition-colors">' .
-                                                __('términos de servicio') .
-                                                '</a>',
-                                            'privacy_policy' =>
-                                                '<a target="_blank" href="' .
-                                                route('policy.show') .
-                                                '" class="underline text-purple-400 hover:text-purple-300 transition-colors">' .
-                                                __('políticas de privacidad') .
-                                                '</a>',
-                                        ]) !!}
-                                    </div>
-                                </div>
-                            </x-label>
+                            <div class="ms-2 text-gray-200">
+                                {!! __('Estoy de acuerdo con los :terms_of_service y :privacy_policy', [
+                                    'terms_of_service' =>
+                                        '<a target="_blank" href="' .
+                                        route('terms.show') .
+                                        '" class="underline text-white hover:text-cyan-300 transition-colors">' .
+                                        __('términos de servicio') .
+                                        '</a>',
+                                    'privacy_policy' =>
+                                        '<a target="_blank" href="' .
+                                        route('policy.show') .
+                                        '" class="underline text-purple-400 hover:text-purple-300 transition-colors">' .
+                                        __('políticas de privacidad') .
+                                        '</a>',
+                                ]) !!}
+                            </div>
                         </div>
-                    @endif
+                    </x-label>
+                </div>
+            @endif
 
-                    <div
-                        class="flex items-center justify-center mt-6 space-y-4 sm:space-y-0 sm:space-x-4 sm:flex-row flex-col">
-                        <a class="underline text-sm text-gray-300 hover:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 transition-colors flex items-center"
-                            href="{{ route('login') }}">
-                            <i class="fas fa-sign-in-alt mr-2"></i>
-                            {{ __('Ya está registrado?') }}
-                        </a>
+            <div
+                class="flex items-center justify-center mt-6 space-y-4 sm:space-y-0 sm:space-x-4 sm:flex-row flex-col">
+                <a class="underline text-sm text-gray-300 hover:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 transition-colors flex items-center"
+                    href="{{ route('login') }}">
+                    <i class="fas fa-sign-in-alt mr-2"></i>
+                    {{ __('Ya está registrado?') }}
+                </a>
 
-                        <x-button
-                            class="group relative px-8 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-cyan-500/30 transform hover:scale-105 border-0 rounded-xl">
-                            <span class="flex items-center">
-                                <i class="fas fa-rocket mr-3 group-hover:animate-pulse"></i>
-                                {{ __('Registrarse') }}
-                                <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform"></i>
-                            </span>
-                        </x-button>
-                    </div>
-                </form>
+                <x-button
+                    class="group relative px-8 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-cyan-500/30 transform hover:scale-105 border-0 rounded-xl">
+                    <span class="flex items-center">
+                        <i class="fas fa-rocket mr-3 group-hover:animate-pulse"></i>
+                        {{ __('Registrarse') }}
+                        <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform"></i>
+                    </span>
+                </x-button>
             </div>
-        </x-authentication-card>
+            </form>
+    </div>
+    </x-authentication-card>
 
-        <!-- Floating particles effect -->
-        <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
-            <div class="absolute top-1/4 left-1/4 w-3 h-3 bg-cyan-400 rounded-full opacity-30 animate-ping"></div>
-            <div class="absolute top-3/4 right-1/4 w-2 h-2 bg-purple-400 rounded-full opacity-40 animate-pulse"></div>
-            <div
-                class="absolute top-1/2 left-3/4 w-2.5 h-2.5 bg-blue-400 rounded-full opacity-25 animate-ping delay-1000">
-            </div>
-            <div
-                class="absolute top-1/3 right-1/3 w-1.5 h-1.5 bg-green-400 rounded-full opacity-35 animate-pulse delay-500">
-            </div>
-            <div
-                class="absolute bottom-1/4 left-1/2 w-2 h-2 bg-yellow-400 rounded-full opacity-30 animate-ping delay-700">
-            </div>
+    <!-- Floating particles effect -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div class="absolute top-1/4 left-1/4 w-3 h-3 bg-cyan-400 rounded-full opacity-30 animate-ping"></div>
+        <div class="absolute top-3/4 right-1/4 w-2 h-2 bg-purple-400 rounded-full opacity-40 animate-pulse"></div>
+        <div class="absolute top-1/2 left-3/4 w-2.5 h-2.5 bg-blue-400 rounded-full opacity-25 animate-ping delay-1000">
+        </div>
+        <div
+            class="absolute top-1/3 right-1/3 w-1.5 h-1.5 bg-green-400 rounded-full opacity-35 animate-pulse delay-500">
+        </div>
+        <div class="absolute bottom-1/4 left-1/2 w-2 h-2 bg-yellow-400 rounded-full opacity-30 animate-ping delay-700">
         </div>
     </div>
+    </div>
+    <style>
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-in-out;
+        }
 
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .notification-toast {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .strength-bar {
+            transition: background-color 0.3s ease;
+        }
+
+        .custom-select:focus {
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+        }
+    </style>
     <script>
-        // Script existente para cargar universidades
-        fetch(`/universidades`)
-            .then(response => response.json())
-            .then(data => {
-                const categorySelect = document.getElementById('universidad');
-                categorySelect.innerHTML =
-                    `<option value="" disabled selected class="bg-slate-800 text-gray-400">Seleccionar universidad</option>`;
-                data.forEach(universidad => {
-                    const option = document.createElement('option');
-                    option.value = universidad.iduniversidad;
-                    option.text = universidad.nomuniversidad;
-                    option.className = 'bg-slate-800 text-white hover:bg-cyan-600';
-                    categorySelect.appendChild(option);
-                });
-            })
-            .catch(error => console.error('Error al cargar las universidades', error));
+        $(document).ready(function() {
+            // Función única para limpiar errores
+            function clearErrors() {
+                $('.invalid-feedback').remove();
+                $('.password-match').addClass('hidden');
+                $('.match-success, .match-error').addClass('hidden');
+                $('input, select').removeClass('border-red-500 focus:border-red-500');
+                $('input, select').addClass('border-blue-500/30 focus:border-blue-400');
+            }
 
-        // Efectos adicionales para los selects
-        document.addEventListener('DOMContentLoaded', function() {
-            const selects = document.querySelectorAll('select');
+            // Función única para mostrar errores
+            function showFieldError(fieldName, message) {
+                const field = $(`#${fieldName}`);
+                const fieldContainer = field.closest('div').parent();
 
-            selects.forEach(select => {
-                select.addEventListener('focus', function() {
-                    this.classList.add('ring-2', 'ring-cyan-400/20');
-                });
+                // Eliminar errores previos para este campo específico
+                fieldContainer.find('.invalid-feedback').remove();
 
-                select.addEventListener('blur', function() {
-                    this.classList.remove('ring-2', 'ring-cyan-400/20');
-                });
+                // Cambiar estilo del campo
+                field.removeClass(
+                    'border-blue-500/30 border-cyan-400/30 focus:border-blue-400 focus:border-cyan-400 border-green-500/70'
+                );
+                field.addClass('border-red-500 focus:border-red-500');
 
-                select.addEventListener('change', function() {
-                    if (this.value) {
-                        this.classList.add('text-cyan-100');
-                        this.classList.remove('text-gray-400');
-                    }
-                });
+                // Crear mensaje de error
+                const errorHtml = `
+                <div class="invalid-feedback text-red-400 text-xs mt-1 flex items-center animate-fadeIn">
+                    <i class="fas fa-exclamation-triangle mr-1"></i>
+                    <span class="error-message">${message}</span>
+                </div>
+            `;
+
+                // Insertar después del contenedor del campo
+                field.closest('div').after(errorHtml);
+            }
+
+            // Función para mostrar notificaciones
+            function showNotification(message, type = 'error') {
+                // Remover notificaciones existentes
+                $('.notification-toast').remove();
+
+                const bgColor = type === 'error' ? 'bg-red-600/90 border-red-500/50' :
+                    'bg-green-600/90 border-green-500/50';
+                const icon = type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle';
+
+                const notificationHtml = `
+                <div class="notification-toast fixed top-4 right-4 z-50 max-w-sm p-4 rounded-xl shadow-lg transition-all duration-300 ${bgColor} backdrop-blur-md transform translate-x-full opacity-0">
+                    <div class="flex items-center text-white">
+                        <i class="fas ${icon} mr-3"></i>
+                        <span>${message}</span>
+                    </div>
+                </div>
+            `;
+
+                $('body').append(notificationHtml);
+
+                // Animación de entrada
+                setTimeout(() => {
+                    $('.notification-toast').removeClass('translate-x-full opacity-0');
+                }, 100);
+
+                // Remover después de 5 segundos
+                setTimeout(() => {
+                    $('.notification-toast').addClass('translate-x-full opacity-0');
+                    setTimeout(() => $('.notification-toast').remove(), 300);
+                }, 5000);
+            }
+
+            // Validación de fortaleza de contraseña
+            function checkPasswordStrength(password) {
+                const strengthBars = $('.strength-bar');
+                const strengthText = $('.strength-text');
+                const strengthContainer = $('.password-strength');
+
+                if (password.length === 0) {
+                    strengthContainer.addClass('hidden');
+                    return;
+                }
+
+                strengthContainer.removeClass('hidden');
+
+                let strength = 0;
+                let message = '';
+                let color = '';
+
+                // Criterios de fortaleza
+                if (password.length >= 8) strength++;
+                if (/[a-z]/.test(password)) strength++;
+                if (/[A-Z]/.test(password)) strength++;
+                if (/[0-9]/.test(password)) strength++;
+                if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+                // Resetear barras
+                strengthBars.removeClass('bg-red-500 bg-yellow-500 bg-blue-500 bg-green-500').addClass(
+                    'bg-gray-600');
+
+                switch (strength) {
+                    case 0:
+                    case 1:
+                        strengthBars.eq(0).removeClass('bg-gray-600').addClass('bg-red-500');
+                        message = 'Muy débil';
+                        color = 'text-red-400';
+                        break;
+                    case 2:
+                        strengthBars.slice(0, 2).removeClass('bg-gray-600').addClass('bg-yellow-500');
+                        message = 'Débil';
+                        color = 'text-yellow-400';
+                        break;
+                    case 3:
+                        strengthBars.slice(0, 3).removeClass('bg-gray-600').addClass('bg-blue-500');
+                        message = 'Moderada';
+                        color = 'text-blue-400';
+                        break;
+                    case 4:
+                    case 5:
+                        strengthBars.removeClass('bg-gray-600').addClass('bg-green-500');
+                        message = 'Fuerte';
+                        color = 'text-green-400';
+                        break;
+                }
+
+                strengthText.removeClass('text-red-400 text-yellow-400 text-blue-400 text-green-400 text-gray-400');
+                strengthText.addClass(color).text(message);
+            }
+
+            // Validación de coincidencia de contraseñas
+            function checkPasswordMatch() {
+                const password = $('#password').val();
+                const passwordConfirmation = $('#password_confirmation').val();
+                const matchContainer = $('.password-match');
+                const successText = $('.match-success-text');
+                const errorText = $('.match-error-text');
+                const successIcon = $('.match-success');
+                const errorIcon = $('.match-error');
+
+                if (passwordConfirmation.length === 0) {
+                    matchContainer.addClass('hidden');
+                    successIcon.addClass('hidden');
+                    errorIcon.addClass('hidden');
+                    return;
+                }
+
+                matchContainer.removeClass('hidden');
+
+                if (password === passwordConfirmation && password.length > 0) {
+                    // Contraseñas coinciden
+                    successText.removeClass('hidden');
+                    errorText.addClass('hidden');
+                    successIcon.removeClass('hidden');
+                    errorIcon.addClass('hidden');
+
+                    $('#password_confirmation').removeClass('border-red-500').addClass('border-green-500/70');
+                } else {
+                    // Contraseñas no coinciden
+                    successText.addClass('hidden');
+                    errorText.removeClass('hidden');
+                    successIcon.addClass('hidden');
+                    errorIcon.removeClass('hidden');
+
+                    $('#password_confirmation').removeClass('border-green-500/70').addClass('border-red-500');
+                }
+            }
+
+            // Event listeners
+            $('#password').on('input', function() {
+                checkPasswordStrength($(this).val());
+                checkPasswordMatch();
             });
 
-            // Efecto para el input de fecha
-            const dateInput = document.getElementById('fecnac');
-            if (dateInput) {
-                dateInput.addEventListener('focus', function() {
-                    this.style.borderColor = '#06b6d4';
-                    this.style.boxShadow = '0 0 0 3px rgba(6, 182, 212, 0.1)';
-                });
+            fetch(`/universidades`)
+                .then(response => response.json())
+                .then(data => {
+                    const categorySelect = document.getElementById('universidad');
+                    categorySelect.innerHTML =
+                        `<option value="" disabled selected class="bg-slate-800 text-gray-400">Seleccionar universidad</option>`;
+                    data.forEach(universidad => {
+                        const option = document.createElement('option');
+                        option.value = universidad.iduniversidad;
+                        option.text = universidad.nomuniversidad;
+                        option.className = 'bg-slate-800 text-white hover:bg-cyan-600';
+                        categorySelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error al cargar las universidades', error))
 
-                dateInput.addEventListener('blur', function() {
-                    this.style.borderColor = '#3b82f6';
-                    this.style.boxShadow = 'none';
-                });
-            }
-        });
+            $('#password_confirmation').on('input', function() {
+                checkPasswordMatch();
+            });
 
-        $(document).ready(function() {
+            // Limpiar errores al escribir
+            $('input, select').on('input change', function() {
+                const field = $(this);
+                const fieldContainer = field.closest('div').parent();
+
+                // Restaurar estilos normales
+                field.removeClass('border-red-500 focus:border-red-500');
+                field.addClass('border-blue-500/30 focus:border-blue-400');
+
+                // Remover mensajes de error específicos del campo
+                fieldContainer.find('.invalid-feedback').remove();
+            });
+
+            // Envío del formulario
             $('#register').on('submit', function(e) {
                 e.preventDefault();
+                clearErrors();
+
+                const submitBtn = $(this).find('button[type="submit"]');
+                const originalText = submitBtn.html();
+
+                // Mostrar loading
+                submitBtn.html(`
+                <span class="flex items-center">
+                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Registrando...
+                </span>
+            `).prop('disabled', true);
+
                 $.ajax({
                     type: 'POST',
                     url: '/register',
                     data: $(this).serialize(),
                     success: function(response) {
-                        window.location.href = document.referrer || "{{ route('dashboard') }}";
+                        showNotification('¡Registro exitoso! Redirigiendo...', 'success');
+                        setTimeout(() => {
+                            window.location.href = "{{ route('dashboard') }}";
+                        }, 1500);
                     },
                     error: function(xhr) {
+                        submitBtn.html(originalText).prop('disabled', false);
+
                         if (xhr.status === 422) {
                             const errors = xhr.responseJSON.errors;
-                            $('.invalid-feedback').addClass('hidden');
+                            let errorCount = 0;
+
+                            // Mostrar errores específicos
                             for (const field in errors) {
-                                $(`#${field}`).next('.invalid-feedback').removeClass('hidden');
+                                if (errors[field].length > 0) {
+                                    showFieldError(field, errors[field][0]);
+                                    errorCount++;
+                                }
                             }
+
+                            showNotification(
+                                `Se encontraron ${errorCount} error(es). Revise los campos marcados.`,
+                                'error');
+
+                        } else if (xhr.status === 500) {
+                            const errorMessage = xhr.responseJSON?.error ||
+                                'Error interno del servidor';
+                            showNotification(errorMessage, 'error');
                         } else {
-                            alert(
-                                'Ocurrió un error inesperado. Por favor, intenta nuevamente: ' +
-                                (xhr.responseJSON?.message || 'Error desconocido')
-                            );
+                            showNotification('Error inesperado. Intente nuevamente.', 'error');
                         }
                     }
                 });
             });
         });
     </script>
+
 </x-guest-layout>

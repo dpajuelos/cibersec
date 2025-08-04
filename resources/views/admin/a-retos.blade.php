@@ -276,6 +276,25 @@
         </div>
     </div>
 
+    <style>
+        .z-\[10000\] {
+            z-index: 10000 !important;
+        }
+
+        .z-\[10001\] {
+            z-index: 10001 !important;
+        }
+
+
+        #confirm-modal {
+            z-index: 10000 !important;
+        }
+
+        /* Contenedor de notificaciones */
+        #notification-container {
+            z-index: 10001 !important;
+        }
+    </style>
     <!-- Incluir el modal -->
     @include('admin.components.reto-modal')
 

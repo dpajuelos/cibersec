@@ -110,45 +110,93 @@
                     </div>
 
                     @if ($competenciaActiva)
+                        @if ($mensajeCompetencia)
+                            <!-- Competencia fuera de rango de fechas -->
+                            <div class="text-center">
+                                <h3 class="text-lg font-bold text-yellow-400 mb-2">{{ $competenciaActiva->nomcompe }}
+                                </h3>
+                                <div class="flex items-center justify-center space-x-4 text-xs mb-4">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-calendar-alt mr-1 text-green-400"></i>
+                                        <span class="text-gray-300">Inicio:
+                                            {{ \Carbon\Carbon::parse($competenciaActiva->fec_inicio)->format('d/m/Y H:i') }}</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-calendar-times mr-1 text-red-400"></i>
+                                        <span class="text-gray-300">Fin:
+                                            {{ \Carbon\Carbon::parse($competenciaActiva->fec_final)->format('d/m/Y H:i') }}</span>
+                                    </div>
+                                </div>
+
+                                <!-- Mensaje de estado -->
+                                <div
+                                    class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-yellow-600/20 to-orange-600/20 border border-yellow-400/30 rounded-xl backdrop-blur-sm mb-4">
+                                    <i class="fas fa-info-circle mr-2 text-yellow-400"></i>
+                                    <span class="text-yellow-400 font-medium">{{ $mensajeCompetencia }}</span>
+                                </div>
+
+                                <!-- Botón para ver ranking -->
+                                <a href="{{ route('ranking') }}"
+                                    class="inline-flex items-center px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-blue-500/25">
+                                    <i class="fas fa-trophy mr-2"></i>
+                                    Ver Ranking
+                                </a>
+                            </div>
+                        @else
+                            <!-- Competencia activa y dentro del rango -->
+                            <div class="text-center">
+                                <h3 class="text-lg font-bold text-cyan-400 mb-2">{{ $competenciaActiva->nomcompe }}</h3>
+                                <div class="flex items-center justify-center space-x-4 text-xs">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-calendar-alt mr-1 text-green-400"></i>
+                                        <span class="text-gray-300">Inicio:
+                                            {{ \Carbon\Carbon::parse($competenciaActiva->fec_inicio)->format('d/m/Y H:i') }}</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-calendar-times mr-1 text-red-400"></i>
+                                        <span class="text-gray-300">Fin:
+                                            {{ \Carbon\Carbon::parse($competenciaActiva->fec_final)->format('d/m/Y H:i') }}</span>
+                                    </div>
+                                </div>
+
+                                @auth
+                                    @if (!$usuarioRegistrado)
+                                        <button onclick="registrarseEnCompetencia()"
+                                            class="mt-4 inline-flex items-center px-6 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-green-500/25">
+                                            <i class="fas fa-user-plus mr-2"></i>
+                                            ¡Únete al Desafío!
+                                        </button>
+                                    @else
+                                        <div
+                                            class="mt-4 inline-flex items-center px-6 py-2 bg-gradient-to-r from-green-600/20 to-emerald-600/20 border border-green-500/30 rounded-xl backdrop-blur-sm">
+                                            <i class="fas fa-check-circle mr-2 text-green-400"></i>
+                                            <span class="text-green-400 font-medium">¡Ya estás participando!</span>
+                                        </div>
+                                    @endif
+                                @else
+                                    <div class="mt-4 text-sm text-gray-400">
+                                        <i class="fas fa-info-circle mr-1"></i>
+                                        Inicia sesión para participar
+                                    </div>
+                                @endauth
+                            </div>
+                        @endif
+                    @else
+                        <!-- No hay competencias activas -->
                         <div class="text-center">
-                            <h3 class="text-lg font-bold text-cyan-400 mb-2">{{ $competenciaActiva->nomcompe }}</h3>
-                            <div class="flex items-center justify-center space-x-4 text-xs">
-                                <div class="flex items-center">
-                                    <i class="fas fa-calendar-alt mr-1 text-green-400"></i>
-                                    <span class="text-gray-300">Inicio:
-                                        {{ \Carbon\Carbon::parse($competenciaActiva->fec_inicio)->format('d/m/Y H:i') }}</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <i class="fas fa-calendar-times mr-1 text-red-400"></i>
-                                    <span class="text-gray-300">Fin:
-                                        {{ \Carbon\Carbon::parse($competenciaActiva->fec_final)->format('d/m/Y H:i') }}</span>
-                                </div>
+                            <div
+                                class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-gray-600/20 to-slate-600/20 border border-gray-400/30 rounded-xl backdrop-blur-sm mb-4">
+                                <i class="fas fa-exclamation-triangle mr-2 text-gray-400"></i>
+                                <span
+                                    class="text-gray-400 font-medium">{{ $mensajeCompetencia ?? 'No hay competencias activas' }}</span>
                             </div>
 
-                            @auth
-                                @if (!$usuarioRegistrado)
-                                    <button onclick="registrarseEnCompetencia()"
-                                        class="mt-4 inline-flex items-center px-6 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-green-500/25">
-                                        <i class="fas fa-user-plus mr-2"></i>
-                                        ¡Únete al Desafío!
-                                    </button>
-                                @else
-                                    <div
-                                        class="mt-4 inline-flex items-center px-6 py-2 bg-gradient-to-r from-green-600/20 to-emerald-600/20 border border-green-500/30 rounded-xl backdrop-blur-sm">
-                                        <i class="fas fa-check-circle mr-2 text-green-400"></i>
-                                        <span class="text-green-400 font-medium">¡Ya estás participando!</span>
-                                    </div>
-                                @endif
-                            @else
-                                <div class="mt-4 text-sm text-gray-400">
-                                    <i class="fas fa-info-circle mr-1"></i>
-                                    Inicia sesión para participar
-                                </div>
-                            @endauth
-                        </div>
-                    @else
-                        <div class="text-center">
-                            <span class="text-gray-400 text-sm">No hay competencias activas</span>
+                            <!-- Botón para ver ranking -->
+                            <a href="{{ route('ranking') }}"
+                                class="inline-flex items-center px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-blue-500/25">
+                                <i class="fas fa-trophy mr-2"></i>
+                                Ver Ranking
+                            </a>
                         </div>
                     @endif
                 </div>
@@ -333,7 +381,7 @@
                                                 class="fas fa-list mr-3 text-gray-400 group-hover/item:scale-110 transition-transform"></i>
                                             <span class="flex-1 text-left">Todas las dificultades</span>
                                             <i
-                                                class="fas fa-arrow-right opacity-0 group-hover/item:opacity-100 transition-opacity"></i>
+                                                class="fas fa-arrow-right opacity-0 group-hover:item:opacity-100 transition-opacity"></i>
                                         </button>
                                         <button onclick="filterByDifficulty('easy')"
                                             class="flex items-center w-full px-4 py-3 text-sm text-gray-300 hover:bg-slate-700/50 hover:text-green-400 transition-all duration-300 group/item">
@@ -409,7 +457,7 @@
                                             </div>
                                             <span class="flex-1 text-left">Resueltos</span>
                                             <i
-                                                class="fas fa-arrow-right opacity-0 group-hover/item:opacity-100 transition-opacity"></i>
+                                                class="fas fa-arrow-right opacity-0 group-hover:item:opacity-100 transition-opacity"></i>
                                         </button>
                                         <button onclick="filterByStatus('unsolved')"
                                             class="flex items-center w-full px-4 py-3 text-sm text-gray-300 hover:bg-slate-700/50 hover:text-orange-400 transition-all duration-300 group/item">
@@ -418,7 +466,7 @@
                                             </div>
                                             <span class="flex-1 text-left">Pendientes</span>
                                             <i
-                                                class="fas fa-arrow-right opacity-0 group-hover/item:opacity-100 transition-opacity"></i>
+                                                class="fas fa-arrow-right opacity-0 group-hover:item:opacity-100 transition-opacity"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -449,7 +497,59 @@
 
             <!-- Enhanced Challenges Grid with Improved UX -->
             <div id="challengesContainer" class="space-y-8">
-                @if (!$retosPorCategoria->isEmpty())
+                @if ($mensajeCompetencia && !$retosPorCategoria->isEmpty())
+                    <!-- Mostrar mensaje informativo cuando hay competencia pero fuera de rango -->
+                    <div class="text-center py-16 px-8">
+                        <div
+                            class="mx-auto w-32 h-32 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-full flex items-center justify-center mb-8 relative overflow-hidden">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-br from-yellow-400/10 to-orange-400/10 animate-pulse">
+                            </div>
+                            <i class="fas fa-clock text-5xl text-yellow-400 relative z-10"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-yellow-400 mb-4">{{ $mensajeCompetencia }}</h3>
+                        <p class="text-gray-400 max-w-md mx-auto text-lg leading-relaxed mb-6">
+                            @if (str_contains($mensajeCompetencia, 'no ha comenzado'))
+                                La competencia comenzará el
+                                {{ \Carbon\Carbon::parse($competenciaActiva->fec_inicio)->format('d/m/Y') }} a las
+                                {{ \Carbon\Carbon::parse($competenciaActiva->fec_inicio)->format('H:i') }}.
+                                ¡Prepárate para el desafío!
+                            @elseif (str_contains($mensajeCompetencia, 'ha finalizado'))
+                                La competencia finalizó el
+                                {{ \Carbon\Carbon::parse($competenciaActiva->fec_final)->format('d/m/Y') }} a las
+                                {{ \Carbon\Carbon::parse($competenciaActiva->fec_final)->format('H:i') }}.
+                                ¡Revisa los resultados en el ranking!
+                            @endif
+                        </p>
+                        <a href="{{ route('ranking') }}"
+                            class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-blue-500/25">
+                            <i class="fas fa-trophy mr-2"></i>
+                            Ver Ranking Completo
+                        </a>
+                    </div>
+                @elseif ($mensajeCompetencia)
+                    <!-- No hay competencias activas -->
+                    <div class="text-center py-24 px-8">
+                        <div
+                            class="mx-auto w-32 h-32 bg-gradient-to-br from-gray-500/20 to-slate-500/20 rounded-full flex items-center justify-center mb-8 relative overflow-hidden">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-br from-gray-400/10 to-slate-400/10 animate-pulse">
+                            </div>
+                            <i class="fas fa-exclamation-triangle text-5xl text-gray-400 relative z-10"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-300 mb-4">No hay competencias activas</h3>
+                        <p class="text-gray-400 max-w-md mx-auto text-lg leading-relaxed mb-6">
+                            Actualmente no hay competencias disponibles.
+                            Mantente atento para futuras competencias de ciberseguridad.
+                        </p>
+                        <a href="{{ route('ranking') }}"
+                            class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-blue-500/25">
+                            <i class="fas fa-trophy mr-2"></i>
+                            Ver Rankings Anteriores
+                        </a>
+                    </div>
+                @elseif (!$retosPorCategoria->isEmpty())
+                    <!-- Mostrar retos normalmente -->
                     @foreach ($retosPorCategoria as $categoria => $retos)
                         @php
                             $colores = $coloresPorCategoria[$categoria] ?? [
@@ -593,7 +693,7 @@
                         </div>
                     @endforeach
                 @else
-                    <!-- Enhanced Empty State -->
+                    <!-- Estado por defecto cuando no hay retos -->
                     <div class="text-center py-24 px-8">
                         <div
                             class="mx-auto w-32 h-32 bg-gradient-to-br from-purple-500/20 to-indigo-500/20 rounded-full flex items-center justify-center mb-8 relative overflow-hidden">
@@ -604,14 +704,8 @@
                         </div>
                         <h3 class="text-2xl font-bold text-gray-300 mb-4">No se encontraron retos</h3>
                         <p class="text-gray-400 max-w-md mx-auto text-lg leading-relaxed">
-                            No hay retos disponibles que coincidan con tus criterios de búsqueda.
-                            Intenta ajustar los filtros.
+                            No hay retos disponibles en este momento.
                         </p>
-                        <button onclick="clearAllFilters()"
-                            class="mt-6 inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-purple-500/25">
-                            <i class="fas fa-refresh mr-2"></i>
-                            Limpiar filtros
-                        </button>
                     </div>
                 @endif
             </div>

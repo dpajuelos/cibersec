@@ -20,6 +20,24 @@ class RetosController extends Controller
     {
         $competenciaActiva = Competencia::where('fk_estado_compe', 3)->first();
         $usuarioRegistrado = false;
+        $mensajeCompetencia = null;
+        $retosPorCategoria = collect();
+
+        // Validar si hay competencias activas
+        if (!$competenciaActiva) {
+            $mensajeCompetencia = 'No hay competencias activas';
+            return view('retos', compact('mensajeCompetencia', 'usuarioRegistrado', 'retosPorCategoria', 'competenciaActiva'));
+        }
+
+        // Validar si la competencia está dentro del rango de fechas
+        $ahora = now();
+        if ($ahora < $competenciaActiva->fec_inicio) {
+            $mensajeCompetencia = 'La competencia ' . $competenciaActiva->nomcompe . ' aún no ha comenzado';
+            return view('retos', compact('mensajeCompetencia', 'competenciaActiva', 'usuarioRegistrado', 'retosPorCategoria'));
+        } elseif ($ahora > $competenciaActiva->fec_final) {
+            $mensajeCompetencia = 'La competencia ' . $competenciaActiva->nomcompe . ' ha finalizado';
+            return view('retos', compact('mensajeCompetencia', 'competenciaActiva', 'usuarioRegistrado', 'retosPorCategoria'));
+        }
 
         if (Auth::check() && $competenciaActiva) {
             $perfilId = Perfil::join('usuarios', 'perfiles.fk_usuario', '=', 'usuarios.idusuario')
@@ -40,6 +58,9 @@ class RetosController extends Controller
                 ->select('perfiles.idperfil')
                 ->first()
                 ->idperfil;
+            $registroID = DB::table('registros_personas')
+                ->where('fk_perfil', $perfilId)
+                ->value('idregistros');
 
             $retos = DB::table('retos AS rt')
                 ->select(
@@ -52,25 +73,17 @@ class RetosController extends Controller
                     'pt.url',
                     'pt.tipo',
                     DB::raw('COALESCE(MAX(sp.idsolve), 0) > 0 AS resuelto'),
-                    DB::raw('(SELECT COUNT(*) FROM submissions_personas AS sub WHERE sub.fk_idretos = rt.idretos) AS intentos')
+                    DB::raw('(SELECT COUNT(*) FROM submissions_personas AS sub WHERE sub.fk_idretos = rt.idretos AND sub.fk_idregistros = ' . $registroID . ') AS intentos')
                 )
                 ->join('categorias AS ct', 'rt.fk_categoria', '=', 'ct.idcategoria')
                 ->join('estados_reto AS et', 'rt.fk_estado_reto', '=', 'et.idestado_reto')
                 ->join('competencias AS c', 'rt.fk_competencia', '=', 'c.idcompetencia')
                 ->leftJoin('archivos_reto AS pt', 'pt.fk_retos', '=', 'rt.idretos')
-                // Submissions del usuario actual
-                ->leftJoin('submissions_personas AS sb', function ($join) use ($perfilId) {
+                ->leftJoin('submissions_personas AS sb', function ($join) use ($registroID) {
                     $join
                         ->on('sb.fk_idretos', '=', 'rt.idretos')
-                        ->where('sb.fk_idregistros', '=', function ($query) use ($perfilId) {
-                            $query
-                                ->select('idregistros')
-                                ->from('registros_personas')
-                                ->where('fk_perfil', $perfilId)
-                                ->limit(1);
-                        });
+                        ->where('sb.fk_idregistros', '=', $registroID);
                 })
-                // Solve relacionado al intento
                 ->leftJoin('solve_personas AS sp', 'sp.fk_idsubmissions_personas', '=', 'sb.idsubmissions_personas')
                 ->where('et.estadoreto', '=', 'Activo')
                 ->where('c.fk_estado_compe', 3)
@@ -99,7 +112,7 @@ class RetosController extends Controller
                     'pt.url',
                     'pt.tipo',
                     DB::raw('0 AS resuelto'),
-                    DB::raw('(SELECT COUNT(*) FROM submissions_personas AS sub WHERE sub.fk_idretos = rt.idretos) AS intentos')
+                    DB::raw('0 AS intentos')
                 )
                 ->join('categorias AS ct', 'rt.fk_categoria', '=', 'ct.idcategoria')
                 ->join('estados_reto AS et', 'rt.fk_estado_reto', '=', 'et.idestado_reto')
@@ -112,7 +125,7 @@ class RetosController extends Controller
             $retosPorCategoria = $retos->groupBy('nomcategoria');
         }
 
-        return view('retos', compact('retosPorCategoria', 'competenciaActiva', 'usuarioRegistrado'));
+        return view('retos', compact('retosPorCategoria', 'competenciaActiva', 'usuarioRegistrado', 'mensajeCompetencia'));
     }
 
     public function registrarEnCompetencia(Request $request, $competenciaId)
